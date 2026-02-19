@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.next/
+.env
+.env.local
+*.log
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+postgres_data/
+redis_data/
+.venv/
+.vscode/

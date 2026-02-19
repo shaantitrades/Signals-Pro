@@ -1,0 +1,76 @@
+name: SignalsPro CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '20'
+  PYTHON_VERSION: '3.12'
+
+jobs:
+  # ─── Lint & Type Check ─────────────────────────────────
+  lint-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: cd backend && npm ci
+      - run: cd backend && npx prisma generate
+      - run: cd backend && npm run build
+
+  lint-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: cd frontend && npm ci
+      - run: cd frontend && npm run build
+
+  lint-engine:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - run: cd signal-engine && pip install .
+      - run: cd signal-engine && python -c "from app.main import app; print('OK')"
+
+  # ─── Build Docker Images ───────────────────────────────
+  build:
+    needs: [lint-backend, lint-frontend, lint-engine]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build backend
+        run: docker build -t signalspro-backend:${{ github.sha }} ./backend
+
+      - name: Build frontend
+        run: docker build -t signalspro-frontend:${{ github.sha }} ./frontend
+
+      - name: Build signal engine
+        run: docker build -t signalspro-engine:${{ github.sha }} ./signal-engine
+
+  # ─── Deploy (manual trigger for production) ────────────
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to production
+        run: echo "Deploy step - configure with your hosting provider"
