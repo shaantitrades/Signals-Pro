@@ -45,6 +45,7 @@ module.exports = {
         sell: { DEFAULT: '#EF4444', bg: 'rgba(239, 68, 68, 0.1)' },
         signal: {
           high: '#F59E0B',
+          strong: '#F59E0B',
           medium: '#3B82F6',
           low: '#10B981',
         },

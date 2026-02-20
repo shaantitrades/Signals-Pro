@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useI18n } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
@@ -8,6 +8,14 @@ import { useAuthStore } from '@/lib/store';
 import { authApi, subscriptionsApi } from '@/lib/api';
 
 export default function SettingsPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center h-64"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>}>
+      <SettingsContent />
+    </Suspense>
+  );
+}
+
+function SettingsContent() {
   const { t } = useI18n();
   const searchParams = useSearchParams();
   const { user, initAuth, hasActiveSubscription } = useAuthStore();
