@@ -19,6 +19,7 @@ RUN npm run build
 # Production
 FROM base AS runner
 ENV NODE_ENV=production
+RUN apk add --no-cache openssl
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=build /app/dist ./dist
