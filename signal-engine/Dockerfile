@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Install Python dependencies
 COPY pyproject.toml .
+COPY app/__init__.py app/__init__.py
 RUN pip install --no-cache-dir .
 
 # Copy application
