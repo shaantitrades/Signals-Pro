@@ -115,12 +115,12 @@ validationRouter.post('/:signalId', authenticate, authorize('VALIDATOR', 'ADMIN'
         signalId,
         action: `validation_${data.result.toLowerCase()}`,
         userId: req.user!.id,
-        details: {
+        details: JSON.stringify({
           validationType: data.validationType,
           result: data.result,
           confidenceScore: data.confidenceScore,
           newStatus: newValidationStatus,
-        },
+        }),
       },
     });
 

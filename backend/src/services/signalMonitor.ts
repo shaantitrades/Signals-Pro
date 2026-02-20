@@ -82,7 +82,7 @@ async function checkExpiredSignals() {
       data: {
         signalId: signal.id,
         action: 'auto_expired',
-        details: { reason: 'Signal expiration time reached', expiredAt: now },
+        details: JSON.stringify({ reason: 'Signal expiration time reached', expiredAt: now }),
       },
     });
 
@@ -150,7 +150,7 @@ async function checkPerformanceThresholds() {
               type: 'SYSTEM',
               title: `⚠️ Performance Alert: ${category}`,
               message: `Win rate for ${category} dropped to ${winRate.toFixed(1)}%. ${disabled.count} pending signals have been auto-disabled. Minimum threshold: ${MIN_WIN_RATE}%.`,
-              metadata: { category, winRate, disabledCount: disabled.count },
+              metadata: JSON.stringify({ category, winRate, disabledCount: disabled.count }),
             },
           });
         }
@@ -211,7 +211,7 @@ async function checkConsecutiveLosses() {
           type: 'SYSTEM',
           title: '🚨 Consecutive Loss Alert',
           message: `${consecutiveLosses} consecutive losses detected. ${paused.count} pending signals have been auto-paused. Manual review required.`,
-          metadata: { consecutiveLosses, pausedCount: paused.count },
+          metadata: JSON.stringify({ consecutiveLosses, pausedCount: paused.count }),
         },
       });
     }
@@ -245,10 +245,10 @@ async function checkLowConfidenceSignals() {
       data: {
         signalId: signal.id,
         action: 'auto_rejected_low_confidence',
-        details: {
+        details: JSON.stringify({
           confidenceScore: signal.confidenceScore,
           threshold: MIN_CONFIDENCE_THRESHOLD,
-        },
+        }),
       },
     });
   }

@@ -46,14 +46,14 @@ botRouter.post('/start', authenticate, requireSubscription, async (req: AuthRequ
         userId: req.user!.id,
         name: data.name || `${data.category} Bot`,
         category: data.category,
-        assets: data.assets,
-        timeframes: data.timeframes,
+        assets: JSON.stringify(data.assets),
+        timeframes: JSON.stringify(data.timeframes),
         isActive: true,
         maxConcurrent: data.maxConcurrent || 3,
         riskPerTrade: data.riskPerTrade || 2.0,
         maxDailyLoss: data.maxDailyLoss || 5.0,
         minConfidence: data.minConfidence || 85.0,
-        allowedRiskLevels: data.allowedRiskLevels || ['LOW', 'MEDIUM'],
+        allowedRiskLevels: JSON.stringify(data.allowedRiskLevels || ['LOW', 'MEDIUM']),
       },
     });
 
@@ -72,7 +72,7 @@ botRouter.post('/start', authenticate, requireSubscription, async (req: AuthRequ
         type: 'BOT_STARTED',
         title: 'Bot démarré',
         message: `Votre bot ${data.category} est maintenant actif sur ${data.assets.join(', ')}`,
-        metadata: { botId: botConfig.id },
+        metadata: JSON.stringify({ botId: botConfig.id }),
       },
     });
 
@@ -121,7 +121,7 @@ botRouter.post('/stop', authenticate, async (req: AuthRequest, res: Response, ne
         type: 'BOT_STOPPED',
         title: 'Bot arrêté',
         message: `Votre bot ${bot.category} a été arrêté`,
-        metadata: { botId: bot.id },
+        metadata: JSON.stringify({ botId: bot.id }),
       },
     });
 
@@ -198,9 +198,14 @@ botRouter.put('/config/:id', authenticate, async (req: AuthRequest, res: Respons
 
     const data = botConfigSchema.partial().parse(req.body);
 
+    const updateData: any = { ...data };
+    if (data.assets) updateData.assets = JSON.stringify(data.assets);
+    if (data.timeframes) updateData.timeframes = JSON.stringify(data.timeframes);
+    if (data.allowedRiskLevels) updateData.allowedRiskLevels = JSON.stringify(data.allowedRiskLevels);
+
     const updatedConfig = await prisma.botConfig.update({
       where: { id: req.params.id },
-      data,
+      data: updateData,
     });
 
     res.json({

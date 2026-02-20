@@ -321,7 +321,7 @@ signalRouter.post('/', authenticate, authorize('ADMIN', 'SUPER_ADMIN', 'VALIDATO
         signalId: signal.id,
         action: 'created',
         userId: req.user!.id,
-        details: { source: 'manual', ip: req.ip },
+        details: JSON.stringify({ source: 'manual', ip: req.ip }),
       },
     });
 
@@ -380,7 +380,7 @@ signalRouter.patch('/:id', authenticate, authorize('ADMIN', 'SUPER_ADMIN', 'VALI
         signalId: signal.id,
         action: 'updated',
         userId: req.user!.id,
-        details: { changes: req.body },
+        details: JSON.stringify({ changes: req.body }),
       },
     });
 
