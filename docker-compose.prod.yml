@@ -1,23 +1,6 @@
 version: '3.8'
 
 services:
-  # ─── Database ─────────────────────────────────────────────
-  postgres:
-    image: timescale/timescaledb:latest-pg16
-    restart: always
-    environment:
-      POSTGRES_DB: ${DB_NAME:-signalspro}
-      POSTGRES_USER: ${DB_USER:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    # No ports exposed — only accessible via internal network
-
   # ─── Redis ────────────────────────────────────────────────
   redis:
     image: redis:7-alpine
@@ -43,7 +26,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3001
-      DATABASE_URL: postgresql://${DB_USER:-postgres}:${DB_PASSWORD}@postgres:5432/${DB_NAME:-signalspro}
+      DATABASE_URL: ${DATABASE_URL}
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
       JWT_SECRET: ${JWT_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
@@ -55,8 +38,6 @@ services:
       API_URL: ${API_URL:-http://62.169.24.224:3001/api}
       SIGNAL_ENGINE_URL: http://signal-engine:8000
     depends_on:
-      postgres:
-        condition: service_healthy
       redis:
         condition: service_healthy
 
@@ -67,7 +48,7 @@ services:
       dockerfile: Dockerfile
     restart: always
     environment:
-      DATABASE_URL: postgresql+asyncpg://${DB_USER:-postgres}:${DB_PASSWORD}@postgres:5432/${DB_NAME:-signalspro}
+      DATABASE_URL: ${DATABASE_URL_ASYNC}
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
       API_URL: http://backend:3001/api
       API_KEY: ${ENGINE_API_KEY}
@@ -95,7 +76,4 @@ services:
       - backend
 
 volumes:
-  postgres_data:
   redis_data:
-  web:
-    driver: bridge
