@@ -3,7 +3,7 @@ version: '3.8'
 services:
   # ─── PostgreSQL (auto-hébergé, remplace Supabase) ─────────
   postgres:
-    image: postgres:16-alpine
+    image: timescale/timescaledb:latest-pg16
     restart: always
     environment:
       POSTGRES_DB: signalspro
