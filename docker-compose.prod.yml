@@ -8,26 +8,27 @@ services:
     environment:
       POSTGRES_DB: signalspro
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-Rk7Xm9Pq2Wv5Nj8Hs4Lf6Gc3Yd1Tb0Za}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d signalspro"]
-      interval: 10s
+      interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 10
+      start_period: 30s
     # No ports exposed — only accessible via internal Docker network
 
   # ─── Redis ────────────────────────────────────────────────
   redis:
     image: redis:7-alpine
     restart: always
-    command: redis-server --requirepass ${REDIS_PASSWORD}
+    command: redis-server --requirepass ${REDIS_PASSWORD:-7KHw8mN2pXvR9qZbY5tL3jF6gC4hD1sA}
     volumes:
       - redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
-      interval: 10s
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-7KHw8mN2pXvR9qZbY5tL3jF6gC4hD1sA}", "ping"]
+      interval: 5s
       timeout: 5s
       retries: 5
     # No ports exposed — only accessible via internal network
@@ -43,14 +44,14 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3001
-      DATABASE_URL: postgresql://postgres:${DB_PASSWORD}@postgres:5432/signalspro
-      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      DATABASE_URL: postgresql://postgres:${DB_PASSWORD:-Rk7Xm9Pq2Wv5Nj8Hs4Lf6Gc3Yd1Tb0Za}@postgres:5432/signalspro
+      REDIS_URL: redis://:${REDIS_PASSWORD:-7KHw8mN2pXvR9qZbY5tL3jF6gC4hD1sA}@redis:6379
+      JWT_SECRET: ${JWT_SECRET:-xK8mP3vN9qR2wL5jY7tF4hG6bZ1cX0sA8dE3wQ9mN5kJ7pL2yT6vR4hG9bF3xM1c}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-bT9mK5wP2xL8jN4qR7vH3cY6fG1zS0dA5eW9mQ8kJ3pL7yT2vR6hG4bF8xM0cN5j}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-15m}
       JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
-      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
-      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-sk_test_placeholder}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-whsec_placeholder}
       FRONTEND_URL: ${FRONTEND_URL:-http://62.169.24.224:3000}
       API_URL: ${API_URL:-http://62.169.24.224:3001/api}
       SIGNAL_ENGINE_URL: http://signal-engine:8000
@@ -67,10 +68,10 @@ services:
       dockerfile: Dockerfile
     restart: always
     environment:
-      DATABASE_URL: postgresql+asyncpg://postgres:${DB_PASSWORD}@postgres:5432/signalspro
-      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      DATABASE_URL: postgresql+asyncpg://postgres:${DB_PASSWORD:-Rk7Xm9Pq2Wv5Nj8Hs4Lf6Gc3Yd1Tb0Za}@postgres:5432/signalspro
+      REDIS_URL: redis://:${REDIS_PASSWORD:-7KHw8mN2pXvR9qZbY5tL3jF6gC4hD1sA}@redis:6379
       API_URL: http://backend:3001/api
-      API_KEY: ${ENGINE_API_KEY}
+      API_KEY: ${ENGINE_API_KEY:-a7f3e9c2b1d8f4a6e5c9b7d3f2a8e6c4b9d7f3a5e2c8b6d4f9a7e3c1b5d8f4a2}
       SIGNAL_MIN_CONFIDENCE: ${SIGNAL_MIN_CONFIDENCE:-85}
       ANALYSIS_INTERVAL_SECONDS: ${ANALYSIS_INTERVAL_SECONDS:-30}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
