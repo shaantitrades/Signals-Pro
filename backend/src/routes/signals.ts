@@ -265,6 +265,7 @@ signalRouter.get('/recent', async (req: any, res: Response, next: NextFunction) 
 
     const signals = await prisma.signal.findMany({
       where,
+      distinct: ['asset'],
       orderBy: { createdAt: 'desc' },
       take: limit,
     });
