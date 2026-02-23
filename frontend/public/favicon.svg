@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Red arrow: upper-left → lower-right (SELL) -->
+  <g transform="rotate(135, 16, 16)">
+    <polygon points="16,2 24,13 20,13 20,30 12,30 12,13 8,13" fill="#EF4444"/>
+  </g>
+  <!-- Green arrow: lower-left → upper-right (BUY) -->
+  <g transform="rotate(45, 16, 16)">
+    <polygon points="16,2 24,13 20,13 20,30 12,30 12,13 8,13" fill="#22C55E"/>
+  </g>
+</svg>

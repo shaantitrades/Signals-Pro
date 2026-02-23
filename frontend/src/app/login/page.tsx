@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useI18n } from '@/lib/i18n';
 
 declare global {
@@ -117,7 +118,7 @@ export default function LoginPage() {
 
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 text-2xl font-bold">
-            <span className="text-3xl">📡</span>
+            <Image src="/logo.svg" alt="SignalsPro" width={36} height={36} className="w-9 h-9" />
             <span className="gradient-text">SignalsPro</span>
           </Link>
           <p className="text-muted-foreground mt-2">{t('auth.loginDesc')}</p>

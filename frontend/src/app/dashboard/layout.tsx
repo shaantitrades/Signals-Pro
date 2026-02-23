@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { useAuthStore, useWSStore } from '@/lib/store';
@@ -94,9 +95,7 @@ export default function DashboardLayout({
           {/* Left: Logo + Status + Live */}
           <div className="flex items-center gap-2 sm:gap-4">
             <Link href="/dashboard" className="flex items-center space-x-2 shrink-0">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">SP</span>
-              </div>
+              <Image src="/logo.svg" alt="SignalsPro" width={32} height={32} className="w-8 h-8" priority />
               <span className="text-lg font-bold hidden sm:inline">SignalsPro</span>
             </Link>
 
@@ -275,7 +274,10 @@ export default function DashboardLayout({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             <div>
-              <h3 className="font-bold text-lg mb-3">SignalsPro</h3>
+              <div className="flex items-center gap-2 mb-3">
+                <Image src="/logo.svg" alt="SignalsPro" width={28} height={28} className="w-7 h-7" />
+                <h3 className="font-bold text-lg">SignalsPro</h3>
+              </div>
               <p className="text-white/60 text-sm leading-relaxed">{t('footer.brand.desc')}</p>
             </div>
             <div>
