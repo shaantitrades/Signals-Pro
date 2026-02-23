@@ -334,55 +334,6 @@ export default function BotPage() {
         </div>
       )}
 
-      {/* Bot Status Header */}
-      <div className={cn(
-        'signal-card p-4 sm:p-6 transition-all duration-300',
-        isBotRunning ? 'border-profit/50 glow-green' : 'border-border'
-      )}>
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className={cn(
-              'w-12 h-12 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl',
-              isBotRunning ? 'bg-profit/10' : 'bg-secondary'
-            )}>
-              🤖
-            </div>
-            <div>
-              <h2 className="text-xl sm:text-2xl font-bold">{t('bot.title')}</h2>
-              <p className="text-sm text-muted-foreground">
-                {isBotRunning 
-                  ? t('bot.running', { count: selectedAssets.length })
-                  : t('bot.stopped')
-                }
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            {isBotRunning && (
-              <div className="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-profit/10 rounded-lg">
-                <span className="w-2 h-2 bg-profit rounded-full animate-pulse" />
-                <span className="text-profit font-medium text-sm sm:text-base">{t('bot.inProgress')}</span>
-              </div>
-            )}
-            <button
-              onClick={handleStartStop}
-              disabled={!selectedCategory || selectedAssets.length === 0}
-              className={cn(
-                'px-5 py-2.5 sm:px-8 sm:py-3 rounded-xl font-bold text-base sm:text-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap relative',
-                isBotRunning
-                  ? 'bg-loss text-white hover:bg-loss/90 shadow-lg shadow-loss/20'
-                  : !hasSubscription
-                    ? 'bg-profit/60 text-white cursor-pointer shadow-lg shadow-profit/10'
-                    : 'bg-profit text-white hover:bg-profit/90 shadow-lg shadow-profit/20'
-              )}
-            >
-              {!hasSubscription && !isBotRunning && <span className="mr-1">🔒</span>}
-              {isBotRunning ? t('bot.stop') : t('bot.start')}
-            </button>
-          </div>
-        </div>
-      </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Configuration Panel (Left 2 cols) */}
         <div className="lg:col-span-2 space-y-6">
@@ -571,6 +522,55 @@ export default function BotPage() {
               </div>
             </div>
           )}
+
+          {/* Bot Status Header - START/STOP */}
+          <div className={cn(
+            'signal-card p-4 sm:p-6 transition-all duration-300',
+            isBotRunning ? 'border-profit/50 glow-green' : 'border-border'
+          )}>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className={cn(
+                  'w-12 h-12 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center text-2xl sm:text-3xl',
+                  isBotRunning ? 'bg-profit/10' : 'bg-secondary'
+                )}>
+                  🤖
+                </div>
+                <div>
+                  <h2 className="text-xl sm:text-2xl font-bold">{t('bot.title')}</h2>
+                  <p className="text-sm text-muted-foreground">
+                    {isBotRunning 
+                      ? t('bot.running', { count: selectedAssets.length })
+                      : t('bot.stopped')
+                    }
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                {isBotRunning && (
+                  <div className="flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 bg-profit/10 rounded-lg">
+                    <span className="w-2 h-2 bg-profit rounded-full animate-pulse" />
+                    <span className="text-profit font-medium text-sm sm:text-base">{t('bot.inProgress')}</span>
+                  </div>
+                )}
+                <button
+                  onClick={handleStartStop}
+                  disabled={!selectedCategory || selectedAssets.length === 0}
+                  className={cn(
+                    'px-5 py-2.5 sm:px-8 sm:py-3 rounded-xl font-bold text-base sm:text-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap relative',
+                    isBotRunning
+                      ? 'bg-loss text-white hover:bg-loss/90 shadow-lg shadow-loss/20'
+                      : !hasSubscription
+                        ? 'bg-profit/60 text-white cursor-pointer shadow-lg shadow-profit/10'
+                        : 'bg-profit text-white hover:bg-profit/90 shadow-lg shadow-profit/20'
+                  )}
+                >
+                  {!hasSubscription && !isBotRunning && <span className="mr-1">🔒</span>}
+                  {isBotRunning ? t('bot.stop') : t('bot.start')}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Active Signals Panel (Right col) */}
