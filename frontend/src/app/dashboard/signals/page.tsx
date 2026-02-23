@@ -7,6 +7,76 @@ import { useI18n } from '@/lib/i18n';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 // ============================================================================
+// Market Hours Detection
+// ============================================================================
+
+interface MarketStatus {
+  isOpen: boolean;
+  message: string;
+  icon: string;
+  opensAt: string;
+}
+
+/**
+ * Check if a market category is currently open (Paris time).
+ * - FOREX: Mon 00:00 → Fri 23:00 — closed weekends
+ * - CRYPTO: 24/7/365
+ * - INDICES: Mon-Fri ~08:00 → 22:30 — closed nights & weekends
+ * - COMMODITIES: Mon-Fri ~01:00 → 22:00 — closed weekends
+ * - FOREX_OTC: 24/7
+ */
+function getMarketStatus(category: string): MarketStatus {
+  const now = new Date();
+  const parisTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
+  const day = parisTime.getDay(); // 0=Sun, 6=Sat
+  const hour = parisTime.getHours();
+  const minutes = parisTime.getMinutes();
+  const timeDecimal = hour + minutes / 60;
+
+  const isWeekend = day === 0 || day === 6;
+  const isFriday = day === 5;
+
+  switch (category) {
+    case 'CRYPTO':
+    case 'FOREX_OTC':
+      return { isOpen: true, message: '', icon: '', opensAt: '' };
+
+    case 'FOREX': {
+      if (isWeekend && !(day === 0 && hour >= 23)) {
+        return { isOpen: false, message: 'sig.marketClosedForex', icon: '💱', opensAt: 'sig.opensMonday' };
+      }
+      if (isFriday && hour >= 23) {
+        return { isOpen: false, message: 'sig.marketClosedForex', icon: '💱', opensAt: 'sig.opensMonday' };
+      }
+      return { isOpen: true, message: '', icon: '', opensAt: '' };
+    }
+
+    case 'INDICES': {
+      if (isWeekend) {
+        return { isOpen: false, message: 'sig.marketClosedIndices', icon: '📈', opensAt: 'sig.opensMonday' };
+      }
+      if (timeDecimal < 8 || timeDecimal >= 22.5) {
+        return { isOpen: false, message: 'sig.marketClosedIndicesNight', icon: '📈', opensAt: 'sig.opens8am' };
+      }
+      return { isOpen: true, message: '', icon: '', opensAt: '' };
+    }
+
+    case 'COMMODITIES': {
+      if (isWeekend) {
+        return { isOpen: false, message: 'sig.marketClosedCommodities', icon: '🪙', opensAt: 'sig.opensMonday' };
+      }
+      if (timeDecimal < 1 || timeDecimal >= 22) {
+        return { isOpen: false, message: 'sig.marketClosedCommoditiesNight', icon: '🪙', opensAt: 'sig.opens1am' };
+      }
+      return { isOpen: true, message: '', icon: '', opensAt: '' };
+    }
+
+    default:
+      return { isOpen: true, message: '', icon: '', opensAt: '' };
+  }
+}
+
+// ============================================================================
 // Types
 // ============================================================================
 
@@ -142,9 +212,34 @@ export default function SignalsPage() {
     });
 
   const totalPnl = filteredSignals.reduce((acc, s) => acc + s.pnlPips, 0);
+  const marketStatus = getMarketStatus(categoryFilter);
 
   return (
     <div className="space-y-6">
+      {/* Market Closed Banner */}
+      {!marketStatus.isOpen && (
+        <div className="signal-card p-4 border-yellow-500/40 bg-yellow-500/5">
+          <div className="flex items-center gap-3">
+            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-yellow-500/10 flex items-center justify-center">
+              <span className="text-xl">{marketStatus.icon}</span>
+            </div>
+            <div className="flex-1">
+              <p className="font-semibold text-yellow-500 text-sm">
+                🕐 {t(marketStatus.message)}
+              </p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {t(marketStatus.opensAt)} — {t('sig.marketClosedNote')}
+              </p>
+            </div>
+            <div className="hidden sm:block text-right">
+              <span className="text-xs px-2 py-1 rounded-full bg-yellow-500/10 text-yellow-500 font-medium">
+                {t('sig.marketClosed')}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header Stats Bar */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="signal-card p-4 text-center">
