@@ -76,7 +76,7 @@ services:
       ANALYSIS_INTERVAL_SECONDS: ${ANALYSIS_INTERVAL_SECONDS:-30}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
     ports:
-      - "8000:8000"
+      - "8080:8000"
     depends_on:
       - backend
 
@@ -88,14 +88,14 @@ services:
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://62.169.24.224:3001/api}
         NEXT_PUBLIC_WS_URL: ${NEXT_PUBLIC_WS_URL:-ws://62.169.24.224:3001}
-        NEXT_PUBLIC_SIGNAL_ENGINE_URL: ${NEXT_PUBLIC_SIGNAL_ENGINE_URL:-http://62.169.24.224:8000}
+        NEXT_PUBLIC_SIGNAL_ENGINE_URL: ${NEXT_PUBLIC_SIGNAL_ENGINE_URL:-http://62.169.24.224:8080}
     restart: always
     ports:
       - "3000:3000"
     environment:
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://62.169.24.224:3001/api}
       NEXT_PUBLIC_WS_URL: ${NEXT_PUBLIC_WS_URL:-ws://62.169.24.224:3001}
-      NEXT_PUBLIC_SIGNAL_ENGINE_URL: ${NEXT_PUBLIC_SIGNAL_ENGINE_URL:-http://62.169.24.224:8000}
+      NEXT_PUBLIC_SIGNAL_ENGINE_URL: ${NEXT_PUBLIC_SIGNAL_ENGINE_URL:-http://62.169.24.224:8080}
     depends_on:
       - backend
 
