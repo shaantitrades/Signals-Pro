@@ -6,7 +6,7 @@ import { cn, formatPips, formatPercent, getConfidenceColor, getCategoryIcon } fr
 import { useI18n } from '@/lib/i18n';
 import { useAuthStore } from '@/lib/store';
 
-const SIGNAL_ENGINE_URL = process.env.NEXT_PUBLIC_SIGNAL_ENGINE_URL || 'http://localhost:8000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 interface RecentSignal {
   id: string;
@@ -28,39 +28,38 @@ export default function DashboardPage() {
   const [stats, setStats] = useState({ activeSignals: 0, categories: 0 });
   const [loading, setLoading] = useState(true);
 
-  // Fetch real signals from the signal engine across all categories
+  // Fetch real signals from the backend API (DB-backed, always available)
   useEffect(() => {
     async function fetchDashboardData() {
       setLoading(true);
-      const categories = ['FOREX', 'CRYPTO', 'COMMODITIES', 'INDICES'];
       const allSignals: RecentSignal[] = [];
       let categoriesWithSignals = 0;
 
-      await Promise.all(
-        categories.map(async (cat) => {
-          try {
-            const res = await fetch(`${SIGNAL_ENGINE_URL}/signals/scan/${cat}/M15?min_confidence=50`);
-            if (!res.ok) return;
-            const data = await res.json();
-            if (data.signals && data.signals.length > 0) {
-              categoriesWithSignals++;
-              data.signals.forEach((s: any, i: number) => {
-                allSignals.push({
-                  id: `${cat}-${i}`,
-                  asset: s.asset || s.symbol || 'N/A',
-                  category: cat,
-                  action: s.action || s.direction || 'BUY',
-                  confidence: Math.round(s.confidence || 0),
-                  status: 'ACTIVE',
-                  time: 'Live',
-                });
+      try {
+        const res = await fetch(`${API_URL}/api/signals/recent?min_confidence=50&limit=50`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.signals && data.signals.length > 0) {
+            // Track unique categories
+            const cats = new Set<string>();
+            data.signals.forEach((s: any, i: number) => {
+              cats.add(s.category);
+              allSignals.push({
+                id: s.id || `sig-${i}`,
+                asset: s.asset || 'N/A',
+                category: s.category,
+                action: s.action || 'BUY',
+                confidence: Math.round(s.confidence || 0),
+                status: s.status || 'ACTIVE',
+                time: s.created_at ? new Date(s.created_at).toLocaleTimeString() : 'Live',
               });
-            }
-          } catch {
-            // skip failed category
+            });
+            categoriesWithSignals = cats.size;
           }
-        })
-      );
+        }
+      } catch {
+        // Backend not available, signals will be empty
+      }
 
       // Sort by confidence and take top 5
       allSignals.sort((a, b) => b.confidence - a.confidence);

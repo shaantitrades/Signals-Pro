@@ -244,6 +244,62 @@ signalRouter.get('/active', authenticate, requireSubscription, async (req: AuthR
 });
 
 // ============================================================================
+// GET /api/signals/recent - Public endpoint for recent signals from DB
+// No auth required — serves signals already saved by the scheduler
+// ============================================================================
+
+signalRouter.get('/recent', async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const category = req.query.category as string | undefined;
+    const minConfidence = req.query.min_confidence ? parseFloat(req.query.min_confidence as string) : undefined;
+    const limit = Math.min(parseInt(req.query.limit as string || '50', 10), 100);
+
+    // Build filter: recent signals (last 48h) that are active/validated
+    const where: any = {
+      status: { in: ['ACTIVE', 'EXECUTED', 'TP1_HIT', 'TP2_HIT', 'PENDING'] },
+      createdAt: { gte: new Date(Date.now() - 48 * 60 * 60 * 1000) },
+    };
+
+    if (category) where.category = category;
+    if (minConfidence) where.confidenceScore = { gte: minConfidence };
+
+    const signals = await prisma.signal.findMany({
+      where,
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+    });
+
+    // Map DB fields to signal-engine response format for frontend compatibility
+    res.json({
+      success: true,
+      signals: signals.map((s: any) => ({
+        id: s.id,
+        asset: s.asset,
+        category: s.category,
+        action: s.action,
+        entry_price: Number(s.entryPrice),
+        tp1: Number(s.takeProfit1),
+        tp2: s.takeProfit2 ? Number(s.takeProfit2) : null,
+        tp3: s.takeProfit3 ? Number(s.takeProfit3) : null,
+        sl: Number(s.stopLoss),
+        confidence: s.confidenceScore,
+        risk_level: s.riskLevel,
+        timeframe: s.timeframe,
+        status: s.status,
+        pnl_pips: s.pnlPips || 0,
+        reasoning: s.analysis,
+        created_at: s.createdAt.toISOString(),
+        indicators: [],
+      })),
+      source: 'database',
+      total: signals.length,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// ============================================================================
 // GET /api/signals/:id - Get signal detail
 // ============================================================================
 

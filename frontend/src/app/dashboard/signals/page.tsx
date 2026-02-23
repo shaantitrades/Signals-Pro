@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { cn, formatPrice, getTimeframeLabel, getRiskLevelColor } from '@/lib/utils';
 import { useI18n } from '@/lib/i18n';
 
-const SIGNAL_ENGINE_URL = process.env.NEXT_PUBLIC_SIGNAL_ENGINE_URL || 'http://localhost:8000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 // ============================================================================
 // Types
@@ -66,65 +66,46 @@ export default function SignalsPage() {
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
   const [expandedSignal, setExpandedSignal] = useState<string | null>(null);
 
-  // Fetch real signals from the signal engine
-  const fetchSignals = useCallback(async (categoriesToScan?: string[]) => {
+  // Fetch real signals from the backend API (DB-backed, always available)
+  const fetchSignals = useCallback(async () => {
     try {
-      const cats = categoriesToScan || Object.keys(SCAN_TIMEFRAMES);
+      setLoading(true);
       const allSignals: Signal[] = [];
 
-      for (const cat of cats) {
-        const timeframes = SCAN_TIMEFRAMES[cat];
-        if (!timeframes) continue;
-        // Use the best timeframe (first = fastest) for the scan
-        const tf = timeframes[0];
-        try {
-          const res = await fetch(`${SIGNAL_ENGINE_URL}/signals/scan/${cat}/${tf}?min_confidence=50`);
-          if (!res.ok) continue;
-          const data = await res.json();
-          if (data.signals && Array.isArray(data.signals)) {
-            for (const s of data.signals) {
-              // Compute pnl pips (rough estimate)
-              const isForex = cat === 'FOREX' || cat === 'FOREX_OTC';
-              const pipMultiplier = isForex
-                ? (s.asset?.includes('JPY') ? 100 : 10000)
-                : cat === 'CRYPTO' ? 1 : 10;
-              const rawPnl = s.action === 'BUY'
-                ? (s.entry_price - s.entry_price) // at entry, pnl = 0
-                : (s.entry_price - s.entry_price);
+      const res = await fetch(`${API_URL}/api/signals/recent?min_confidence=50&limit=100`);
+      if (!res.ok) throw new Error(`Backend returned ${res.status}`);
+      const data = await res.json();
 
-              // Determine how many of the 3 indicators agreed
-              const indicatorCount = s.indicators?.length || 3;
-              const buyCount = s.indicators?.filter((i: any) => i.signal === 'BUY').length || 0;
-              const sellCount = s.indicators?.filter((i: any) => i.signal === 'SELL').length || 0;
-              const agreeing = s.action === 'BUY' ? buyCount : sellCount;
+      if (data.signals && Array.isArray(data.signals)) {
+        for (const s of data.signals) {
+          const indicatorCount = s.indicators?.length || 3;
+          const buyCount = s.indicators?.filter((i: any) => i.signal === 'BUY').length || 0;
+          const sellCount = s.indicators?.filter((i: any) => i.signal === 'SELL').length || 0;
+          const agreeing = s.action === 'BUY' ? buyCount : sellCount;
 
-              allSignals.push({
-                id: `${s.asset}-${s.timeframe}-${Date.now()}`,
-                asset: s.asset,
-                category: s.category,
-                action: s.action,
-                entryPrice: s.entry_price,
-                currentPrice: s.entry_price, // at generation time, current = entry
-                tp1: s.tp1,
-                tp2: s.tp2 || null,
-                tp3: s.tp3 || null,
-                sl: s.sl,
-                confidence: s.confidence,
-                riskLevel: s.risk_level || 'MEDIUM',
-                timeframe: s.timeframe,
-                status: 'ACTIVE',
-                pnlPips: 0,
-                createdAt: 'now',
-                validations: {
-                  ai: true,
-                  human: agreeing >= 2,
-                  market: agreeing >= 3,
-                },
-              });
-            }
-          }
-        } catch {
-          // Category scan failed, skip
+          allSignals.push({
+            id: s.id || `${s.asset}-${s.timeframe}-${Date.now()}`,
+            asset: s.asset,
+            category: s.category,
+            action: s.action,
+            entryPrice: s.entry_price,
+            currentPrice: s.entry_price,
+            tp1: s.tp1,
+            tp2: s.tp2 || null,
+            tp3: s.tp3 || null,
+            sl: s.sl,
+            confidence: Math.round(s.confidence),
+            riskLevel: s.risk_level || 'MEDIUM',
+            timeframe: s.timeframe,
+            status: s.status || 'ACTIVE',
+            pnlPips: s.pnl_pips || 0,
+            createdAt: s.created_at ? new Date(s.created_at).toLocaleTimeString() : 'now',
+            validations: {
+              ai: true,
+              human: agreeing >= 2,
+              market: agreeing >= 3,
+            },
+          });
         }
       }
 

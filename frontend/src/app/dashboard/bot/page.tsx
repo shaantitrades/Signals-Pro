@@ -55,39 +55,40 @@ const categories = [
   { value: 'COMMODITIES', labelKey: 'cat.commodities', descKey: 'cat.commoditiesDesc', icon: '🪙' },
 ];
 
-// Active signals are fetched in real-time from the signal engine (no hardcoded demo data)
+// Active signals are fetched from the backend API (DB-backed, always available)
 
-// Fetch a real signal from the signal engine for a given asset
-const SIGNAL_ENGINE_URL = process.env.NEXT_PUBLIC_SIGNAL_ENGINE_URL || 'http://localhost:8000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 async function fetchRealSignal(
   category: string,
   asset: string,
   timeframes: string[]
 ): Promise<any | null> {
-  // Try each timeframe, return the first valid signal found
-  for (const tf of timeframes) {
-    try {
-      const res = await fetch(`${SIGNAL_ENGINE_URL}/signals/generate/${category}/${asset}/${tf}`);
-      if (!res.ok) continue;
-      const data = await res.json();
-      if (data.signal) {
+  // Try fetching from backend API (DB-backed), which always has signals
+  try {
+    const res = await fetch(`${API_URL}/api/signals/recent?category=${category}&min_confidence=50&limit=10`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (data.signals && data.signals.length > 0) {
+      // Find a signal matching the requested asset
+      const match = data.signals.find((s: any) => s.asset === asset);
+      if (match) {
         return {
-          id: `${asset}-${tf}-${Date.now()}`,
-          asset: data.signal.asset,
-          action: data.signal.action,
-          entryPrice: data.signal.entry_price,
-          tp1: data.signal.tp1,
-          sl: data.signal.sl,
-          confidence: data.signal.confidence,
-          timeframe: data.signal.timeframe,
+          id: match.id || `${asset}-${Date.now()}`,
+          asset: match.asset,
+          action: match.action,
+          entryPrice: match.entry_price,
+          tp1: match.tp1,
+          sl: match.sl,
+          confidence: Math.round(match.confidence),
+          timeframe: match.timeframe,
           time: 'now',
           category,
         };
       }
-    } catch {
-      // Signal engine not available, continue
     }
+  } catch {
+    // Backend not available
   }
   return null;
 }
@@ -111,40 +112,36 @@ export default function BotPage() {
   const [activeSignals, setActiveSignals] = useState<any[]>([]);
   const [loadingActive, setLoadingActive] = useState(true);
 
-  // Fetch active signals from signal engine
+  // Fetch active signals from backend API (DB-backed)
   useEffect(() => {
     async function fetchActiveSignals() {
       setLoadingActive(true);
-      const cats = ['FOREX', 'CRYPTO', 'COMMODITIES'];
       const signals: any[] = [];
 
-      await Promise.all(
-        cats.map(async (cat) => {
-          try {
-            const res = await fetch(`${SIGNAL_ENGINE_URL}/signals/scan/${cat}/M15?min_confidence=75`);
-            if (!res.ok) return;
-            const data = await res.json();
-            if (data.signals) {
-              data.signals.slice(0, 2).forEach((s: any, i: number) => {
-                signals.push({
-                  id: `${cat}-${i}`,
-                  asset: s.asset || s.symbol || 'N/A',
-                  action: s.action || s.direction || 'BUY',
-                  entryPrice: s.entry_price || s.price || 0,
-                  currentPrice: s.entry_price || s.price || 0,
-                  tp1: s.tp1 || s.take_profit_1 || 0,
-                  sl: s.sl || s.stop_loss || 0,
-                  confidence: Math.round(s.confidence || 0),
-                  time: 'Live',
-                  status: 'ACTIVE',
-                });
+      try {
+        const res = await fetch(`${API_URL}/api/signals/recent?min_confidence=75&limit=20`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.signals) {
+            data.signals.slice(0, 6).forEach((s: any, i: number) => {
+              signals.push({
+                id: s.id || `${s.category}-${i}`,
+                asset: s.asset || 'N/A',
+                action: s.action || 'BUY',
+                entryPrice: s.entry_price || 0,
+                currentPrice: s.entry_price || 0,
+                tp1: s.tp1 || 0,
+                sl: s.sl || 0,
+                confidence: Math.round(s.confidence || 0),
+                time: s.created_at ? new Date(s.created_at).toLocaleTimeString() : 'Live',
+                status: s.status || 'ACTIVE',
               });
-            }
-          } catch {
-            // skip
+            });
           }
-        })
-      );
+        }
+      } catch {
+        // Backend not available
+      }
 
       signals.sort((a, b) => b.confidence - a.confidence);
       setActiveSignals(signals.slice(0, 4));
