@@ -195,7 +195,7 @@ export default function SignalsPage() {
     try {
       const currentSignals = signals;
       if (currentSignals.length === 0) return;
-      const assets = [...new Set(currentSignals.map(s => s.asset))].join(',');
+      const assets = Array.from(new Set(currentSignals.map(s => s.asset))).join(',');
       const res = await fetch(`${API_URL}/api/signals/prices?assets=${assets}`);
       if (!res.ok) return;
       const data = await res.json();
