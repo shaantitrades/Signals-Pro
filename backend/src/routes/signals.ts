@@ -244,6 +244,29 @@ signalRouter.get('/active', authenticate, requireSubscription, async (req: AuthR
 });
 
 // ============================================================================
+// GET /api/signals/prices - Live prices proxy to signal-engine
+// No auth required — used by frontend to update current prices in real time
+// ============================================================================
+
+signalRouter.get('/prices', async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const assets = req.query.assets as string;
+    if (!assets) {
+      return res.json({ prices: {} });
+    }
+    const { data } = await axios.get(`${SIGNAL_ENGINE_URL}/prices/`, {
+      params: { assets },
+      timeout: 15000,
+    });
+    res.json(data);
+  } catch (error: any) {
+    // If signal-engine is down, return empty prices instead of 500
+    console.warn('Price fetch from signal-engine failed:', error.message);
+    res.json({ prices: {} });
+  }
+});
+
+// ============================================================================
 // GET /api/signals/recent - Public endpoint for recent signals from DB
 // No auth required — serves signals already saved by the scheduler
 // ============================================================================

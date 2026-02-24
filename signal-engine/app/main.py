@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 
 from app.config import settings
-from app.routes import signals, health, analysis, backtest
+from app.routes import signals, health, analysis, backtest, prices
 from app.services.scheduler import start_scheduler, stop_scheduler
 
 
@@ -44,6 +44,7 @@ app.add_middleware(
 
 app.include_router(health.router, tags=["Health"])
 app.include_router(signals.router, prefix="/signals", tags=["Signals"])
+app.include_router(prices.router, prefix="/prices", tags=["Prices"])
 app.include_router(analysis.router, prefix="/analysis", tags=["Analysis"])
 app.include_router(backtest.router, prefix="/backtest", tags=["Backtest"])
 

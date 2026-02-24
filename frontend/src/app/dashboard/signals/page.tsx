@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { cn, formatPrice, getTimeframeLabel, getRiskLevelColor } from '@/lib/utils';
 import { useI18n } from '@/lib/i18n';
 
@@ -190,12 +190,48 @@ export default function SignalsPage() {
     }
   }, []);
 
+  // Fetch live prices from signal-engine (via backend proxy) and update signals
+  const fetchLivePrices = useCallback(async () => {
+    try {
+      const currentSignals = signals;
+      if (currentSignals.length === 0) return;
+      const assets = [...new Set(currentSignals.map(s => s.asset))].join(',');
+      const res = await fetch(`${API_URL}/api/signals/prices?assets=${assets}`);
+      if (!res.ok) return;
+      const data = await res.json();
+      if (!data.prices) return;
+
+      setSignals(prev => prev.map(s => {
+        const livePrice = data.prices[s.asset];
+        if (livePrice == null) return s;
+
+        // Calculate PnL in pips
+        const pipSize = s.asset.includes('JPY') ? 0.01 : s.asset.match(/USD$|^USD/) && !s.asset.includes('XAU') && !s.asset.includes('XAG') ? 0.0001 : 0.01;
+        const diff = s.action === 'BUY' ? livePrice - s.entryPrice : s.entryPrice - livePrice;
+        const pnlPips = Math.round(diff / pipSize);
+
+        return { ...s, currentPrice: livePrice, pnlPips };
+      }));
+    } catch {
+      // Silent fail — prices will just stay at entry price
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signals.length]);
+
   // Initial load + auto-refresh every 60 seconds
   useEffect(() => {
     fetchSignals();
     const interval = setInterval(() => fetchSignals(), 60_000);
     return () => clearInterval(interval);
   }, [fetchSignals]);
+
+  // Live prices: fetch immediately when signals change, then every 30s
+  useEffect(() => {
+    if (signals.length === 0) return;
+    fetchLivePrices();
+    const priceInterval = setInterval(() => fetchLivePrices(), 30_000);
+    return () => clearInterval(priceInterval);
+  }, [signals.length, fetchLivePrices]);
 
   // Filter and sort signals
   const filteredSignals = signals
@@ -470,12 +506,12 @@ export default function SignalsPage() {
               <div className="grid grid-cols-2 gap-2 text-sm mb-3">
                 <div>
                   <span className="text-xs text-muted-foreground">{t('sig.entry')}</span>
-                  <p className="font-medium">{signal.entryPrice}</p>
+                  <p className="font-medium font-mono">{formatPrice(signal.entryPrice)}</p>
                 </div>
                 <div>
                   <span className="text-xs text-muted-foreground">{t('sig.current')}</span>
-                  <p className={cn('font-medium', signal.pnlPips >= 0 ? 'text-profit' : 'text-loss')}>
-                    {signal.currentPrice}
+                  <p className={cn('font-medium font-mono', signal.pnlPips >= 0 ? 'text-profit' : 'text-loss')}>
+                    {formatPrice(signal.currentPrice)}
                   </p>
                 </div>
               </div>
@@ -567,12 +603,12 @@ export default function SignalsPage() {
                         {signal.action}
                       </span>
                     </td>
-                    <td className="p-3 text-right font-mono text-sm">{signal.entryPrice}</td>
+                    <td className="p-3 text-right font-mono text-sm">{formatPrice(signal.entryPrice)}</td>
                     <td className={cn('p-3 text-right font-mono text-sm', signal.pnlPips >= 0 ? 'text-profit' : 'text-loss')}>
-                      {signal.currentPrice}
+                      {formatPrice(signal.currentPrice)}
                     </td>
-                    <td className="p-3 text-right font-mono text-sm text-profit">{signal.tp1}</td>
-                    <td className="p-3 text-right font-mono text-sm text-loss">{signal.sl}</td>
+                    <td className="p-3 text-right font-mono text-sm text-profit">{formatPrice(signal.tp1)}</td>
+                    <td className="p-3 text-right font-mono text-sm text-loss">{formatPrice(signal.sl)}</td>
                     <td className="p-3 text-center">
                       <span className={cn(
                         'text-xs font-bold',
