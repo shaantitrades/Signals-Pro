@@ -110,6 +110,7 @@ const SCAN_TIMEFRAMES: Record<string, string[]> = {
 };
 
 const categoryFilters = [
+  { value: '', labelKey: 'sig.all', icon: '📊' },
   { value: 'FOREX', labelKey: 'cat.forex', icon: '💱' },
   { value: 'CRYPTO', labelKey: 'cat.crypto', icon: '₿' },
   { value: 'INDICES', labelKey: 'cat.indices', icon: '📈' },
@@ -129,7 +130,7 @@ export default function SignalsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
-  const [categoryFilter, setCategoryFilter] = useState('FOREX');
+  const [categoryFilter, setCategoryFilter] = useState('');
   const [strengthFilter, setStrengthFilter] = useState('');
   const [riskFilter, setRiskFilter] = useState('');
   const [sortBy, setSortBy] = useState<'confidence' | 'pnl' | 'recent'>('confidence');
