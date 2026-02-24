@@ -44,8 +44,8 @@ export default function Home() {
         {/* Nav */}
         <nav className="relative z-20 flex items-center justify-between px-4 sm:px-6 py-4 max-w-7xl mx-auto">
           <div className="flex items-center space-x-2">
-            <Image src="/logo.svg" alt="SignalsPro" width={32} height={32} className="w-8 h-8" priority />
-            <span className="text-xl font-bold">SignalsPro</span>
+            <Image src="/logo.svg" alt="Market Signals24" width={32} height={32} className="w-8 h-8" priority />
+            <span className="text-xl font-bold">Market Signals24</span>
           </div>
           <div className="flex items-center space-x-2 sm:space-x-4">
             <Link href="/tarifs" className="text-sm sm:text-base text-muted-foreground hover:text-foreground transition-colors">
@@ -139,10 +139,10 @@ export default function Home() {
           {/* Stats Bar */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 max-w-4xl mx-auto px-2">
             {[
-              { label: t('stats.winRate'), value: '87.3%', icon: '🎯' },
-              { label: t('stats.signalsDay'), value: '100-700', icon: '📡' },
-              { label: t('stats.latency'), value: '<100ms', icon: '⚡' },
-              { label: t('stats.assets'), value: '30+', icon: '📊' },
+              { label: t('stats.winRate'), value: '87.3%', icon: 'ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â½Ãƒâ€šÃ‚Â¯' },
+              { label: t('stats.signalsDay'), value: '100-700', icon: 'ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€šÃ‚Â¡' },
+              { label: t('stats.latency'), value: '<100ms', icon: 'ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã‚Â¡Ãƒâ€šÃ‚Â¡' },
+              { label: t('stats.assets'), value: '30+', icon: 'ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦Ã‚Â ' },
             ].map((stat) => (
               <div key={stat.label} className="stat-card text-center">
                 <span className="text-2xl mb-1 block">{stat.icon}</span>
@@ -165,42 +165,42 @@ export default function Home() {
           {/* Level 1 */}
           <div className="signal-card p-6">
             <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
-              <span className="text-2xl">🤖</span>
+              <span className="text-2xl">ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€šÃ‚Â¤ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“</span>
             </div>
             <h3 className="text-xl font-semibold mb-2">{t('features.level1.title')}</h3>
             <p className="text-muted-foreground mb-4">{t('features.level1.desc')}</p>
             <ul className="text-sm space-y-2 text-muted-foreground">
-              <li className="flex items-center gap-2"><span className="text-profit">✓</span> {t('features.level1.f1')}</li>
-              <li className="flex items-center gap-2"><span className="text-profit">✓</span> {t('features.level1.f2')}</li>
-              <li className="flex items-center gap-2"><span className="text-profit">✓</span> {t('features.level1.f3')}</li>
+              <li className="flex items-center gap-2"><span className="text-profit">ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ</span> {t('features.level1.f1')}</li>
+              <li className="flex items-center gap-2"><span className="text-profit">ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ</span> {t('features.level1.f2')}</li>
+              <li className="flex items-center gap-2"><span className="text-profit">ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ</span> {t('features.level1.f3')}</li>
             </ul>
           </div>
 
           {/* Level 2 */}
           <div className="signal-card p-6 border-primary/30">
             <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
-              <span className="text-2xl">👨‍💼</span>
+              <span className="text-2xl">ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã‹Å“Ãƒâ€šÃ‚Â¨ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢Ãƒâ€šÃ‚Â¼</span>
             </div>
             <h3 className="text-xl font-semibold mb-2">{t('features.level2.title')}</h3>
             <p className="text-muted-foreground mb-4">{t('features.level2.desc')}</p>
             <ul className="text-sm space-y-2 text-muted-foreground">
-              <li className="flex items-center gap-2"><span className="text-profit">✓</span> {t('features.level2.f1')}</li>
-              <li className="flex items-center gap-2"><span className="text-profit">✓</span> {t('features.level2.f2')}</li>
-              <li className="flex items-center gap-2"><span className="text-profit">✓</span> {t('features.level2.f3')}</li>
+              <li className="flex items-center gap-2"><span className="text-profit">ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ</span> {t('features.level2.f1')}</li>
+              <li className="flex items-center gap-2"><span className="text-profit">ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ</span> {t('features.level2.f2')}</li>
+              <li className="flex items-center gap-2"><span className="text-profit">ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ</span> {t('features.level2.f3')}</li>
             </ul>
           </div>
 
           {/* Level 3 */}
           <div className="signal-card p-6">
             <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
-              <span className="text-2xl">📊</span>
+              <span className="text-2xl">ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦Ã‚Â </span>
             </div>
             <h3 className="text-xl font-semibold mb-2">{t('features.level3.title')}</h3>
             <p className="text-muted-foreground mb-4">{t('features.level3.desc')}</p>
             <ul className="text-sm space-y-2 text-muted-foreground">
-              <li className="flex items-center gap-2"><span className="text-profit">✓</span> {t('features.level3.f1')}</li>
-              <li className="flex items-center gap-2"><span className="text-profit">✓</span> {t('features.level3.f2')}</li>
-              <li className="flex items-center gap-2"><span className="text-profit">✓</span> {t('features.level3.f3')}</li>
+              <li className="flex items-center gap-2"><span className="text-profit">ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ</span> {t('features.level3.f1')}</li>
+              <li className="flex items-center gap-2"><span className="text-profit">ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ</span> {t('features.level3.f2')}</li>
+              <li className="flex items-center gap-2"><span className="text-profit">ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ</span> {t('features.level3.f3')}</li>
             </ul>
           </div>
         </div>
@@ -212,8 +212,8 @@ export default function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <Image src="/logo.svg" alt="SignalsPro" width={28} height={28} className="w-7 h-7" />
-                <h3 className="font-bold text-lg">SignalsPro</h3>
+                <Image src="/logo.svg" alt="Market Signals24" width={28} height={28} className="w-7 h-7" />
+                <h3 className="font-bold text-lg">Market Signals24</h3>
               </div>
               <p className="text-white/60 text-sm leading-relaxed">{t('footer.brand.desc')}</p>
             </div>
@@ -229,8 +229,8 @@ export default function Home() {
             <div>
               <h3 className="font-bold text-lg mb-3">{t('footer.support')}</h3>
               <ul className="space-y-2 text-sm">
-                <li><a href="mailto:support@signalspro.com" className="text-white/60 hover:text-white transition-colors">{t('footer.support.customer')}</a></li>
-                <li><a href="mailto:support@signalspro.com?subject=Become%20an%20Affiliate" className="text-white/60 hover:text-white transition-colors">{t('footer.support.affiliate')}</a></li>
+                <li><a href="mailto:support@Market Signals24.com" className="text-white/60 hover:text-white transition-colors">{t('footer.support.customer')}</a></li>
+                <li><a href="mailto:support@Market Signals24.com?subject=Become%20an%20Affiliate" className="text-white/60 hover:text-white transition-colors">{t('footer.support.affiliate')}</a></li>
                 <li><span className="text-white/60 hover:text-white transition-colors cursor-pointer">{t('footer.support.faq')}</span></li>
               </ul>
             </div>

@@ -1,7 +1,7 @@
 [project]
-name = "signalspro-engine"
+name = "Market Signals24-engine"
 version = "1.0.0"
-description = "AI Signal Generation Engine for SignalsPro"
+description = "AI Signal Generation Engine for Market Signals24"
 requires-python = ">=3.12"
 
 [project.dependencies]

@@ -6,4 +6,4 @@ router = APIRouter()
 
 @router.get("/health")
 async def health():
-    return {"status": "ok", "service": "signalspro-engine", "version": "1.0.0"}
+    return {"status": "ok", "service": "Market Signals24-engine", "version": "1.0.0"}

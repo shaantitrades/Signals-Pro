@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Seeding database...');
+  console.log('ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã¢â‚¬â„¢Ãƒâ€šÃ‚Â± Seeding database...');
 
   // ============================================================================
   // Subscription Plans
@@ -63,7 +63,7 @@ async function main() {
           liveSession: true,
           prioritySupport: true,
           refundable: false,
-          bonus: 'Accès analytics avancées',
+          bonus: 'AccÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¨s analytics avancÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©es',
         }),
       },
     }),
@@ -83,19 +83,19 @@ async function main() {
           liveSession: true,
           prioritySupport: true,
           refundable: false,
-          bonus: 'Accès VIP + Discord privé + Sessions 1on1',
+          bonus: 'AccÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¨s VIP + Discord privÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â© + Sessions 1on1',
           savings: '22%',
         }),
       },
     }),
   ]);
-  console.log(`✅ ${plans.length} subscription plans created`);
+  console.log(`ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ ${plans.length} subscription plans created`);
 
   // ============================================================================
   // Assets
   // ============================================================================
   const assets = [
-    // ── Forex Major Pairs ──
+    // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ Forex Major Pairs ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬
     { symbol: 'EURUSD', name: 'Euro / US Dollar', category: 'FOREX', pipSize: 0.0001 },
     { symbol: 'GBPUSD', name: 'British Pound / US Dollar', category: 'FOREX', pipSize: 0.0001 },
     { symbol: 'USDJPY', name: 'US Dollar / Japanese Yen', category: 'FOREX', pipSize: 0.01 },
@@ -104,7 +104,7 @@ async function main() {
     { symbol: 'USDCAD', name: 'US Dollar / Canadian Dollar', category: 'FOREX', pipSize: 0.0001 },
     { symbol: 'NZDUSD', name: 'New Zealand Dollar / US Dollar', category: 'FOREX', pipSize: 0.0001 },
 
-    // ── Forex Minor / Cross Pairs ──
+    // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ Forex Minor / Cross Pairs ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬
     { symbol: 'EURGBP', name: 'Euro / British Pound', category: 'FOREX', pipSize: 0.0001 },
     { symbol: 'EURJPY', name: 'Euro / Japanese Yen', category: 'FOREX', pipSize: 0.01 },
     { symbol: 'GBPJPY', name: 'British Pound / Japanese Yen', category: 'FOREX', pipSize: 0.01 },
@@ -127,7 +127,7 @@ async function main() {
     { symbol: 'NZDCAD', name: 'New Zealand Dollar / Canadian Dollar', category: 'FOREX', pipSize: 0.0001 },
     { symbol: 'NZDCHF', name: 'New Zealand Dollar / Swiss Franc', category: 'FOREX', pipSize: 0.0001 },
 
-    // ── Forex OTC ──
+    // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ Forex OTC ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬
     { symbol: 'EURUSD_OTC', name: 'Euro / US Dollar OTC', category: 'FOREX_OTC', pipSize: 0.0001 },
     { symbol: 'GBPUSD_OTC', name: 'British Pound / US Dollar OTC', category: 'FOREX_OTC', pipSize: 0.0001 },
     { symbol: 'USDJPY_OTC', name: 'US Dollar / Japanese Yen OTC', category: 'FOREX_OTC', pipSize: 0.01 },
@@ -156,7 +156,7 @@ async function main() {
     { symbol: 'NZDJPY_OTC', name: 'New Zealand Dollar / Japanese Yen OTC', category: 'FOREX_OTC', pipSize: 0.01 },
     { symbol: 'NZDCAD_OTC', name: 'New Zealand Dollar / Canadian Dollar OTC', category: 'FOREX_OTC', pipSize: 0.0001 },
 
-    // ── Crypto ──
+    // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ Crypto ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬
     { symbol: 'BTCUSD', name: 'Bitcoin / US Dollar', category: 'CRYPTO', pipSize: 0.01 },
     { symbol: 'ETHUSD', name: 'Ethereum / US Dollar', category: 'CRYPTO', pipSize: 0.01 },
     { symbol: 'BNBUSD', name: 'Binance Coin / US Dollar', category: 'CRYPTO', pipSize: 0.01 },
@@ -181,7 +181,7 @@ async function main() {
     { symbol: 'XLMUSD', name: 'Stellar / US Dollar', category: 'CRYPTO', pipSize: 0.00001 },
     { symbol: 'ALGOUSD', name: 'Algorand / US Dollar', category: 'CRYPTO', pipSize: 0.0001 },
 
-    // ── Indices ──
+    // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ Indices ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬
     { symbol: 'US30', name: 'Dow Jones Industrial Average', category: 'INDICES', pipSize: 1 },
     { symbol: 'US500', name: 'S&P 500', category: 'INDICES', pipSize: 0.1 },
     { symbol: 'USTEC', name: 'Nasdaq 100', category: 'INDICES', pipSize: 0.1 },
@@ -201,7 +201,7 @@ async function main() {
     { symbol: 'US2000', name: 'Russell 2000', category: 'INDICES', pipSize: 0.1 },
     { symbol: 'SG30', name: 'SGX 30', category: 'INDICES', pipSize: 0.1 },
 
-    // ── Commodities ──
+    // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ Commodities ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬
     { symbol: 'XAUUSD', name: 'Gold / US Dollar', category: 'COMMODITIES', pipSize: 0.01 },
     { symbol: 'XAGUSD', name: 'Silver / US Dollar', category: 'COMMODITIES', pipSize: 0.001 },
     { symbol: 'USOIL', name: 'US Crude Oil (WTI)', category: 'COMMODITIES', pipSize: 0.01 },
@@ -227,7 +227,7 @@ async function main() {
       create: asset,
     });
   }
-  console.log(`✅ ${assets.length} assets created`);
+  console.log(`ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ ${assets.length} assets created`);
 
   // ============================================================================
   // Demo Admin User
@@ -237,26 +237,26 @@ async function main() {
   const adminPassword = await bcryptMod.hash('admin123!', 12);
   
   await prisma.user.upsert({
-    where: { email: 'admin@signalspro.com' },
+    where: { email: 'admin@Market Signals24.com' },
     update: {},
     create: {
-      email: 'admin@signalspro.com',
+      email: 'admin@Market Signals24.com',
       passwordHash: adminPassword,
       firstName: 'Admin',
-      lastName: 'SignalsPro',
+      lastName: 'Market Signals24',
       role: 'SUPER_ADMIN',
       emailVerified: true,
     },
   });
-  console.log('✅ Admin user created (admin@signalspro.com / admin123!)');
+  console.log('ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Admin user created (admin@Market Signals24.com / admin123!)');
 
   // Demo Validator
   const validatorPassword = await bcryptMod.hash('validator123!', 12);
   await prisma.user.upsert({
-    where: { email: 'validator@signalspro.com' },
+    where: { email: 'validator@Market Signals24.com' },
     update: {},
     create: {
-      email: 'validator@signalspro.com',
+      email: 'validator@Market Signals24.com',
       passwordHash: validatorPassword,
       firstName: 'Validator',
       lastName: 'Demo',
@@ -264,7 +264,7 @@ async function main() {
       emailVerified: true,
     },
   });
-  console.log('✅ Validator user created (validator@signalspro.com / validator123!)');
+  console.log('ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Validator user created (validator@Market Signals24.com / validator123!)');
 
   // Pro Subscribed User
   const proPassword = await bcryptMod.hash('123456', 12);
@@ -296,14 +296,14 @@ async function main() {
       },
     });
   }
-  console.log('✅ Pro user created (pro@gmail.comm / 123456) with active subscription');
+  console.log('ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Pro user created (pro@gmail.comm / 123456) with active subscription');
 
-  console.log('\n🎉 Database seeded successfully!');
+  console.log('\nÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â½ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â° Database seeded successfully!');
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Error seeding database:', e);
+    console.error('ÃƒÆ’Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒâ€¦Ã¢â‚¬â„¢ Error seeding database:', e);
     process.exit(1);
   })
   .finally(async () => {

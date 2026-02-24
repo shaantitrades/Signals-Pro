@@ -118,8 +118,8 @@ export default function LoginPage() {
 
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 text-2xl font-bold">
-            <Image src="/logo.svg" alt="SignalsPro" width={36} height={36} className="w-9 h-9" />
-            <span className="gradient-text">SignalsPro</span>
+            <Image src="/logo.svg" alt="Market Signals24" width={36} height={36} className="w-9 h-9" />
+            <span className="gradient-text">Market Signals24</span>
           </Link>
           <p className="text-muted-foreground mt-2">{t('auth.loginDesc')}</p>
         </div>
@@ -172,7 +172,7 @@ export default function LoginPage() {
               <div className="relative">
                 <input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)}
                   className="w-full px-4 py-2.5 pr-11 bg-secondary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="••••••••" required />
+                  placeholder="Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢Ã¢â‚¬Â¢" required />
                 <button type="button" onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
                   {showPassword ? (

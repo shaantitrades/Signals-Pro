@@ -89,24 +89,24 @@ async function start() {
   try {
     // Initialize Redis
     await initializeRedis();
-    console.log('✅ Redis connected');
+    console.log('Ã¢Å“â€¦ Redis connected');
 
     // Initialize WebSocket
     initializeWebSocket(server);
-    console.log('✅ WebSocket initialized');
+    console.log('Ã¢Å“â€¦ WebSocket initialized');
 
     // Initialize Signal Monitor (anti-fake system)
     initializeSignalMonitor();
-    console.log('✅ Signal Monitor initialized');
+    console.log('Ã¢Å“â€¦ Signal Monitor initialized');
 
     server.listen(PORT, () => {
-      console.log(`\n🚀 SignalsPro API Server running on port ${PORT}`);
-      console.log(`📡 WebSocket server ready`);
-      console.log(`🌐 Frontend URL: ${process.env.FRONTEND_URL}`);
-      console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}\n`);
+      console.log(`\nÃ°Å¸Å¡â‚¬ Market Signals24 API Server running on port ${PORT}`);
+      console.log(`Ã°Å¸â€œÂ¡ WebSocket server ready`);
+      console.log(`Ã°Å¸Å’Â Frontend URL: ${process.env.FRONTEND_URL}`);
+      console.log(`Ã°Å¸â€œÅ  Environment: ${process.env.NODE_ENV || 'development'}\n`);
     });
   } catch (error) {
-    console.error('❌ Failed to start server:', error);
+    console.error('Ã¢ÂÅ’ Failed to start server:', error);
     process.exit(1);
   }
 }

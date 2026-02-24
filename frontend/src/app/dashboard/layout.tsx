@@ -20,13 +20,13 @@ export default function DashboardLayout({
   const { lang, setLang, t } = useI18n();
 
   const navItems = [
-    { href: '/dashboard', label: t('nav.dashboard'), icon: '📊' },
-    { href: '/dashboard/signals-otc', label: t('nav.signalsOtc'), icon: '⚡' },
-    { href: '/dashboard/bot', label: t('nav.tradingBot'), icon: '🤖' },
-    { href: '/dashboard/signals', label: t('nav.signalsLive'), icon: '📡' },
-    { href: '/dashboard/trades', label: t('nav.myTrades'), icon: '💼' },
-    { href: '/dashboard/performance', label: t('nav.performance'), icon: '📈' },
-    { href: '/dashboard/settings', label: t('nav.settings'), icon: '⚙️' },
+    { href: '/dashboard', label: t('nav.dashboard'), icon: 'ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦Ã‚Â ' },
+    { href: '/dashboard/signals-otc', label: t('nav.signalsOtc'), icon: 'ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã‚Â¡Ãƒâ€šÃ‚Â¡' },
+    { href: '/dashboard/bot', label: t('nav.tradingBot'), icon: 'ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€šÃ‚Â¤ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“' },
+    { href: '/dashboard/signals', label: t('nav.signalsLive'), icon: 'ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€šÃ‚Â¡' },
+    { href: '/dashboard/trades', label: t('nav.myTrades'), icon: 'ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢Ãƒâ€šÃ‚Â¼' },
+    { href: '/dashboard/performance', label: t('nav.performance'), icon: 'ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¹Ã¢â‚¬Â ' },
+    { href: '/dashboard/settings', label: t('nav.settings'), icon: 'ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã‚Â¡ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚Â' },
   ];
 
   // Fetch user data (including subscription) on mount
@@ -95,8 +95,8 @@ export default function DashboardLayout({
           {/* Left: Logo + Status + Live */}
           <div className="flex items-center gap-2 sm:gap-4">
             <Link href="/dashboard" className="flex items-center space-x-2 shrink-0">
-              <Image src="/logo.svg" alt="SignalsPro" width={32} height={32} className="w-8 h-8" priority />
-              <span className="text-lg font-bold hidden sm:inline">SignalsPro</span>
+              <Image src="/logo.svg" alt="Market Signals24" width={32} height={32} className="w-8 h-8" priority />
+              <span className="text-lg font-bold hidden sm:inline">Market Signals24</span>
             </Link>
 
             <div className="h-6 w-px bg-border hidden md:block" />
@@ -211,11 +211,11 @@ export default function DashboardLayout({
                           <svg className="w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
                           {t('menu.changePassword')}
                         </button>
-                        <button onClick={() => { setUserMenuOpen(false); window.location.href = 'mailto:support@signalspro.com?subject=Suspend%20My%20Account'; }} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-orange-400 hover:bg-secondary/50 transition-colors">
+                        <button onClick={() => { setUserMenuOpen(false); window.location.href = 'mailto:support@Market Signals24.com?subject=Suspend%20My%20Account'; }} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-orange-400 hover:bg-secondary/50 transition-colors">
                           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" /></svg>
                           {t('menu.suspendAccount')}
                         </button>
-                        <button onClick={() => { setUserMenuOpen(false); window.location.href = 'mailto:support@signalspro.com?subject=Delete%20My%20Account'; }} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-loss hover:bg-secondary/50 transition-colors">
+                        <button onClick={() => { setUserMenuOpen(false); window.location.href = 'mailto:support@Market Signals24.com?subject=Delete%20My%20Account'; }} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-loss hover:bg-secondary/50 transition-colors">
                           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                           {t('menu.deleteAccount')}
                         </button>
@@ -223,7 +223,7 @@ export default function DashboardLayout({
                     )}
                   </div>
 
-                  <button onClick={() => { setUserMenuOpen(false); window.location.href = 'mailto:support@signalspro.com'; }} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-secondary/50 transition-colors">
+                  <button onClick={() => { setUserMenuOpen(false); window.location.href = 'mailto:support@Market Signals24.com'; }} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-secondary/50 transition-colors">
                     <svg className="w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                     {t('menu.customerService')}
                   </button>
@@ -275,8 +275,8 @@ export default function DashboardLayout({
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <Image src="/logo.svg" alt="SignalsPro" width={28} height={28} className="w-7 h-7" />
-                <h3 className="font-bold text-lg">SignalsPro</h3>
+                <Image src="/logo.svg" alt="Market Signals24" width={28} height={28} className="w-7 h-7" />
+                <h3 className="font-bold text-lg">Market Signals24</h3>
               </div>
               <p className="text-white/60 text-sm leading-relaxed">{t('footer.brand.desc')}</p>
             </div>
@@ -292,8 +292,8 @@ export default function DashboardLayout({
             <div>
               <h3 className="font-bold text-lg mb-3">{t('footer.support')}</h3>
               <ul className="space-y-2 text-sm">
-                <li><a href="mailto:support@signalspro.com" className="text-white/60 hover:text-white transition-colors">{t('footer.support.customer')}</a></li>
-                <li><a href="mailto:support@signalspro.com?subject=Become%20an%20Affiliate" className="text-white/60 hover:text-white transition-colors">{t('footer.support.affiliate')}</a></li>
+                <li><a href="mailto:support@Market Signals24.com" className="text-white/60 hover:text-white transition-colors">{t('footer.support.customer')}</a></li>
+                <li><a href="mailto:support@Market Signals24.com?subject=Become%20an%20Affiliate" className="text-white/60 hover:text-white transition-colors">{t('footer.support.affiliate')}</a></li>
                 <li><span className="text-white/60 hover:text-white transition-colors cursor-pointer">{t('footer.support.faq')}</span></li>
               </ul>
             </div>

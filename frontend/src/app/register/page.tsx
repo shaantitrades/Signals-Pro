@@ -92,7 +92,7 @@ export default function RegisterPage() {
       return;
     }
     if (form.password.length < 8) {
-      setError('Le mot de passe doit faire au moins 8 caractères');
+      setError('Le mot de passe doit faire au moins 8 caractÃƒÂ¨res');
       return;
     }
     setLoading(true);
@@ -131,8 +131,8 @@ export default function RegisterPage() {
         </div>
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-2 text-2xl font-bold">
-            <Image src="/logo.svg" alt="SignalsPro" width={36} height={36} className="w-9 h-9" />
-            <span className="gradient-text">SignalsPro</span>
+            <Image src="/logo.svg" alt="Market Signals24" width={36} height={36} className="w-9 h-9" />
+            <span className="gradient-text">Market Signals24</span>
           </Link>
           <p className="text-muted-foreground mt-2">{t('auth.createAccount')}</p>
         </div>

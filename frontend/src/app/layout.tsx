@@ -12,7 +12,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'SignalsPro - Professional Trading Signals Platform',
+  title: 'Market Signals24 - Professional Trading Signals Platform',
   description: 'Triple-validated trading signals for Forex, Crypto, Indices & Commodities. AI-powered signal generation with human expert validation.',
   keywords: 'trading signals, forex signals, crypto signals, trading bot, copy trading',
   icons: {

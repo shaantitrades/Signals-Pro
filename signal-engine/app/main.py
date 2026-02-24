@@ -1,5 +1,5 @@
 """
-SignalsPro AI Signal Generation Engine
+Market Signals24 AI Signal Generation Engine
 Main FastAPI application entry point.
 """
 from contextlib import asynccontextmanager
@@ -16,16 +16,16 @@ from app.services.scheduler import start_scheduler, stop_scheduler
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application startup and shutdown lifecycle."""
-    logger.info("🚀 SignalsPro Engine starting...")
+    logger.info("Ã°Å¸Å¡â‚¬ Market Signals24 Engine starting...")
     await start_scheduler()
-    logger.info("✅ Signal analysis scheduler started")
+    logger.info("Ã¢Å“â€¦ Signal analysis scheduler started")
     yield
     await stop_scheduler()
-    logger.info("🛑 SignalsPro Engine stopped")
+    logger.info("Ã°Å¸â€ºâ€˜ Market Signals24 Engine stopped")
 
 
 app = FastAPI(
-    title="SignalsPro Signal Engine",
+    title="Market Signals24 Signal Engine",
     description="AI-powered trading signal generation with triple validation",
     version="1.0.0",
     lifespan=lifespan,

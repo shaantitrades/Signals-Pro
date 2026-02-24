@@ -8,7 +8,7 @@ export default function PrivacyPolicyPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
           <Link href="/" className="inline-flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors mb-6">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-            ← Retour
+            ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Ãƒâ€šÃ‚Â Retour
           </Link>
           <h1 className="text-3xl sm:text-4xl font-bold">Privacy Policy</h1>
           <p className="text-white/60 mt-2">Last Updated: February 11, 2026</p>
@@ -21,7 +21,7 @@ export default function PrivacyPolicyPage() {
           
           <section className="signal-card p-6 sm:p-8">
             <p className="text-muted-foreground leading-relaxed">
-              SignalsPro is committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website and use our services. Please read this Privacy Policy carefully.
+              Market Signals24 is committed to protecting your privacy and ensuring the security of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website and use our services. Please read this Privacy Policy carefully.
             </p>
           </section>
 
@@ -31,28 +31,28 @@ export default function PrivacyPolicyPage() {
             <h3 className="text-lg font-semibold mb-3">1.1 Personal Information</h3>
             <p className="text-muted-foreground mb-3">We may collect personal information that you voluntarily provide to us when you:</p>
             <ul className="text-muted-foreground space-y-1 mb-4">
-              <li>• Register for an account</li>
-              <li>• Subscribe to our services</li>
-              <li>• Contact us via email or contact forms</li>
-              <li>• Participate in surveys or promotions</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Register for an account</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Subscribe to our services</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Contact us via email or contact forms</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Participate in surveys or promotions</li>
             </ul>
             <p className="text-muted-foreground mb-3">This information may include:</p>
             <ul className="text-muted-foreground space-y-1">
-              <li>• Name and email address</li>
-              <li>• Payment information (processed securely through Stripe)</li>
-              <li>• Communication preferences</li>
-              <li>• Any other information you choose to provide</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Name and email address</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Payment information (processed securely through Stripe)</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Communication preferences</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Any other information you choose to provide</li>
             </ul>
 
             <h3 className="text-lg font-semibold mt-6 mb-3">1.2 Automatic Information</h3>
             <p className="text-muted-foreground mb-3">When you visit our website, we may automatically collect certain information, including:</p>
             <ul className="text-muted-foreground space-y-1">
-              <li>• IP address and location data</li>
-              <li>• Browser type and version</li>
-              <li>• Operating system</li>
-              <li>• Pages visited and time spent on our site</li>
-              <li>• Referring website addresses</li>
-              <li>• Device information</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ IP address and location data</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Browser type and version</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Operating system</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Pages visited and time spent on our site</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Referring website addresses</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Device information</li>
             </ul>
           </section>
 
@@ -60,15 +60,15 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-xl font-bold mb-4">2. How We Use Your Information</h2>
             <p className="text-muted-foreground mb-3">We use the information we collect for the following purposes:</p>
             <ul className="text-muted-foreground space-y-1">
-              <li>• To provide and maintain our services</li>
-              <li>• To process your subscription and payments</li>
-              <li>• To send you trading signals and related content</li>
-              <li>• To communicate with you about your account</li>
-              <li>• To respond to your inquiries and provide customer support</li>
-              <li>• To improve our website and services</li>
-              <li>• To detect and prevent fraud or abuse</li>
-              <li>• To comply with legal obligations</li>
-              <li>• To send you marketing communications (with your consent)</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ To provide and maintain our services</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ To process your subscription and payments</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ To send you trading signals and related content</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ To communicate with you about your account</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ To respond to your inquiries and provide customer support</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ To improve our website and services</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ To detect and prevent fraud or abuse</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ To comply with legal obligations</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ To send you marketing communications (with your consent)</li>
             </ul>
           </section>
 
@@ -79,19 +79,19 @@ export default function PrivacyPolicyPage() {
             <h3 className="text-lg font-semibold mb-3">3.1 Service Providers</h3>
             <p className="text-muted-foreground mb-2">We may share your information with trusted third-party service providers who assist us in:</p>
             <ul className="text-muted-foreground space-y-1 mb-4">
-              <li>• Payment processing (Stripe)</li>
-              <li>• Email delivery services</li>
-              <li>• Website hosting and maintenance</li>
-              <li>• Analytics and website optimization</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Payment processing (Stripe)</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Email delivery services</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Website hosting and maintenance</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Analytics and website optimization</li>
             </ul>
 
             <h3 className="text-lg font-semibold mb-3">3.2 Legal Requirements</h3>
             <p className="text-muted-foreground mb-2">We may disclose your information if required to do so by law or in response to:</p>
             <ul className="text-muted-foreground space-y-1">
-              <li>• Valid legal requests</li>
-              <li>• Court orders or government investigations</li>
-              <li>• Protection of our rights and safety</li>
-              <li>• Prevention of fraud or illegal activities</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Valid legal requests</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Court orders or government investigations</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Protection of our rights and safety</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Prevention of fraud or illegal activities</li>
             </ul>
           </section>
 
@@ -99,11 +99,11 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-xl font-bold mb-4">4. Data Security</h2>
             <p className="text-muted-foreground mb-3">We implement appropriate technical and organizational security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. These measures include:</p>
             <ul className="text-muted-foreground space-y-1">
-              <li>• Encryption of sensitive data</li>
-              <li>• Secure payment processing through Stripe</li>
-              <li>• Regular security assessments</li>
-              <li>• Access controls and authentication</li>
-              <li>• Secure data storage and transmission</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Encryption of sensitive data</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Secure payment processing through Stripe</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Regular security assessments</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Access controls and authentication</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Secure data storage and transmission</li>
             </ul>
           </section>
 
@@ -111,25 +111,25 @@ export default function PrivacyPolicyPage() {
             <h2 className="text-xl font-bold mb-4">5. Your Rights (GDPR)</h2>
             <p className="text-muted-foreground mb-3">If you are located in the European Union, you have the following rights regarding your personal data:</p>
             <ul className="text-muted-foreground space-y-1 mb-4">
-              <li>• <strong className="text-foreground">Access:</strong> Request access to your personal data</li>
-              <li>• <strong className="text-foreground">Rectification:</strong> Request correction of inaccurate data</li>
-              <li>• <strong className="text-foreground">Erasure:</strong> Request deletion of your personal data</li>
-              <li>• <strong className="text-foreground">Portability:</strong> Request transfer of your data</li>
-              <li>• <strong className="text-foreground">Restriction:</strong> Request limitation of processing</li>
-              <li>• <strong className="text-foreground">Objection:</strong> Object to processing of your data</li>
-              <li>• <strong className="text-foreground">Withdraw consent:</strong> Withdraw consent at any time</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ <strong className="text-foreground">Access:</strong> Request access to your personal data</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ <strong className="text-foreground">Rectification:</strong> Request correction of inaccurate data</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ <strong className="text-foreground">Erasure:</strong> Request deletion of your personal data</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ <strong className="text-foreground">Portability:</strong> Request transfer of your data</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ <strong className="text-foreground">Restriction:</strong> Request limitation of processing</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ <strong className="text-foreground">Objection:</strong> Object to processing of your data</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ <strong className="text-foreground">Withdraw consent:</strong> Withdraw consent at any time</li>
             </ul>
-            <p className="text-muted-foreground">To exercise these rights, please contact us at <a href="mailto:support@signalspro.com" className="text-primary hover:underline">support@signalspro.com</a></p>
+            <p className="text-muted-foreground">To exercise these rights, please contact us at <a href="mailto:support@Market Signals24.com" className="text-primary hover:underline">support@Market Signals24.com</a></p>
           </section>
 
           <section className="signal-card p-6 sm:p-8">
             <h2 className="text-xl font-bold mb-4">6. Cookies and Tracking Technologies</h2>
             <p className="text-muted-foreground mb-3">We use cookies and similar tracking technologies to enhance your experience on our website. Cookies are small files stored on your device that help us:</p>
             <ul className="text-muted-foreground space-y-1 mb-3">
-              <li>• Remember your preferences and settings</li>
-              <li>• Analyze website usage and performance</li>
-              <li>• Provide personalized content</li>
-              <li>• Ensure website security</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Remember your preferences and settings</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Analyze website usage and performance</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Provide personalized content</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Ensure website security</li>
             </ul>
             <p className="text-muted-foreground">You can control cookie settings through your browser preferences.</p>
           </section>
@@ -168,8 +168,8 @@ export default function PrivacyPolicyPage() {
               If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us:
             </p>
             <div className="mt-4 space-y-2 text-muted-foreground">
-              <p><strong className="text-foreground">Email:</strong> <a href="mailto:support@signalspro.com" className="text-primary hover:underline">support@signalspro.com</a></p>
-              <p><strong className="text-foreground">Website:</strong> signalspro.com</p>
+              <p><strong className="text-foreground">Email:</strong> <a href="mailto:support@Market Signals24.com" className="text-primary hover:underline">support@Market Signals24.com</a></p>
+              <p><strong className="text-foreground">Website:</strong> Market Signals24.com</p>
             </div>
           </section>
 

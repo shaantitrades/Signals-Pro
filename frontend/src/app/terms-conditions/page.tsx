@@ -8,7 +8,7 @@ export default function TermsConditionsPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
           <Link href="/" className="inline-flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors mb-6">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-            ← Retour
+            ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Ãƒâ€šÃ‚Â Retour
           </Link>
           <h1 className="text-3xl sm:text-4xl font-bold">Terms &amp; Conditions of Use</h1>
           <p className="text-white/60 mt-2">Last Updated: February 11, 2026</p>
@@ -20,9 +20,9 @@ export default function TermsConditionsPage() {
         <div className="prose prose-lg dark:prose-invert max-w-none space-y-8">
           
           <section className="signal-card p-6 sm:p-8">
-            <h2 className="text-xl font-bold mb-4">Welcome to SignalsPro!</h2>
+            <h2 className="text-xl font-bold mb-4">Welcome to Market Signals24!</h2>
             <p className="text-muted-foreground leading-relaxed">
-              These Terms &amp; Conditions of Use (hereinafter &quot;T&amp;C&quot;) govern the access and use of the website signalspro.com (hereinafter the &quot;Site&quot;) and the signal provision subscription services (hereinafter the &quot;Services&quot;) offered by SignalsPro.
+              These Terms &amp; Conditions of Use (hereinafter &quot;T&amp;C&quot;) govern the access and use of the website Market Signals24.com (hereinafter the &quot;Site&quot;) and the signal provision subscription services (hereinafter the &quot;Services&quot;) offered by Market Signals24.
             </p>
             <p className="text-muted-foreground leading-relaxed mt-4">
               By accessing the Site and using our Services, you acknowledge that you have read, understood, and agree to be bound by all of these T&amp;C. If you do not agree with these terms, you must not use the Site or the Services.
@@ -52,7 +52,7 @@ export default function TermsConditionsPage() {
               2.1. Access to the Services requires the creation of a personal account. The User agrees to provide accurate, complete, and up-to-date information.
             </p>
             <p className="text-muted-foreground leading-relaxed mt-3">
-              2.2. The User is solely responsible for the confidentiality of their password and for all activities conducted from their account. The User agrees to immediately notify SignalsPro of any unauthorized use of their account.
+              2.2. The User is solely responsible for the confidentiality of their password and for all activities conducted from their account. The User agrees to immediately notify Market Signals24 of any unauthorized use of their account.
             </p>
           </section>
 
@@ -70,7 +70,7 @@ export default function TermsConditionsPage() {
             <h2 className="text-xl font-bold mb-4">Article 4: No-Refund Policy</h2>
             <div className="text-muted-foreground space-y-3">
               <p>4.1. <strong className="text-foreground">Finality of Purchase:</strong> The User expressly acknowledges and agrees that any payment made for a Subscription is final.</p>
-              <p>4.2. <strong className="text-foreground">NO REFUNDS:</strong> Due to the digital and immediate nature of the Services provided (instant access to signals and content), SignalsPro does not issue any refunds, either full or partial, under any circumstances.</p>
+              <p>4.2. <strong className="text-foreground">NO REFUNDS:</strong> Due to the digital and immediate nature of the Services provided (instant access to signals and content), Market Signals24 does not issue any refunds, either full or partial, under any circumstances.</p>
               <p>4.3. This includes, but is not limited to, cases of dissatisfaction, non-use of the Service, cancellation during the billing period, or forgetting to cancel the automatic renewal. By subscribing, you waive any right to claim a refund.</p>
             </div>
           </section>
@@ -79,10 +79,10 @@ export default function TermsConditionsPage() {
             <h2 className="text-xl font-bold mb-4">Article 5: User Obligations</h2>
             <p className="text-muted-foreground mb-3">The User agrees to:</p>
             <ul className="text-muted-foreground space-y-2">
-              <li>• Use the Services for strictly personal and non-commercial purposes.</li>
-              <li>• Not share, resell, copy, or distribute the Signals and content of the Site to third parties.</li>
-              <li>• Not use any devices or software intended to disrupt the proper functioning of the Site.</li>
-              <li>• Comply with all applicable laws and regulations.</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Use the Services for strictly personal and non-commercial purposes.</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Not share, resell, copy, or distribute the Signals and content of the Site to third parties.</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Not use any devices or software intended to disrupt the proper functioning of the Site.</li>
+              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Comply with all applicable laws and regulations.</li>
             </ul>
           </section>
 
@@ -90,7 +90,7 @@ export default function TermsConditionsPage() {
             <h2 className="text-xl font-bold mb-4">Article 6: IMPORTANT DISCLAIMER AND LIMITATION OF LIABILITY</h2>
             <div className="text-muted-foreground space-y-3">
               <p>6.1. <strong className="text-foreground">Nature of Information:</strong> The Signals and content provided on the Site are for purely informational and educational purposes. They do not, under any circumstances, constitute investment advice, financial recommendation, solicitation, or an offer to buy or sell any financial product.</p>
-              <p>6.2. <strong className="text-foreground">No Guarantee:</strong> SignalsPro does not guarantee the performance, accuracy, or relevance of the Signals in any way. Past performance is not indicative of future results.</p>
+              <p>6.2. <strong className="text-foreground">No Guarantee:</strong> Market Signals24 does not guarantee the performance, accuracy, or relevance of the Signals in any way. Past performance is not indicative of future results.</p>
               <p>6.3. <strong className="text-foreground">Assumption of Risk:</strong> The User is solely and exclusively responsible for their investment or trading decisions and for any financial losses that may result. The use of the Signals is at the User&apos;s own risk.</p>
               <p>6.4. <strong className="text-foreground">Service Availability:</strong> We strive to keep the Site accessible 24/7 but cannot guarantee continuous availability. Access may be interrupted for maintenance or force majeure reasons.</p>
             </div>
@@ -99,7 +99,7 @@ export default function TermsConditionsPage() {
           <section className="signal-card p-6 sm:p-8">
             <h2 className="text-xl font-bold mb-4">Article 7: Intellectual Property</h2>
             <p className="text-muted-foreground leading-relaxed">
-              All elements of the Site (logo, texts, software, signals, design) are the exclusive property of SignalsPro and are protected by copyright and intellectual property law. Any reproduction, even partial, is strictly prohibited.
+              All elements of the Site (logo, texts, software, signals, design) are the exclusive property of Market Signals24 and are protected by copyright and intellectual property law. Any reproduction, even partial, is strictly prohibited.
             </p>
           </section>
 
@@ -113,7 +113,7 @@ export default function TermsConditionsPage() {
           <section className="signal-card p-6 sm:p-8">
             <h2 className="text-xl font-bold mb-4">Article 9: Modification of T&amp;C</h2>
             <p className="text-muted-foreground leading-relaxed">
-              SignalsPro reserves the right to modify these T&amp;C at any time. Users will be informed of any substantial changes. The applicable version is the one in effect on the Site at the time the Services are used.
+              Market Signals24 reserves the right to modify these T&amp;C at any time. Users will be informed of any substantial changes. The applicable version is the one in effect on the Site at the time the Services are used.
             </p>
           </section>
 
