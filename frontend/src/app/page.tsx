@@ -139,10 +139,10 @@ export default function Home() {
           {/* Stats Bar */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 max-w-4xl mx-auto px-2">
             {[
-              { label: t('stats.winRate'), value: '87.3%', icon: 'ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â½Ãƒâ€šÃ‚Â¯' },
-              { label: t('stats.signalsDay'), value: '100-700', icon: 'ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€šÃ‚Â¡' },
-              { label: t('stats.latency'), value: '<100ms', icon: 'ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã‚Â¡Ãƒâ€šÃ‚Â¡' },
-              { label: t('stats.assets'), value: '30+', icon: 'ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦Ã‚Â ' },
+              { label: t('stats.winRate'), value: '87.3%', icon: '🎯' },
+              { label: t('stats.signalsDay'), value: '100-700', icon: '📡' },
+              { label: t('stats.latency'), value: '<100ms', icon: '⚡' },
+              { label: t('stats.assets'), value: '30+', icon: '📊' },
             ].map((stat) => (
               <div key={stat.label} className="stat-card text-center">
                 <span className="text-2xl mb-1 block">{stat.icon}</span>
@@ -165,42 +165,42 @@ export default function Home() {
           {/* Level 1 */}
           <div className="signal-card p-6">
             <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
-              <span className="text-2xl">ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€šÃ‚Â¤ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“</span>
+              <span className="text-2xl">🤖</span>
             </div>
             <h3 className="text-xl font-semibold mb-2">{t('features.level1.title')}</h3>
             <p className="text-muted-foreground mb-4">{t('features.level1.desc')}</p>
             <ul className="text-sm space-y-2 text-muted-foreground">
-              <li className="flex items-center gap-2"><span className="text-profit">ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ</span> {t('features.level1.f1')}</li>
-              <li className="flex items-center gap-2"><span className="text-profit">ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ</span> {t('features.level1.f2')}</li>
-              <li className="flex items-center gap-2"><span className="text-profit">ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ</span> {t('features.level1.f3')}</li>
+              <li className="flex items-center gap-2"><span className="text-profit">✓</span> {t('features.level1.f1')}</li>
+              <li className="flex items-center gap-2"><span className="text-profit">✓</span> {t('features.level1.f2')}</li>
+              <li className="flex items-center gap-2"><span className="text-profit">✓</span> {t('features.level1.f3')}</li>
             </ul>
           </div>
 
           {/* Level 2 */}
           <div className="signal-card p-6 border-primary/30">
             <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
-              <span className="text-2xl">ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã‹Å“Ãƒâ€šÃ‚Â¨ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚ÂÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢Ãƒâ€šÃ‚Â¼</span>
+              <span className="text-2xl">👨‍💼</span>
             </div>
             <h3 className="text-xl font-semibold mb-2">{t('features.level2.title')}</h3>
             <p className="text-muted-foreground mb-4">{t('features.level2.desc')}</p>
             <ul className="text-sm space-y-2 text-muted-foreground">
-              <li className="flex items-center gap-2"><span className="text-profit">ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ</span> {t('features.level2.f1')}</li>
-              <li className="flex items-center gap-2"><span className="text-profit">ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ</span> {t('features.level2.f2')}</li>
-              <li className="flex items-center gap-2"><span className="text-profit">ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ</span> {t('features.level2.f3')}</li>
+              <li className="flex items-center gap-2"><span className="text-profit">✓</span> {t('features.level2.f1')}</li>
+              <li className="flex items-center gap-2"><span className="text-profit">✓</span> {t('features.level2.f2')}</li>
+              <li className="flex items-center gap-2"><span className="text-profit">✓</span> {t('features.level2.f3')}</li>
             </ul>
           </div>
 
           {/* Level 3 */}
           <div className="signal-card p-6">
             <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
-              <span className="text-2xl">ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦Ã‚Â </span>
+              <span className="text-2xl">📊</span>
             </div>
             <h3 className="text-xl font-semibold mb-2">{t('features.level3.title')}</h3>
             <p className="text-muted-foreground mb-4">{t('features.level3.desc')}</p>
             <ul className="text-sm space-y-2 text-muted-foreground">
-              <li className="flex items-center gap-2"><span className="text-profit">ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ</span> {t('features.level3.f1')}</li>
-              <li className="flex items-center gap-2"><span className="text-profit">ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ</span> {t('features.level3.f2')}</li>
-              <li className="flex items-center gap-2"><span className="text-profit">ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œ</span> {t('features.level3.f3')}</li>
+              <li className="flex items-center gap-2"><span className="text-profit">✓</span> {t('features.level3.f1')}</li>
+              <li className="flex items-center gap-2"><span className="text-profit">✓</span> {t('features.level3.f2')}</li>
+              <li className="flex items-center gap-2"><span className="text-profit">✓</span> {t('features.level3.f3')}</li>
             </ul>
           </div>
         </div>

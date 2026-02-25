@@ -8,7 +8,7 @@ export default function LegalNoticePage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
           <Link href="/" className="inline-flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors mb-6">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-            ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Ãƒâ€šÃ‚Â Retour
+            ← Retour
           </Link>
           <h1 className="text-3xl sm:text-4xl font-bold">Legal Notice</h1>
           <p className="text-white/60 mt-2">Last Updated: February 11, 2026</p>
@@ -48,11 +48,11 @@ export default function LegalNoticePage() {
               Market Signals24 provides AI-powered trading signals and market analysis for educational and informational purposes. Our service includes:
             </p>
             <ul className="text-muted-foreground space-y-1">
-              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Real-time buy/sell signals for Forex, Crypto, and Indices markets</li>
-              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Market analysis and educational content</li>
-              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Technical analysis tools and indicators</li>
-              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Risk management guidance</li>
-              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Customer support and educational resources</li>
+              <li>• Real-time buy/sell signals for Forex, Crypto, and Indices markets</li>
+              <li>• Market analysis and educational content</li>
+              <li>• Technical analysis tools and indicators</li>
+              <li>• Risk management guidance</li>
+              <li>• Customer support and educational resources</li>
             </ul>
             <p className="text-amber-500 mt-4 font-medium">
               Important: Our signals are for educational purposes only and should not be considered as financial advice.
@@ -90,13 +90,13 @@ export default function LegalNoticePage() {
             <h2 className="text-xl font-bold mb-4">4. User Responsibilities</h2>
             <p className="text-muted-foreground mb-3">By using our service, users acknowledge and agree to the following responsibilities:</p>
             <ul className="text-muted-foreground space-y-1">
-              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Conducting their own research and analysis before making trading decisions</li>
-              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Understanding the risks involved in financial trading</li>
-              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Complying with all applicable laws and regulations in their jurisdiction</li>
-              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Using proper risk management techniques</li>
-              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Not relying solely on our signals for trading decisions</li>
-              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Maintaining the security of their account credentials</li>
-              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Reporting any suspicious activity or technical issues</li>
+              <li>• Conducting their own research and analysis before making trading decisions</li>
+              <li>• Understanding the risks involved in financial trading</li>
+              <li>• Complying with all applicable laws and regulations in their jurisdiction</li>
+              <li>• Using proper risk management techniques</li>
+              <li>• Not relying solely on our signals for trading decisions</li>
+              <li>• Maintaining the security of their account credentials</li>
+              <li>• Reporting any suspicious activity or technical issues</li>
             </ul>
           </section>
 
@@ -113,12 +113,12 @@ export default function LegalNoticePage() {
               To the maximum extent permitted by law, Market Signals24 shall not be liable for any direct, indirect, incidental, special, consequential, or punitive damages arising from:
             </p>
             <ul className="text-muted-foreground space-y-1 mb-4">
-              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Use of our trading signals or services</li>
-              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Trading losses or missed opportunities</li>
-              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Technical issues or service interruptions</li>
-              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Inaccuracies in market data or analysis</li>
-              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Delays in signal delivery</li>
-              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Any other damages related to our service</li>
+              <li>• Use of our trading signals or services</li>
+              <li>• Trading losses or missed opportunities</li>
+              <li>• Technical issues or service interruptions</li>
+              <li>• Inaccuracies in market data or analysis</li>
+              <li>• Delays in signal delivery</li>
+              <li>• Any other damages related to our service</li>
             </ul>
             <p className="text-muted-foreground">
               Our total liability shall not exceed the amount paid by the user for our services in the 12 months preceding the claim.
@@ -131,10 +131,10 @@ export default function LegalNoticePage() {
               We strive to provide continuous service availability, but we do not guarantee uninterrupted access to our platform. Service may be temporarily unavailable due to:
             </p>
             <ul className="text-muted-foreground space-y-1 mb-3">
-              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Scheduled maintenance and updates</li>
-              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Technical issues or system failures</li>
-              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Network connectivity problems</li>
-              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Force majeure events</li>
+              <li>• Scheduled maintenance and updates</li>
+              <li>• Technical issues or system failures</li>
+              <li>• Network connectivity problems</li>
+              <li>• Force majeure events</li>
             </ul>
             <p className="text-muted-foreground">
               We will make reasonable efforts to notify users of planned maintenance and restore service as quickly as possible.

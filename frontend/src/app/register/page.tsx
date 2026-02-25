@@ -92,7 +92,7 @@ export default function RegisterPage() {
       return;
     }
     if (form.password.length < 8) {
-      setError('Le mot de passe doit faire au moins 8 caractÃƒÂ¨res');
+      setError('Le mot de passe doit faire au moins 8 caractères');
       return;
     }
     setLoading(true);

@@ -20,13 +20,13 @@ export default function DashboardLayout({
   const { lang, setLang, t } = useI18n();
 
   const navItems = [
-    { href: '/dashboard', label: t('nav.dashboard'), icon: 'ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¦Ã‚Â ' },
-    { href: '/dashboard/signals-otc', label: t('nav.signalsOtc'), icon: 'ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã‚Â¡Ãƒâ€šÃ‚Â¡' },
-    { href: '/dashboard/bot', label: t('nav.tradingBot'), icon: 'ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€šÃ‚Â¤ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“' },
-    { href: '/dashboard/signals', label: t('nav.signalsLive'), icon: 'ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€šÃ‚Â¡' },
-    { href: '/dashboard/trades', label: t('nav.myTrades'), icon: 'ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢Ãƒâ€šÃ‚Â¼' },
-    { href: '/dashboard/performance', label: t('nav.performance'), icon: 'ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸ÃƒÂ¢Ã¢â€šÂ¬Ã…â€œÃƒâ€¹Ã¢â‚¬Â ' },
-    { href: '/dashboard/settings', label: t('nav.settings'), icon: 'ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã‚Â¡ÃƒÂ¢Ã¢â‚¬Å¾Ã‚Â¢ÃƒÆ’Ã‚Â¯Ãƒâ€šÃ‚Â¸Ãƒâ€šÃ‚Â' },
+    { href: '/dashboard', label: t('nav.dashboard'), icon: '📊' },
+    { href: '/dashboard/signals-otc', label: t('nav.signalsOtc'), icon: '⚡' },
+    { href: '/dashboard/bot', label: t('nav.tradingBot'), icon: '🤖' },
+    { href: '/dashboard/signals', label: t('nav.signalsLive'), icon: '📡' },
+    { href: '/dashboard/trades', label: t('nav.myTrades'), icon: '💼' },
+    { href: '/dashboard/performance', label: t('nav.performance'), icon: '📈' },
+    { href: '/dashboard/settings', label: t('nav.settings'), icon: '⚙️' },
   ];
 
   // Fetch user data (including subscription) on mount

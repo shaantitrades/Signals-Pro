@@ -8,7 +8,7 @@ export default function TermsConditionsPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6">
           <Link href="/" className="inline-flex items-center gap-2 text-sm text-white/70 hover:text-white transition-colors mb-6">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-            ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â Ãƒâ€šÃ‚Â Retour
+            ← Retour
           </Link>
           <h1 className="text-3xl sm:text-4xl font-bold">Terms &amp; Conditions of Use</h1>
           <p className="text-white/60 mt-2">Last Updated: February 11, 2026</p>
@@ -79,10 +79,10 @@ export default function TermsConditionsPage() {
             <h2 className="text-xl font-bold mb-4">Article 5: User Obligations</h2>
             <p className="text-muted-foreground mb-3">The User agrees to:</p>
             <ul className="text-muted-foreground space-y-2">
-              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Use the Services for strictly personal and non-commercial purposes.</li>
-              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Not share, resell, copy, or distribute the Signals and content of the Site to third parties.</li>
-              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Not use any devices or software intended to disrupt the proper functioning of the Site.</li>
-              <li>ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¢ Comply with all applicable laws and regulations.</li>
+              <li>• Use the Services for strictly personal and non-commercial purposes.</li>
+              <li>• Not share, resell, copy, or distribute the Signals and content of the Site to third parties.</li>
+              <li>• Not use any devices or software intended to disrupt the proper functioning of the Site.</li>
+              <li>• Comply with all applicable laws and regulations.</li>
             </ul>
           </section>
 
