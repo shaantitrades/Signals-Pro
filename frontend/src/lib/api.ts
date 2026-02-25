@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/api\/?$/, '');
+// Strip any trailing path (/api, /api/, /api1, etc.) to get just the base origin+port
+const rawUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_URL = rawUrl.replace(/\/api\d*\/?$/, '').replace(/\/+$/, '');
 
 export const api = axios.create({
   baseURL: `${API_URL}/api`,

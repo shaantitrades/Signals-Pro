@@ -6,7 +6,7 @@ import { cn, formatPips, formatPercent, getConfidenceColor, getCategoryIcon } fr
 import { useI18n } from '@/lib/i18n';
 import { useAuthStore } from '@/lib/store';
 
-const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/api\/?$/, '');
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/api\d*\/?$/, '').replace(/\/+$/, '');
 
 interface RecentSignal {
   id: string;

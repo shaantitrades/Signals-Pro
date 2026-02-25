@@ -57,7 +57,7 @@ const categories = [
 
 // Active signals are fetched from the backend API (DB-backed, always available)
 
-const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/api\/?$/, '');
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/api\d*\/?$/, '').replace(/\/+$/, '');
 
 async function fetchRealSignal(
   category: string,
