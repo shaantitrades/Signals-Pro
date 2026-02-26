@@ -34,14 +34,15 @@ export default function DashboardLayout({
     initAuth();
   }, [initAuth]);
 
-  // Theme state
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  // Theme state — sync with the script in root layout that already set the class
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('theme') as 'light' | 'dark' | null;
-    const initial = saved || 'light';
-    setTheme(initial);
-    document.documentElement.classList.toggle('dark', initial === 'dark');
+    setMounted(true);
+    // Read the class that was already set by the inline script in <head>
+    const isDark = document.documentElement.classList.contains('dark');
+    setTheme(isDark ? 'dark' : 'light');
   }, []);
 
   const toggleTheme = useCallback(() => {
@@ -86,6 +87,49 @@ export default function DashboardLayout({
     logout();
     router.push('/login');
   };
+
+  // Show a styled skeleton loader until client JS has hydrated
+  // This prevents users from seeing raw unstyled text
+  if (!mounted) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        {/* Skeleton top bar */}
+        <header className="sticky top-0 z-40 bg-background border-b border-border px-3 sm:px-6 py-2 sm:py-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded bg-muted animate-pulse" />
+              <div className="w-32 h-5 rounded bg-muted animate-pulse hidden sm:block" />
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-16 h-6 rounded-full bg-muted animate-pulse" />
+              <div className="w-8 h-8 rounded-full bg-muted animate-pulse" />
+            </div>
+          </div>
+        </header>
+        {/* Skeleton nav */}
+        <nav className="border-b border-border px-3 sm:px-6 py-2">
+          <div className="flex gap-3 overflow-hidden">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-8 w-24 rounded-lg bg-muted animate-pulse shrink-0" />
+            ))}
+          </div>
+        </nav>
+        {/* Skeleton content */}
+        <main className="flex-1 p-4 sm:p-6 max-w-7xl mx-auto w-full">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-24 rounded-xl bg-muted animate-pulse" />
+            ))}
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-40 rounded-lg bg-muted animate-pulse" />
+            ))}
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">

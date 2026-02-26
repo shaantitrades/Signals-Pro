@@ -3,7 +3,12 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { Providers } from '@/components/providers';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',         // Show text immediately with fallback font
+  preload: true,
+  fallback: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+});
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -25,6 +30,50 @@ export const metadata: Metadata = {
   manifest: '/manifest.json',
 };
 
+// Inline script to set theme class BEFORE any CSS renders (prevents FOUC)
+const themeInitScript = `
+(function(){
+  try {
+    var t = localStorage.getItem('theme');
+    if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    }
+  } catch(e) {}
+})();
+`;
+
+// Critical inline CSS — ensures basic styling even if Tailwind CSS file is delayed
+const criticalCSS = `
+  html { background: #0d1117; color: #e6edf3; }
+  html:not(.dark) { background: #ffffff; color: #1f2937; }
+  body { margin: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; }
+  /* Skeleton loading essentials — visible before Tailwind loads */
+  .min-h-screen { min-height: 100vh; }
+  .flex { display: flex; }
+  .flex-col { flex-direction: column; }
+  .items-center { align-items: center; }
+  .justify-center { justify-content: center; }
+  .bg-background { background: hsl(222 47% 6%); }
+  html:not(.dark) .bg-background { background: hsl(0 0% 100%); }
+  .bg-muted { background: hsl(217 33% 17%); }
+  html:not(.dark) .bg-muted { background: hsl(220 14% 96%); }
+  .border-border { border-color: hsl(217 33% 17%); }
+  html:not(.dark) .border-border { border-color: hsl(220 13% 91%); }
+  .border-b { border-bottom-width: 1px; border-bottom-style: solid; }
+  .rounded-xl { border-radius: 0.75rem; }
+  .rounded-lg { border-radius: 0.5rem; }
+  .rounded-full { border-radius: 9999px; }
+  .rounded { border-radius: 0.25rem; }
+  .gap-3 { gap: 0.75rem; }
+  .gap-4 { gap: 1rem; }
+  .p-4 { padding: 1rem; }
+  .w-full { width: 100%; }
+  .shrink-0 { flex-shrink: 0; }
+  .overflow-hidden { overflow: hidden; }
+  @keyframes pulse { 50% { opacity: .5; } }
+  .animate-pulse { animation: pulse 2s cubic-bezier(.4,0,.6,1) infinite; }
+`;
+
 export default function RootLayout({
   children,
 }: {
@@ -32,6 +81,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <style dangerouslySetInnerHTML={{ __html: criticalCSS }} />
+      </head>
       <body className={inter.className}>
         <Providers>
           {children}
