@@ -13,12 +13,12 @@
   </defs>
 
   <!-- Red arrow: upper-left → lower-right (SELL) - drawn first (behind) -->
-  <g transform="rotate(135, 256, 256)">
+  <g transform="translate(-40, 40) rotate(135, 256, 256)">
     <polygon points="256,42 376,222 304,222 304,470 208,470 208,222 136,222" fill="url(#redArrow)"/>
   </g>
 
   <!-- Green arrow: lower-left → upper-right (BUY) - drawn second (in front) -->
-  <g transform="rotate(45, 256, 256)">
+  <g transform="translate(40, -40) rotate(45, 256, 256)">
     <polygon points="256,42 376,222 304,222 304,470 208,470 208,222 136,222" fill="url(#greenArrow)"/>
   </g>
 </svg>
