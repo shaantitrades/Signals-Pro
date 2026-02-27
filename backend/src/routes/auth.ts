@@ -428,3 +428,92 @@ authRouter.put('/password', authenticate, async (req: AuthRequest, res: Response
     next(error);
   }
 });
+
+// ============================================================================
+// POST /api/auth/forgot-password
+// ============================================================================
+
+authRouter.post('/forgot-password', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email } = z.object({ email: z.string().email() }).parse(req.body);
+
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    // Always respond success to prevent email enumeration
+    if (!user || !user.passwordHash) {
+      return res.json({ success: true, message: 'If an account exists, a reset link has been generated.' });
+    }
+
+    // Generate a secure reset token
+    const resetToken = uuidv4() + '-' + uuidv4();
+    const resetTokenExp = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { resetToken, resetTokenExp },
+    });
+
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
+
+    // TODO: Send email with resetUrl when email service is configured
+    console.log(`[Password Reset] Token for ${email}: ${resetUrl}`);
+
+    res.json({
+      success: true,
+      message: 'If an account exists, a reset link has been generated.',
+      // In development, return the URL (remove in production)
+      ...(process.env.NODE_ENV !== 'production' ? { resetUrl } : {}),
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return next(new AppError(error.errors[0].message, 400));
+    }
+    next(error);
+  }
+});
+
+// ============================================================================
+// POST /api/auth/reset-password
+// ============================================================================
+
+authRouter.post('/reset-password', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { token, password } = z.object({
+      token: z.string().min(1),
+      password: z.string().min(8, 'Password must be at least 8 characters'),
+    }).parse(req.body);
+
+    const user = await prisma.user.findFirst({
+      where: {
+        resetToken: token,
+        resetTokenExp: { gte: new Date() },
+      },
+    });
+
+    if (!user) {
+      throw new AppError('Invalid or expired reset token', 400);
+    }
+
+    const passwordHash = await bcrypt.hash(password, 12);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        passwordHash,
+        resetToken: null,
+        resetTokenExp: null,
+      },
+    });
+
+    res.json({
+      success: true,
+      message: 'Password reset successfully. You can now log in.',
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return next(new AppError(error.errors[0].message, 400));
+    }
+    next(error);
+  }
+});
