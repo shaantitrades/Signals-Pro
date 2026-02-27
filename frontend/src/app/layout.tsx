@@ -28,6 +28,9 @@ export const metadata: Metadata = {
     apple: '/apple-touch-icon.png',
   },
   manifest: '/manifest.json',
+  verification: {
+    google: 'eb94bneSZzVTVa4QRfdu_IplBWIW-1n-P2ge5k604Pc',
+  },
 };
 
 // Inline script to set theme class BEFORE any CSS renders (prevents FOUC)

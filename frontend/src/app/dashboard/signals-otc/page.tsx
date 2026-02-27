@@ -191,9 +191,13 @@ function deriveMarketInfo(signal: OTCSignal) {
 // ============================================================================
 // Signal notification sound — synthesized "tiiiiing" via Web Audio API
 // ============================================================================
-function playSignalSound() {
+function playSignalSound(existingCtx?: AudioContext | null) {
   try {
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const ctx = (existingCtx && existingCtx.state !== 'closed')
+      ? existingCtx
+      : new (window.AudioContext || (window as any).webkitAudioContext)();
+    // Resume if suspended (browser requires user-gesture unlock)
+    if (ctx.state === 'suspended') void ctx.resume();
     const now = ctx.currentTime;
 
     // Single clean "ting" — sharp attack, long natural decay
@@ -210,7 +214,7 @@ function playSignalSound() {
     osc.start(now);
     osc.stop(now + 2.1);
 
-    setTimeout(() => ctx.close(), 2500);
+    if (!existingCtx) setTimeout(() => ctx.close(), 2500);
   } catch {
     // Audio not supported — fail silently
   }
@@ -227,6 +231,7 @@ export default function SignalsOTCPage() {
   const [otcError, setOtcError] = useState('');
   const [signalActive, setSignalActive] = useState(false);
   const expirationTimer = useRef<NodeJS.Timeout | null>(null);
+  const audioCtxRef = useRef<AudioContext | null>(null);
 
   // Popup states
   const [showToast, setShowToast] = useState(false);
@@ -307,6 +312,13 @@ export default function SignalsOTCPage() {
       return;
     }
     setOtcLoading(true);
+    // Unlock AudioContext during user gesture (before async API call)
+    try {
+      if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
+        audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+      void audioCtxRef.current.resume();
+    } catch {}
     setOtcError('');
     setSignalActive(true);
     // Clear any previous expiration timer
@@ -317,7 +329,7 @@ export default function SignalsOTCPage() {
         const newSignal = data.data;
         setOtcSignals(prev => [newSignal, ...prev].slice(0, 10));
         // Play notification sound
-        playSignalSound();
+        playSignalSound(audioCtxRef.current);
         // Trigger both popup notifications
         setToastSignal(newSignal);
         setShowToast(true);
@@ -600,8 +612,8 @@ export default function SignalsOTCPage() {
             {otcSignals.length === 0 ? (
               /* Empty state */
               <div className="flex flex-col items-center justify-center py-12 text-center">
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                  <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9.348 14.651a3.75 3.75 0 010-5.303m5.304 0a3.75 3.75 0 010 5.303m-7.425 2.122a6.75 6.75 0 010-9.546m9.546 0a6.75 6.75 0 010 9.546M5.106 18.894c-3.808-3.808-3.808-9.98 0-13.789m13.788 0c3.808 3.808 3.808 9.981 0 13.79M12 12h.008v.007H12V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>
+                <div className="w-16 h-16 rounded-full bg-yellow-400/20 flex items-center justify-center mb-4 animate-pulse">
+                  <svg className="w-9 h-9 text-yellow-400" style={{filter:'drop-shadow(0 0 10px rgba(250,204,21,0.9))'}} fill="currentColor" viewBox="0 0 24 24"><path d="M13 3L4 14h7l-2 7 9-11h-7l2-7z"/></svg>
                 </div>
                 <p className="font-semibold text-foreground mb-2">{t('sigOtc.noActive')}</p>
                 <p className="text-sm text-muted-foreground max-w-[280px]">

@@ -178,6 +178,9 @@ const translations: Record<LangCode, Record<string, string>> = {
     'menu.customerService': 'Customer Service',
     'menu.back': 'Back',
     'menu.logout': 'Log out',
+    'menu.logoutConfirmTitle': 'Sign out',
+    'menu.logoutConfirmDesc': 'Are you sure you want to sign out?',
+    'menu.cancel': 'Cancel',
 
     // Auth
     'auth.createAccount': 'Create your account and start trading',
@@ -837,6 +840,9 @@ const translations: Record<LangCode, Record<string, string>> = {
     'menu.customerService': 'Service Client',
     'menu.back': 'Retour',
     'menu.logout': 'Déconnexion',
+    'menu.logoutConfirmTitle': 'Déconnexion',
+    'menu.logoutConfirmDesc': 'Voulez-vous vraiment vous déconnecter ?',
+    'menu.cancel': 'Annuler',
 
     // Auth
     'auth.createAccount': 'Créez votre compte et commencez à trader',
@@ -1429,7 +1435,7 @@ const translations: Record<LangCode, Record<string, string>> = {
     'header.disconnected': 'Desconectado', 'header.connected': 'Conectado', 'header.darkMode': 'Modo oscuro', 'header.lightMode': 'Modo claro',
     'menu.home': 'Inicio', 'menu.profileSettings': 'Perfil y Configuración', 'menu.editProfile': 'Editar Perfil', 'menu.changePassword': 'Cambiar Contraseña',
     'menu.cancelSub': 'Cancelar Suscripción', 'menu.manageSub': 'Gestionar Suscripción', 'menu.suspendAccount': 'Suspender Cuenta',
-    'menu.notifications': 'Notificaciones', 'menu.deleteAccount': 'Eliminar Cuenta', 'menu.customerService': 'Servicio al Cliente', 'menu.back': 'Volver', 'menu.logout': 'Cerrar sesión',
+    'menu.notifications': 'Notificaciones', 'menu.deleteAccount': 'Eliminar Cuenta', 'menu.customerService': 'Servicio al Cliente', 'menu.back': 'Volver', 'menu.logout': 'Cerrar sesión', 'menu.logoutConfirmTitle': 'Cerrar sesión', 'menu.logoutConfirmDesc': '¿Seguro que quieres cerrar sesión?', 'menu.cancel': 'Cancelar',
     'auth.createAccount': 'Crea tu cuenta y empieza a operar', 'auth.loginDesc': 'Inicia sesión en tu cuenta',
     'auth.googleSignup': 'Registrarse con Google', 'auth.googleLogin': 'Iniciar sesión con Google', 'auth.or': 'o',
     'auth.firstName': 'Nombre', 'auth.lastName': 'Apellido', 'auth.email': 'Email', 'auth.password': 'Contraseña',
@@ -1605,7 +1611,7 @@ const translations: Record<LangCode, Record<string, string>> = {
     'header.disconnected': 'Disconnesso', 'header.connected': 'Connesso', 'header.darkMode': 'Modalità scura', 'header.lightMode': 'Modalità chiara',
     'menu.home': 'Home', 'menu.profileSettings': 'Profilo e Impostazioni', 'menu.changePassword': 'Cambia Password',
     'menu.cancelSub': 'Annulla Abbonamento', 'menu.manageSub': 'Gestisci Abbonamento', 'menu.suspendAccount': 'Sospendi Account',
-    'menu.notifications': 'Notifiche', 'menu.deleteAccount': 'Elimina Account', 'menu.customerService': 'Servizio Clienti', 'menu.back': 'Indietro', 'menu.logout': 'Esci',
+    'menu.notifications': 'Notifiche', 'menu.deleteAccount': 'Elimina Account', 'menu.customerService': 'Servizio Clienti', 'menu.back': 'Indietro', 'menu.logout': 'Esci', 'menu.logoutConfirmTitle': 'Disconnetti', 'menu.logoutConfirmDesc': 'Sei sicuro di voler uscire?', 'menu.cancel': 'Annulla',
     'auth.createAccount': 'Crea il tuo account e inizia a fare trading', 'auth.loginDesc': 'Accedi al tuo account',
     'auth.googleSignup': 'Registrati con Google', 'auth.googleLogin': 'Accedi con Google', 'auth.or': 'o',
     'auth.firstName': 'Nome', 'auth.lastName': 'Cognome', 'auth.email': 'Email', 'auth.password': 'Password',
@@ -1780,7 +1786,7 @@ const translations: Record<LangCode, Record<string, string>> = {
     'header.disconnected': 'Desconectado', 'header.connected': 'Conectado', 'header.darkMode': 'Modo escuro', 'header.lightMode': 'Modo claro',
     'menu.home': 'Início', 'menu.profileSettings': 'Perfil e Configurações', 'menu.changePassword': 'Alterar Senha',
     'menu.cancelSub': 'Cancelar Assinatura', 'menu.manageSub': 'Gerenciar Assinatura', 'menu.suspendAccount': 'Suspender Conta',
-    'menu.notifications': 'Notificações', 'menu.deleteAccount': 'Excluir Conta', 'menu.customerService': 'Atendimento ao Cliente', 'menu.back': 'Voltar', 'menu.logout': 'Sair',
+    'menu.notifications': 'Notificações', 'menu.deleteAccount': 'Excluir Conta', 'menu.customerService': 'Atendimento ao Cliente', 'menu.back': 'Voltar', 'menu.logout': 'Sair', 'menu.logoutConfirmTitle': 'Sair', 'menu.logoutConfirmDesc': 'Tem certeza que deseja sair?', 'menu.cancel': 'Cancelar',
     'auth.createAccount': 'Crie sua conta e comece a negociar', 'auth.loginDesc': 'Entre na sua conta',
     'auth.googleSignup': 'Registrar com Google', 'auth.googleLogin': 'Entrar com Google', 'auth.or': 'ou',
     'auth.firstName': 'Nome', 'auth.lastName': 'Sobrenome', 'auth.email': 'Email', 'auth.password': 'Senha',
@@ -1956,7 +1962,7 @@ const translations: Record<LangCode, Record<string, string>> = {
     'header.disconnected': 'غير متصل', 'header.connected': 'متصل', 'header.darkMode': 'الوضع الداكن', 'header.lightMode': 'الوضع الفاتح',
     'menu.home': 'الرئيسية', 'menu.profileSettings': 'الملف والإعدادات', 'menu.changePassword': 'تغيير كلمة المرور',
     'menu.cancelSub': 'إلغاء الاشتراك', 'menu.manageSub': 'إدارة الاشتراك', 'menu.suspendAccount': 'تعليق الحساب',
-    'menu.notifications': 'الإشعارات', 'menu.deleteAccount': 'حذف الحساب', 'menu.customerService': 'خدمة العملاء', 'menu.back': 'رجوع', 'menu.logout': 'تسجيل الخروج',
+    'menu.notifications': 'الإشعارات', 'menu.deleteAccount': 'حذف الحساب', 'menu.customerService': 'خدمة العملاء', 'menu.back': 'رجوع', 'menu.logout': 'تسجيل الخروج', 'menu.logoutConfirmTitle': 'تسجيل الخروج', 'menu.logoutConfirmDesc': 'هل أنت متأكد من تسجيل الخروج؟', 'menu.cancel': 'إلغاء',
     'auth.createAccount': 'أنشئ حسابك وابدأ التداول', 'auth.loginDesc': 'سجل الدخول إلى حسابك',
     'auth.googleSignup': 'التسجيل بـ Google', 'auth.googleLogin': 'الدخول بـ Google', 'auth.or': 'أو',
     'auth.firstName': 'الاسم الأول', 'auth.lastName': 'اسم العائلة', 'auth.email': 'البريد الإلكتروني', 'auth.password': 'كلمة المرور',
@@ -2177,6 +2183,9 @@ const translations: Record<LangCode, Record<string, string>> = {
     'menu.customerService': 'Kundendienst',
     'menu.back': 'Zurück',
     'menu.logout': 'Abmelden',
+    'menu.logoutConfirmTitle': 'Abmelden',
+    'menu.logoutConfirmDesc': 'Möchten Sie sich wirklich abmelden?',
+    'menu.cancel': 'Abbrechen',
 
     // Auth
     'auth.createAccount': 'Erstellen Sie Ihr Konto und starten Sie den Handel',
@@ -2563,6 +2572,9 @@ const translations: Record<LangCode, Record<string, string>> = {
     'menu.customerService': 'Dịch vụ Khách hàng',
     'menu.back': 'Quay lại',
     'menu.logout': 'Đăng xuất',
+    'menu.logoutConfirmTitle': 'Đăng xuất',
+    'menu.logoutConfirmDesc': 'Bạn có chắc muốn đăng xuất không?',
+    'menu.cancel': 'Hủy',
 
     // Auth
     'auth.createAccount': 'Tạo tài khoản và bắt đầu giao dịch',

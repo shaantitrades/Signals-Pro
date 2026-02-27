@@ -72,6 +72,7 @@ export default function DashboardLayout({
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [profileSubOpen, setProfileSubOpen] = useState(false);
   const [profileEditOpen, setProfileEditOpen] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   // Profile form state for user menu
@@ -133,7 +134,13 @@ export default function DashboardLayout({
   }, []);
 
   const handleLogout = () => {
+    setUserMenuOpen(false);
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = () => {
     logout();
+    setShowLogoutConfirm(false);
     router.push('/login');
   };
 
@@ -189,7 +196,7 @@ export default function DashboardLayout({
           <div className="flex items-center gap-2 sm:gap-4">
             <Link href="/dashboard" className="flex items-center space-x-2 shrink-0">
               <Image src="/logo.svg" alt="Market Signals24" width={32} height={32} className="w-8 h-8" priority />
-              <span className="text-lg font-bold hidden sm:inline">Market Signals24</span>
+              <span className="text-sm sm:text-lg font-bold">Market Signals24</span>
             </Link>
 
             <div className="h-6 w-px bg-border hidden md:block" />
@@ -474,6 +481,37 @@ export default function DashboardLayout({
           </div>
         </div>
       </footer>
+
+      {/* Logout Confirmation Modal */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => setShowLogoutConfirm(false)}>
+          <div className="bg-card border border-border rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4 animate-slide-up" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-loss/10 flex items-center justify-center shrink-0">
+                <svg className="w-5 h-5 text-loss" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+              </div>
+              <div>
+                <h3 className="font-semibold text-base">{t('menu.logoutConfirmTitle')}</h3>
+                <p className="text-sm text-muted-foreground">{t('menu.logoutConfirmDesc')}</p>
+              </div>
+            </div>
+            <div className="flex gap-3 mt-2">
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
+                className="flex-1 px-4 py-2 rounded-lg border border-border text-sm font-medium hover:bg-secondary/50 transition-colors"
+              >
+                {t('menu.cancel')}
+              </button>
+              <button
+                onClick={confirmLogout}
+                className="flex-1 px-4 py-2 rounded-lg bg-loss text-white text-sm font-medium hover:bg-loss/90 transition-colors"
+              >
+                {t('menu.logout')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
