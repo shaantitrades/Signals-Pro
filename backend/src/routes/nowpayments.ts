@@ -12,7 +12,7 @@ const NP_IPN_SECRET = process.env.NOWPAYMENTS_IPN_SECRET || '';
 // ============================================================================
 // ============================================================================
 
-async function npFetch(path: string, options: RequestInit = {}) {
+async function npFetch(path: string, options: RequestInit = {}): Promise<any> {
   const res = await fetch(`${NP_API_URL}${path}`, {
     ...options,
     headers: {
@@ -21,7 +21,7 @@ async function npFetch(path: string, options: RequestInit = {}) {
       ...(options.headers || {}),
     },
   });
-  return res.json();
+  return res.json() as Promise<any>;
 }
 
 /**
