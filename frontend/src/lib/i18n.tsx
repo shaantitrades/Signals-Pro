@@ -91,6 +91,18 @@ const translations: Record<LangCode, Record<string, string>> = {
     'footer.legal.notice': 'Legal Notice',
     'footer.copyright': '© 2026 Market Signals24. All rights reserved.',
 
+    // PWA Install
+    'pwa.installDesc': 'Install the app for quick access and a better experience.',
+    'pwa.install': 'Install',
+    'pwa.later': 'Later',
+
+    // Cookie Consent
+    'cookies.title': 'We use cookies',
+    'cookies.desc': 'We use cookies to improve your experience and analyze site traffic.',
+    'cookies.learnMore': 'Learn more',
+    'cookies.acceptAll': 'Accept all',
+    'cookies.necessary': 'Necessary only',
+
     // Pricing
     'pricing.title': 'Choose Your Plan',
     'pricing.desc': 'Unlock premium signals and optimize your trading strategy.',
@@ -738,6 +750,18 @@ const translations: Record<LangCode, Record<string, string>> = {
     'footer.legal.notice': 'Mentions Légales',
     'footer.copyright': '© 2026 Market Signals24. Tous droits réservés.',
 
+    // PWA Install
+    'pwa.installDesc': "Installez l'application pour un accès rapide et une meilleure expérience.",
+    'pwa.install': 'Installer',
+    'pwa.later': 'Plus tard',
+
+    // Cookie Consent
+    'cookies.title': 'Nous utilisons des cookies',
+    'cookies.desc': 'Nous utilisons des cookies pour améliorer votre expérience et analyser le trafic du site.',
+    'cookies.learnMore': 'En savoir plus',
+    'cookies.acceptAll': 'Tout accepter',
+    'cookies.necessary': 'Nécessaires uniquement',
+
     // Pricing
     'pricing.title': 'Choisissez votre plan',
     'pricing.desc': 'Débloquez des signaux premium et optimisez votre stratégie de trading.',
@@ -1372,6 +1396,8 @@ const translations: Record<LangCode, Record<string, string>> = {
     'footer.legal.risks': 'Riesgos de Trading',
     'footer.legal.notice': 'Aviso Legal',
     'footer.copyright': '© 2026 Market Signals24. Todos los derechos reservados.',
+    'pwa.installDesc': 'Instala la app para un acceso rápido y una mejor experiencia.', 'pwa.install': 'Instalar', 'pwa.later': 'Más tarde',
+    'cookies.title': 'Usamos cookies', 'cookies.desc': 'Usamos cookies para mejorar tu experiencia y analizar el tráfico del sitio.', 'cookies.learnMore': 'Saber más', 'cookies.acceptAll': 'Aceptar todo', 'cookies.necessary': 'Solo necesarias',
     'pricing.title': 'Elige tu plan',
     'pricing.desc': 'Desbloquea señales premium y optimiza tu estrategia de trading.',
     'pricing.plan24h': 'Pase 24 horas', 'pricing.plan48h': 'Pase 48 horas', 'pricing.planWeekly': 'Semanal', 'pricing.planMonthly': 'Mensual',
@@ -1547,6 +1573,8 @@ const translations: Record<LangCode, Record<string, string>> = {
     'footer.legal': 'Legale', 'footer.legal.terms': 'Termini e Condizioni', 'footer.legal.privacy': 'Politica sulla Privacy',
     'footer.legal.risks': 'Rischi di Trading', 'footer.legal.notice': 'Avviso Legale',
     'footer.copyright': '© 2026 Market Signals24. Tutti i diritti riservati.',
+    'pwa.installDesc': "Installa l'app per un accesso rapido e un'esperienza migliore.", 'pwa.install': 'Installa', 'pwa.later': 'Più tardi',
+    'cookies.title': 'Usiamo i cookie', 'cookies.desc': "Usiamo i cookie per migliorare la tua esperienza e analizzare il traffico del sito.", 'cookies.learnMore': 'Scopri di più', 'cookies.acceptAll': 'Accetta tutto', 'cookies.necessary': 'Solo necessari',
     'pricing.title': 'Scegli il tuo piano', 'pricing.desc': 'Sblocca segnali premium e ottimizza la tua strategia di trading.',
     'pricing.plan24h': 'Pass 24 ore', 'pricing.plan48h': 'Pass 48 ore', 'pricing.planWeekly': 'Settimanale', 'pricing.planMonthly': 'Mensile',
     'pricing.mostPopular': 'Più popolare',
@@ -1720,6 +1748,8 @@ const translations: Record<LangCode, Record<string, string>> = {
     'footer.legal': 'Legal', 'footer.legal.terms': 'Termos e Condições', 'footer.legal.privacy': 'Política de Privacidade',
     'footer.legal.risks': 'Riscos de Trading', 'footer.legal.notice': 'Aviso Legal',
     'footer.copyright': '© 2026 Market Signals24. Todos os direitos reservados.',
+    'pwa.installDesc': 'Instale o app para acesso rápido e uma experiência melhor.', 'pwa.install': 'Instalar', 'pwa.later': 'Mais tarde',
+    'cookies.title': 'Usamos cookies', 'cookies.desc': 'Usamos cookies para melhorar sua experiência e analisar o tráfego do site.', 'cookies.learnMore': 'Saiba mais', 'cookies.acceptAll': 'Aceitar tudo', 'cookies.necessary': 'Apenas necessários',
     'pricing.title': 'Escolha seu plano', 'pricing.desc': 'Desbloqueie sinais premium e otimize sua estratégia de trading.',
     'pricing.plan24h': 'Passe 24 horas', 'pricing.plan48h': 'Passe 48 horas', 'pricing.planWeekly': 'Semanal', 'pricing.planMonthly': 'Mensal',
     'pricing.mostPopular': 'Mais popular',
@@ -1894,6 +1924,8 @@ const translations: Record<LangCode, Record<string, string>> = {
     'footer.legal': 'قانوني', 'footer.legal.terms': 'الشروط والأحكام', 'footer.legal.privacy': 'سياسة الخصوصية',
     'footer.legal.risks': 'مخاطر التداول', 'footer.legal.notice': 'إشعار قانوني',
     'footer.copyright': '© 2026 Market Signals24. جميع الحقوق محفوظة.',
+    'pwa.installDesc': 'ثبّت التطبيق للوصول السريع وتجربة أفضل.', 'pwa.install': 'تثبيت', 'pwa.later': 'لاحقاً',
+    'cookies.title': 'نستخدم ملفات تعريف الارتباط', 'cookies.desc': 'نستخدم ملفات تعريف الارتباط لتحسين تجربتك وتحليل حركة المرور على الموقع.', 'cookies.learnMore': 'معرفة المزيد', 'cookies.acceptAll': 'قبول الكل', 'cookies.necessary': 'الضرورية فقط',
     'pricing.title': 'اختر خطتك', 'pricing.desc': 'افتح الإشارات المميزة وحسّن استراتيجية التداول الخاصة بك.',
     'pricing.plan24h': 'تصريح 24 ساعة', 'pricing.plan48h': 'تصريح 48 ساعة', 'pricing.planWeekly': 'أسبوعي', 'pricing.planMonthly': 'شهري',
     'pricing.mostPopular': 'الأكثر شعبية',
@@ -2058,6 +2090,18 @@ const translations: Record<LangCode, Record<string, string>> = {
     'footer.legal.risks': 'Handelsrisiken',
     'footer.legal.notice': 'Impressum',
     'footer.copyright': '© 2026 Market Signals24. Alle Rechte vorbehalten.',
+
+    // PWA Install
+    'pwa.installDesc': 'Installieren Sie die App für schnellen Zugriff und ein besseres Erlebnis.',
+    'pwa.install': 'Installieren',
+    'pwa.later': 'Später',
+
+    // Cookie Consent
+    'cookies.title': 'Wir verwenden Cookies',
+    'cookies.desc': 'Wir verwenden Cookies, um Ihre Erfahrung zu verbessern und den Website-Traffic zu analysieren.',
+    'cookies.learnMore': 'Mehr erfahren',
+    'cookies.acceptAll': 'Alle akzeptieren',
+    'cookies.necessary': 'Nur notwendige',
 
     // Pricing
     'pricing.title': 'Wählen Sie Ihren Plan',
@@ -2432,6 +2476,18 @@ const translations: Record<LangCode, Record<string, string>> = {
     'footer.legal.risks': 'Rủi ro Giao dịch',
     'footer.legal.notice': 'Thông báo Pháp lý',
     'footer.copyright': '© 2026 Market Signals24. Mọi quyền được bảo lưu.',
+
+    // PWA Install
+    'pwa.installDesc': 'Cài đặt ứng dụng để truy cập nhanh và trải nghiệm tốt hơn.',
+    'pwa.install': 'Cài đặt',
+    'pwa.later': 'Để sau',
+
+    // Cookie Consent
+    'cookies.title': 'Chúng tôi sử dụng cookie',
+    'cookies.desc': 'Chúng tôi sử dụng cookie để cải thiện trải nghiệm của bạn và phân tích lưu lượng truy cập.',
+    'cookies.learnMore': 'Tìm hiểu thêm',
+    'cookies.acceptAll': 'Chấp nhận tất cả',
+    'cookies.necessary': 'Chỉ cần thiết',
 
     // Pricing
     'pricing.title': 'Chọn gói của bạn',

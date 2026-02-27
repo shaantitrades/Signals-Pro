@@ -42,6 +42,17 @@ const themeInitScript = `
 })();
 `;
 
+// Register service worker for PWA
+const swRegisterScript = `
+(function(){
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/sw.js').catch(function(){});
+    });
+  }
+})();
+`;
+
 // Critical inline CSS — ensures basic styling even if Tailwind CSS file is delayed
 const criticalCSS = `
   html { background: #ffffff; color: #1f2937; }
@@ -83,6 +94,7 @@ export default function RootLayout({
     <html lang="fr" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <script dangerouslySetInnerHTML={{ __html: swRegisterScript }} />
         <style dangerouslySetInnerHTML={{ __html: criticalCSS }} />
       </head>
       <body className={inter.className}>
