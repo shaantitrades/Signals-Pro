@@ -3,21 +3,22 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('ÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã¢â‚¬â„¢Ãƒâ€šÃ‚Â± Seeding database...');
+  console.log('Seeding database...');
 
   // ============================================================================
   // Subscription Plans
   // ============================================================================
   const plans = await Promise.all([
     prisma.subscriptionPlan.upsert({
-      where: { slug: 'trial-24h' },
-      update: {},
+      where: { slug: 'pass-24h' },
+      update: { priceEur: 6, stripePriceId: 'price_1T5LVF8uXGeIyMMqbiHBpsFh' },
       create: {
-        name: 'Essai 24h',
-        slug: 'trial-24h',
-        priceEur: 5.90,
+        name: 'Pass 24h',
+        slug: 'pass-24h',
+        priceEur: 6,
         durationDays: 1,
         sortOrder: 1,
+        stripePriceId: 'price_1T5LVF8uXGeIyMMqbiHBpsFh',
         features: JSON.stringify({
           signals: true,
           bot: true,
@@ -29,14 +30,35 @@ async function main() {
       },
     }),
     prisma.subscriptionPlan.upsert({
+      where: { slug: 'pass-48h' },
+      update: { priceEur: 10, stripePriceId: 'price_1T5M4u8uXGeIyMMqcQgTyCol' },
+      create: {
+        name: 'Pass 48h',
+        slug: 'pass-48h',
+        priceEur: 10,
+        durationDays: 2,
+        sortOrder: 2,
+        stripePriceId: 'price_1T5M4u8uXGeIyMMqcQgTyCol',
+        features: JSON.stringify({
+          signals: true,
+          bot: true,
+          dashboard: true,
+          liveSession: false,
+          prioritySupport: false,
+          refundable: false,
+        }),
+      },
+    }),
+    prisma.subscriptionPlan.upsert({
       where: { slug: 'weekly' },
-      update: {},
+      update: { priceEur: 25, stripePriceId: 'price_1T5Laa8uXGeIyMMqw7ia4HOp' },
       create: {
         name: 'Hebdomadaire',
         slug: 'weekly',
-        priceEur: 19.90,
+        priceEur: 25,
         durationDays: 7,
-        sortOrder: 2,
+        sortOrder: 3,
+        stripePriceId: 'price_1T5Laa8uXGeIyMMqw7ia4HOp',
         features: JSON.stringify({
           signals: true,
           bot: true,
@@ -49,33 +71,14 @@ async function main() {
     }),
     prisma.subscriptionPlan.upsert({
       where: { slug: 'monthly' },
-      update: {},
+      update: { priceEur: 85, stripePriceId: 'price_1T5LbF8uXGeIyMMq1Du3EpUL' },
       create: {
         name: 'Mensuel',
         slug: 'monthly',
-        priceEur: 99.90,
+        priceEur: 85,
         durationDays: 30,
-        sortOrder: 3,
-        features: JSON.stringify({
-          signals: true,
-          bot: true,
-          dashboard: true,
-          liveSession: true,
-          prioritySupport: true,
-          refundable: false,
-          bonus: 'AccÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¨s analytics avancÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â©es',
-        }),
-      },
-    }),
-    prisma.subscriptionPlan.upsert({
-      where: { slug: 'quarterly' },
-      update: {},
-      create: {
-        name: 'Trimestriel',
-        slug: 'quarterly',
-        priceEur: 259.90,
-        durationDays: 90,
         sortOrder: 4,
+        stripePriceId: 'price_1T5LbF8uXGeIyMMq1Du3EpUL',
         features: JSON.stringify({
           signals: true,
           bot: true,
@@ -83,19 +86,18 @@ async function main() {
           liveSession: true,
           prioritySupport: true,
           refundable: false,
-          bonus: 'AccÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¨s VIP + Discord privÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â© + Sessions 1on1',
-          savings: '22%',
+          bonus: 'Acces analytics avancees',
         }),
       },
     }),
   ]);
-  console.log(`ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ ${plans.length} subscription plans created`);
+  console.log(plans.length + ' subscription plans created');
 
   // ============================================================================
   // Assets
   // ============================================================================
   const assets = [
-    // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ Forex Major Pairs ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬
+    // Forex Major Pairs
     { symbol: 'EURUSD', name: 'Euro / US Dollar', category: 'FOREX', pipSize: 0.0001 },
     { symbol: 'GBPUSD', name: 'British Pound / US Dollar', category: 'FOREX', pipSize: 0.0001 },
     { symbol: 'USDJPY', name: 'US Dollar / Japanese Yen', category: 'FOREX', pipSize: 0.01 },
@@ -104,7 +106,7 @@ async function main() {
     { symbol: 'USDCAD', name: 'US Dollar / Canadian Dollar', category: 'FOREX', pipSize: 0.0001 },
     { symbol: 'NZDUSD', name: 'New Zealand Dollar / US Dollar', category: 'FOREX', pipSize: 0.0001 },
 
-    // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ Forex Minor / Cross Pairs ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬
+    // Forex Minor / Cross Pairs
     { symbol: 'EURGBP', name: 'Euro / British Pound', category: 'FOREX', pipSize: 0.0001 },
     { symbol: 'EURJPY', name: 'Euro / Japanese Yen', category: 'FOREX', pipSize: 0.01 },
     { symbol: 'GBPJPY', name: 'British Pound / Japanese Yen', category: 'FOREX', pipSize: 0.01 },
@@ -127,7 +129,7 @@ async function main() {
     { symbol: 'NZDCAD', name: 'New Zealand Dollar / Canadian Dollar', category: 'FOREX', pipSize: 0.0001 },
     { symbol: 'NZDCHF', name: 'New Zealand Dollar / Swiss Franc', category: 'FOREX', pipSize: 0.0001 },
 
-    // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ Forex OTC ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬
+    // Forex OTC
     { symbol: 'EURUSD_OTC', name: 'Euro / US Dollar OTC', category: 'FOREX_OTC', pipSize: 0.0001 },
     { symbol: 'GBPUSD_OTC', name: 'British Pound / US Dollar OTC', category: 'FOREX_OTC', pipSize: 0.0001 },
     { symbol: 'USDJPY_OTC', name: 'US Dollar / Japanese Yen OTC', category: 'FOREX_OTC', pipSize: 0.01 },
@@ -156,7 +158,7 @@ async function main() {
     { symbol: 'NZDJPY_OTC', name: 'New Zealand Dollar / Japanese Yen OTC', category: 'FOREX_OTC', pipSize: 0.01 },
     { symbol: 'NZDCAD_OTC', name: 'New Zealand Dollar / Canadian Dollar OTC', category: 'FOREX_OTC', pipSize: 0.0001 },
 
-    // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ Crypto ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬
+    // Crypto
     { symbol: 'BTCUSD', name: 'Bitcoin / US Dollar', category: 'CRYPTO', pipSize: 0.01 },
     { symbol: 'ETHUSD', name: 'Ethereum / US Dollar', category: 'CRYPTO', pipSize: 0.01 },
     { symbol: 'BNBUSD', name: 'Binance Coin / US Dollar', category: 'CRYPTO', pipSize: 0.01 },
@@ -181,7 +183,7 @@ async function main() {
     { symbol: 'XLMUSD', name: 'Stellar / US Dollar', category: 'CRYPTO', pipSize: 0.00001 },
     { symbol: 'ALGOUSD', name: 'Algorand / US Dollar', category: 'CRYPTO', pipSize: 0.0001 },
 
-    // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ Indices ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬
+    // Indices
     { symbol: 'US30', name: 'Dow Jones Industrial Average', category: 'INDICES', pipSize: 1 },
     { symbol: 'US500', name: 'S&P 500', category: 'INDICES', pipSize: 0.1 },
     { symbol: 'USTEC', name: 'Nasdaq 100', category: 'INDICES', pipSize: 0.1 },
@@ -201,7 +203,7 @@ async function main() {
     { symbol: 'US2000', name: 'Russell 2000', category: 'INDICES', pipSize: 0.1 },
     { symbol: 'SG30', name: 'SGX 30', category: 'INDICES', pipSize: 0.1 },
 
-    // ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ Commodities ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã‚ÂÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬
+    // Commodities
     { symbol: 'XAUUSD', name: 'Gold / US Dollar', category: 'COMMODITIES', pipSize: 0.01 },
     { symbol: 'XAGUSD', name: 'Silver / US Dollar', category: 'COMMODITIES', pipSize: 0.001 },
     { symbol: 'USOIL', name: 'US Crude Oil (WTI)', category: 'COMMODITIES', pipSize: 0.01 },
@@ -227,7 +229,7 @@ async function main() {
       create: asset,
     });
   }
-  console.log(`ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ ${assets.length} assets created`);
+  console.log(assets.length + ' assets created');
 
   // ============================================================================
   // Demo Admin User
@@ -235,28 +237,28 @@ async function main() {
   const bcrypt = await import('bcryptjs');
   const bcryptMod = bcrypt.default || bcrypt;
   const adminPassword = await bcryptMod.hash('admin123!', 12);
-  
+
   await prisma.user.upsert({
-    where: { email: 'admin@Market Signals24.com' },
+    where: { email: 'admin@marketsignals24.com' },
     update: {},
     create: {
-      email: 'admin@Market Signals24.com',
+      email: 'admin@marketsignals24.com',
       passwordHash: adminPassword,
       firstName: 'Admin',
-      lastName: 'Market Signals24',
+      lastName: 'MarketSignals24',
       role: 'SUPER_ADMIN',
       emailVerified: true,
     },
   });
-  console.log('ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Admin user created (admin@Market Signals24.com / admin123!)');
+  console.log('Admin user created');
 
   // Demo Validator
   const validatorPassword = await bcryptMod.hash('validator123!', 12);
   await prisma.user.upsert({
-    where: { email: 'validator@Market Signals24.com' },
+    where: { email: 'validator@marketsignals24.com' },
     update: {},
     create: {
-      email: 'validator@Market Signals24.com',
+      email: 'validator@marketsignals24.com',
       passwordHash: validatorPassword,
       firstName: 'Validator',
       lastName: 'Demo',
@@ -264,7 +266,7 @@ async function main() {
       emailVerified: true,
     },
   });
-  console.log('ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Validator user created (validator@Market Signals24.com / validator123!)');
+  console.log('Validator user created');
 
   // Pro Subscribed User
   const proPassword = await bcryptMod.hash('123456', 12);
@@ -296,14 +298,14 @@ async function main() {
       },
     });
   }
-  console.log('ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¦ Pro user created (pro@gmail.comm / 123456) with active subscription');
+  console.log('Pro user created with active subscription');
 
-  console.log('\nÃƒÆ’Ã‚Â°Ãƒâ€¦Ã‚Â¸Ãƒâ€¦Ã‚Â½ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â° Database seeded successfully!');
+  console.log('\nDatabase seeded successfully!');
 }
 
 main()
   .catch((e) => {
-    console.error('ÃƒÆ’Ã‚Â¢Ãƒâ€šÃ‚ÂÃƒâ€¦Ã¢â‚¬â„¢ Error seeding database:', e);
+    console.error('Error seeding database:', e);
     process.exit(1);
   })
   .finally(async () => {
