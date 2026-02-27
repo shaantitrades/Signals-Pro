@@ -30,15 +30,35 @@ const PORT = process.env.PORT || 3001;
 // Middleware
 // ============================================================================
 
-app.use(helmet());
+// CORS must be FIRST — before helmet, rate-limiters, and everything else
 const allowedOrigins = [
   process.env.FRONTEND_URL || 'http://localhost:3000',
   'https://marketsignals24.com',
+  'https://www.marketsignals24.com',
   'http://localhost:3000',
 ].filter(Boolean);
-app.use(cors({
-  origin: allowedOrigins,
+
+const corsOptions: cors.CorsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (mobile apps, curl, server-to-server)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error(`CORS: origin ${origin} not allowed`));
+  },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  exposedHeaders: ['Content-Length', 'X-Request-Id'],
+  maxAge: 86400, // Cache preflight for 24h
+};
+
+// Handle OPTIONS preflight globally — BEFORE any other middleware
+app.options('*', cors(corsOptions));
+app.use(cors(corsOptions));
+
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: 'cross-origin' },
+  crossOriginOpenerPolicy: false,
 }));
 app.use(morgan('dev'));
 
@@ -48,19 +68,23 @@ app.use('/api/subscriptions/webhook', express.raw({ type: 'application/json' }))
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// Rate limiting
+// Rate limiting — skip OPTIONS preflight to avoid blocking CORS
+const skipOptions = (req: express.Request) => req.method === 'OPTIONS';
+
 const apiLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 100,
   message: { error: 'Too many requests, please try again later.' },
   standardHeaders: true,
   legacyHeaders: false,
+  skip: skipOptions,
 });
 
 const authLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 10,
   message: { error: 'Too many auth attempts, please try again later.' },
+  skip: skipOptions,
 });
 
 app.use('/api/', apiLimiter);
