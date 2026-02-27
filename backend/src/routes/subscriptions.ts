@@ -83,8 +83,7 @@ subscriptionRouter.post('/create-checkout', authenticate, async (req: AuthReques
       });
     }
 
-    // Determine mode: one-time for fixed-duration plans, subscription for recurring
-    const isRecurring = plan.durationDays >= 30;
+    // All plans are recurring subscriptions
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
@@ -96,34 +95,17 @@ subscriptionRouter.post('/create-checkout', authenticate, async (req: AuthReques
           quantity: 1,
         },
       ],
-      mode: isRecurring ? 'subscription' : 'payment',
+      mode: 'subscription',
       success_url: `${frontendUrl}/dashboard/signals?payment=success&plan=${plan.slug}`,
       cancel_url: `${frontendUrl}/tarifs?payment=cancelled`,
-      metadata: {
-        userId: user.id,
-        planId: plan.id,
-        planSlug: plan.slug,
+      subscription_data: {
+        metadata: {
+          userId: user.id,
+          planId: plan.id,
+          planSlug: plan.slug,
+        },
       },
     };
-
-    // For one-time payments, attach metadata to payment_intent
-    if (!isRecurring) {
-      sessionParams.payment_intent_data = {
-        metadata: {
-          userId: user.id,
-          planId: plan.id,
-          planSlug: plan.slug,
-        },
-      };
-    } else {
-      sessionParams.subscription_data = {
-        metadata: {
-          userId: user.id,
-          planId: plan.id,
-          planSlug: plan.slug,
-        },
-      };
-    }
 
     const session = await stripe.checkout.sessions.create(sessionParams);
 

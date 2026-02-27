@@ -1,0 +1,65 @@
+⚠️ Redis connection failed, running without cache: Connection is closed.
+❌ Signal Monitor error: PrismaClientKnownRequestError: 
+Invalid `prisma.signal.findMany()` invocation:
+
+
+Can't reach database server at `localhost:5432`
+
+Please make sure your database server is running at `localhost:5432`.
+    at $n.handleRequestError (C:\signals new\backend\node_modules\@prisma\client\runtime\library.js:121:7315)
+    at $n.handleAndLogRequestError (C:\signals new\backend\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (C:\signals new\backend\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (C:\signals new\backend\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async checkConsecutiveLosses (C:\signals new\backend\src\services\signalMonitor.ts:175:25)
+    at async Promise.all (index 2)
+    at async Timeout.runMonitoringCycle (C:\signals new\backend\src\services\signalMonitor.ts:47:5) {
+  code: 'P1001',
+  clientVersion: '5.22.0',
+  meta: {
+    modelName: 'Signal',
+    database_host: 'localhost',
+    database_port: 5432
+  }
+}
+❌ Unhandled Error: PrismaClientKnownRequestError: 
+Invalid `prisma.user.findUnique()` invocation:
+
+
+Can't reach database server at `localhost:5432`
+
+Please make sure your database server is running at `localhost:5432`.
+    at $n.handleRequestError (C:\signals new\backend\node_modules\@prisma\client\runtime\library.js:121:7315)
+    at $n.handleAndLogRequestError (C:\signals new\backend\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (C:\signals new\backend\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (C:\signals new\backend\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async <anonymous> (C:\signals new\backend\src\routes\auth.ts:322:18) {
+  code: 'P1001',
+  clientVersion: '5.22.0',
+  meta: {
+    modelName: 'User',
+    database_host: 'localhost',
+    database_port: 5432
+  }
+}
+❌ Signal Monitor error: PrismaClientKnownRequestError: 
+Invalid `prisma.signal.findMany()` invocation:
+
+
+Can't reach database server at `localhost:5432`
+
+Please make sure your database server is running at `localhost:5432`.
+    at $n.handleRequestError (C:\signals new\backend\node_modules\@prisma\client\runtime\library.js:121:7315)
+    at $n.handleAndLogRequestError (C:\signals new\backend\node_modules\@prisma\client\runtime\library.js:121:6623)
+    at $n.request (C:\signals new\backend\node_modules\@prisma\client\runtime\library.js:121:6307)
+    at async l (C:\signals new\backend\node_modules\@prisma\client\runtime\library.js:130:9633)
+    at async checkPerformanceThresholds (C:\signals new\backend\src\services\signalMonitor.ts:108:27)
+    at async Promise.all (index 1)
+    at async Timeout.runMonitoringCycle (C:\signals new\backend\src\services\signalMonitor.ts:47:5) {
+  code: 'P1001',
+  clientVersion: '5.22.0',
+  meta: {
+    modelName: 'Signal',
+    database_host: 'localhost',
+    database_port: 5432
+  }
+}
