@@ -56,6 +56,8 @@ services:
       API_URL: ${API_URL:-https://api.marketsignals24.com/api}
       SIGNAL_ENGINE_URL: http://signal-engine:8000
       ENGINE_API_KEY: ${ENGINE_API_KEY:-a7f3e9c2b1d8f4a6e5c9b7d3f2a8e6c4b9d7f3a5e2c8b6d4f9a7e3c1b5d8f4a2}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-857941292927-403q1vkqhu6577imoqea54nnnl8cgudj.apps.googleusercontent.com}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
     depends_on:
       postgres:
         condition: service_healthy
@@ -90,7 +92,7 @@ services:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.marketsignals24.com}
         NEXT_PUBLIC_WS_URL: ${NEXT_PUBLIC_WS_URL:-wss://api.marketsignals24.com}
         NEXT_PUBLIC_SIGNAL_ENGINE_URL: ${NEXT_PUBLIC_SIGNAL_ENGINE_URL:-https://api.marketsignals24.com}
-        NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${NEXT_PUBLIC_GOOGLE_CLIENT_ID:-857941292927-3os76q6dq4f6nkvnoqh4kbcule2gk777.apps.googleusercontent.com}
+        NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${NEXT_PUBLIC_GOOGLE_CLIENT_ID:-857941292927-403q1vkqhu6577imoqea54nnnl8cgudj.apps.googleusercontent.com}
     restart: always
     ports:
       - "3000:3000"
@@ -98,7 +100,7 @@ services:
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-https://api.marketsignals24.com}
       NEXT_PUBLIC_WS_URL: ${NEXT_PUBLIC_WS_URL:-wss://api.marketsignals24.com}
       NEXT_PUBLIC_SIGNAL_ENGINE_URL: ${NEXT_PUBLIC_SIGNAL_ENGINE_URL:-https://api.marketsignals24.com}
-      NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${NEXT_PUBLIC_GOOGLE_CLIENT_ID:-857941292927-3os76q6dq4f6nkvnoqh4kbcule2gk777.apps.googleusercontent.com}
+      NEXT_PUBLIC_GOOGLE_CLIENT_ID: ${NEXT_PUBLIC_GOOGLE_CLIENT_ID:-857941292927-403q1vkqhu6577imoqea54nnnl8cgudj.apps.googleusercontent.com}
     depends_on:
       - backend
 
