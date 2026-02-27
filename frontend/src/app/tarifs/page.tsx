@@ -63,15 +63,24 @@ export default function TarifsPage() {
     }
   }, []);
 
+  // Static fallback plans shown when API is unreachable
+  const fallbackPlans: Plan[] = [
+    { id: 'plan-24h', name: 'Pass 24h', slug: 'pass-24h', priceEur: 6, durationDays: 1, features: '[]', stripePriceId: null, sortOrder: 1 },
+    { id: 'plan-48h', name: 'Pass 48h', slug: 'pass-48h', priceEur: 10, durationDays: 2, features: '[]', stripePriceId: null, sortOrder: 2 },
+    { id: 'plan-weekly', name: 'Weekly', slug: 'weekly', priceEur: 25, durationDays: 7, features: '[]', stripePriceId: null, sortOrder: 3 },
+    { id: 'plan-monthly', name: 'Monthly', slug: 'monthly', priceEur: 85, durationDays: 30, features: '[]', stripePriceId: null, sortOrder: 4 },
+  ];
+
   // Fetch plans from API
   useEffect(() => {
     api
       .get('/subscriptions/plans')
       .then((res) => {
-        setPlans(res.data.data || []);
+        const data = res.data.data || [];
+        setPlans(data.length > 0 ? data : fallbackPlans);
       })
       .catch(() => {
-        setPlans([]);
+        setPlans(fallbackPlans);
       })
       .finally(() => setLoading(false));
   }, []);
