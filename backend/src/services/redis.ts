@@ -5,14 +5,14 @@ let redis: Redis | null = null;
 export async function initializeRedis(): Promise<void> {
   try {
     const instance = new Redis(process.env.REDIS_URL || 'redis://localhost:6379', {
-      maxRetriesPerRequest: 3,
+      maxRetriesPerRequest: 1,
+      connectTimeout: 2000,
       retryStrategy(times) {
-        if (times > 3) {
-          // Stop retrying after 3 attempts
+        if (times > 1) {
+          // Stop retrying quickly — Redis is optional
           return null;
         }
-        const delay = Math.min(times * 50, 2000);
-        return delay;
+        return 500;
       },
       lazyConnect: true,
       enableOfflineQueue: false,
@@ -30,7 +30,11 @@ export async function initializeRedis(): Promise<void> {
       console.log('🔄 Redis reconnecting...');
     });
 
-    await instance.connect();
+    // Connect with timeout to prevent indefinite hang if Redis is down
+    await Promise.race([
+      instance.connect(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Redis connect timeout')), 2000)),
+    ]);
 
     redis = instance;
     console.log('✅ Redis connected');

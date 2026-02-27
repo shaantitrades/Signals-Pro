@@ -35,28 +35,28 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       {/* Hero Section */}
       <header className="relative">
         {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-background overflow-hidden pointer-events-none" />
         
         {/* Nav */}
-        <nav className="relative z-20 flex items-center justify-between px-4 sm:px-6 py-4 max-w-7xl mx-auto">
-          <div className="flex items-center space-x-2">
-            <Image src="/logo.svg" alt="Market Signals24" width={32} height={32} className="w-8 h-8" priority />
-            <span className="text-xl font-bold">Market Signals24</span>
+        <nav className="relative z-20 flex items-center justify-between px-3 sm:px-6 py-3 sm:py-4 max-w-7xl mx-auto gap-2">
+          <div className="flex items-center space-x-2 min-w-0 shrink-0">
+            <Image src="/logo.svg" alt="Market Signals24" width={32} height={32} className="w-7 h-7 sm:w-8 sm:h-8" priority />
+            <span className="text-base sm:text-xl font-bold hidden min-[480px]:inline">Market Signals24</span>
           </div>
-          <div className="flex items-center space-x-2 sm:space-x-4">
-            <Link href="/tarifs" className="text-sm sm:text-base text-muted-foreground hover:text-foreground transition-colors">
+          <div className="flex items-center gap-1.5 sm:gap-4">
+            <Link href="/tarifs" className="text-xs sm:text-base text-muted-foreground hover:text-foreground transition-colors whitespace-nowrap">
               {t('nav.pricing')}
             </Link>
-            <Link href="/login" className="text-sm sm:text-base text-muted-foreground hover:text-foreground transition-colors hidden sm:inline">
+            <Link href="/login" className="text-xs sm:text-base text-muted-foreground hover:text-foreground transition-colors hidden sm:inline whitespace-nowrap">
               {t('nav.login')}
             </Link>
             <Link
               href="/register"
-              className="bg-primary text-primary-foreground px-3 sm:px-4 py-2 rounded-lg text-sm sm:text-base font-medium hover:bg-primary/90 transition-colors"
+              className="bg-primary text-primary-foreground px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-base font-medium hover:bg-primary/90 transition-colors whitespace-nowrap"
             >
               {t('nav.start')}
             </Link>
@@ -65,10 +65,10 @@ export default function Home() {
             <div className="relative" ref={langRef}>
               <button
                 onClick={() => setLangOpen(!langOpen)}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-border hover:bg-secondary/50 transition-colors text-sm"
+                className="flex items-center gap-1 sm:gap-1.5 px-1.5 sm:px-2.5 py-1.5 rounded-lg border border-border hover:bg-secondary/50 transition-colors text-xs sm:text-sm"
               >
                 <span className="text-xs">{i18nLanguages.find(l => l.code === lang)?.flag}</span>
-                <span className="text-muted-foreground">{lang}</span>
+                <span className="text-muted-foreground hidden sm:inline">{lang}</span>
                 <svg className="w-3 h-3 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
               </button>
               {langOpen && (
@@ -92,7 +92,7 @@ export default function Home() {
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-lg border border-border hover:bg-secondary/50 transition-colors"
+              className="p-1.5 sm:p-2 rounded-lg border border-border hover:bg-secondary/50 transition-colors"
               title={theme === 'light' ? t('header.darkMode') : t('header.lightMode')}
             >
               {theme === 'light' ? (
@@ -123,14 +123,8 @@ export default function Home() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-10 sm:mb-16 px-4">
             <Link
-              href="/register"
-              className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-semibold text-lg hover:bg-primary/90 transition-colors w-full sm:w-auto"
-            >
-              {t('hero.cta')}
-            </Link>
-            <Link
               href="/dashboard/signals"
-              className="bg-secondary text-foreground px-8 py-3 rounded-lg font-semibold text-lg hover:bg-secondary/80 transition-colors w-full sm:w-auto"
+              className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-semibold text-lg hover:bg-primary/90 transition-colors w-full sm:w-auto"
             >
               {t('hero.demo')}
             </Link>

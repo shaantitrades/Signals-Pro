@@ -35,7 +35,7 @@ const themeInitScript = `
 (function(){
   try {
     var t = localStorage.getItem('theme');
-    if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    if (t === 'dark') {
       document.documentElement.classList.add('dark');
     }
   } catch(e) {}
@@ -44,8 +44,8 @@ const themeInitScript = `
 
 // Critical inline CSS — ensures basic styling even if Tailwind CSS file is delayed
 const criticalCSS = `
-  html { background: #0d1117; color: #e6edf3; }
-  html:not(.dark) { background: #ffffff; color: #1f2937; }
+  html { background: #ffffff; color: #1f2937; }
+  html.dark { background: #0d1117; color: #e6edf3; }
   body { margin: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; -webkit-font-smoothing: antialiased; }
   /* Skeleton loading essentials — visible before Tailwind loads */
   .min-h-screen { min-height: 100vh; }

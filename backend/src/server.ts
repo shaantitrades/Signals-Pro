@@ -12,6 +12,7 @@ import { botRouter } from './routes/bot';
 import { tradeRouter } from './routes/trades';
 import { validationRouter } from './routes/validation';
 import { subscriptionRouter } from './routes/subscriptions';
+import { nowpaymentsRouter } from './routes/nowpayments';
 import { performanceRouter } from './routes/performance';
 import { assetRouter } from './routes/assets';
 import { errorHandler } from './middleware/errorHandler';
@@ -35,6 +36,10 @@ app.use(cors({
   credentials: true,
 }));
 app.use(morgan('dev'));
+
+// Stripe webhook needs raw body for signature verification — must come BEFORE express.json()
+app.use('/api/subscriptions/webhook', express.raw({ type: 'application/json' }));
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
@@ -75,6 +80,7 @@ app.use('/api/bot', botRouter);
 app.use('/api/trades', tradeRouter);
 app.use('/api/validation', validationRouter);
 app.use('/api/subscriptions', subscriptionRouter);
+app.use('/api/nowpayments', nowpaymentsRouter);
 app.use('/api/performance', performanceRouter);
 app.use('/api/assets', assetRouter);
 

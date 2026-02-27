@@ -19,51 +19,15 @@ function SettingsContent() {
   const { t } = useI18n();
   const searchParams = useSearchParams();
   const { user, initAuth, hasActiveSubscription } = useAuthStore();
-  const [activeTab, setActiveTab] = useState('profile');
+  const [activeTab, setActiveTab] = useState('notifications');
 
   // Read ?tab= query param on mount
   useEffect(() => {
     const tab = searchParams.get('tab');
-    if (tab && ['profile', 'notifications', 'trading', 'subscription', 'security'].includes(tab)) {
+    if (tab && ['notifications', 'trading', 'subscription', 'security'].includes(tab)) {
       setActiveTab(tab);
     }
   }, [searchParams]);
-
-  // Profile form — initialized from user store
-  const [profile, setProfile] = useState({ firstName: '', lastName: '', email: '', phone: '' });
-  const [profileSaving, setProfileSaving] = useState(false);
-  const [profileMsg, setProfileMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
-
-  // Load user data into profile form
-  useEffect(() => {
-    if (user) {
-      setProfile({
-        firstName: user.firstName || '',
-        lastName: user.lastName || '',
-        email: user.email || '',
-        phone: (user as any).phone || '',
-      });
-    }
-  }, [user]);
-
-  // Save profile handler
-  const handleSaveProfile = async () => {
-    setProfileSaving(true);
-    setProfileMsg(null);
-    try {
-      await authApi.updateProfile({
-        firstName: profile.firstName,
-        lastName: profile.lastName,
-        phone: profile.phone,
-      });
-      await initAuth(); // refresh user data in store
-      setProfileMsg({ type: 'success', text: t('settings.saveSuccess') });
-    } catch (err: any) {
-      setProfileMsg({ type: 'error', text: err?.response?.data?.message || t('settings.saveError') });
-    } finally {
-      setProfileSaving(false);
-    }
-  };
 
   // Password form
   const [passwords, setPasswords] = useState({ current: '', newPw: '', confirm: '' });
@@ -108,7 +72,6 @@ function SettingsContent() {
   });
 
   const tabs = [
-    { value: 'profile', label: t('settings.profile'), icon: '👤' },
     { value: 'notifications', label: t('settings.notifications'), icon: '🔔' },
     { value: 'trading', label: t('settings.trading'), icon: '⚙️' },
     { value: 'subscription', label: t('settings.subscription'), icon: '💳' },
@@ -155,62 +118,6 @@ function SettingsContent() {
 
       {/* Content */}
       <div className="flex-1 space-y-6">
-        {activeTab === 'profile' && (
-          <div className="signal-card p-6">
-            <h3 className="text-lg font-semibold mb-6">{t('settings.profileInfo')}</h3>
-            <div className="space-y-4 max-w-lg">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium mb-1 block">{t('settings.firstName')}</label>
-                  <input
-                    value={profile.firstName}
-                    onChange={e => setProfile(prev => ({ ...prev, firstName: e.target.value }))}
-                    className="w-full px-4 py-2.5 bg-secondary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-1 block">{t('settings.lastName')}</label>
-                  <input
-                    value={profile.lastName}
-                    onChange={e => setProfile(prev => ({ ...prev, lastName: e.target.value }))}
-                    className="w-full px-4 py-2.5 bg-secondary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-1 block">{t('settings.email')}</label>
-                <input
-                  value={profile.email}
-                  disabled
-                  className="w-full px-4 py-2.5 bg-secondary/50 border border-border rounded-lg text-muted-foreground cursor-not-allowed"
-                />
-                <p className="text-xs text-muted-foreground mt-1">{t('settings.emailReadonly')}</p>
-              </div>
-              <div>
-                <label className="text-sm font-medium mb-1 block">{t('settings.phone')}</label>
-                <input
-                  value={profile.phone}
-                  onChange={e => setProfile(prev => ({ ...prev, phone: e.target.value }))}
-                  className="w-full px-4 py-2.5 bg-secondary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                  placeholder="+33 6 00 00 00 00"
-                />
-              </div>
-              {profileMsg && (
-                <p className={cn('text-sm font-medium', profileMsg.type === 'success' ? 'text-profit' : 'text-loss')}>
-                  {profileMsg.text}
-                </p>
-              )}
-              <button
-                onClick={handleSaveProfile}
-                disabled={profileSaving}
-                className="px-6 py-2.5 bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
-              >
-                {profileSaving ? '...' : t('settings.save')}
-              </button>
-            </div>
-          </div>
-        )}
-
         {activeTab === 'notifications' && (
           <div className="signal-card p-6">
             <h3 className="text-lg font-semibold mb-6">{t('settings.notifPrefs')}</h3>

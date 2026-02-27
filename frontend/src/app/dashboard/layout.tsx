@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { useAuthStore, useWSStore } from '@/lib/store';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useI18n, languages as i18nLanguages } from '@/lib/i18n';
+import { authApi } from '@/lib/api';
 
 export default function DashboardLayout({
   children,
@@ -19,14 +20,25 @@ export default function DashboardLayout({
   const { isConnected, latency, connect } = useWSStore();
   const { lang, setLang, t } = useI18n();
 
+  // Modern SVG nav icons (Heroicons outline style)
+  const navIcons: Record<string, React.ReactNode> = {
+    '/dashboard': <svg className="w-4 h-4 sm:w-[18px] sm:h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" /></svg>,
+    '/dashboard/signals-otc': <svg className="w-4 h-4 sm:w-[18px] sm:h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.58-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" /></svg>,
+    '/dashboard/bot': <svg className="w-4 h-4 sm:w-[18px] sm:h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 3v1.5M4.5 8.25H3m18 0h-1.5M4.5 12H3m18 0h-1.5m-15 3.75H3m18 0h-1.5M8.25 19.5V21M12 3v1.5m0 15V21m3.75-18v1.5m0 15V21m-9-1.5h10.5a2.25 2.25 0 002.25-2.25V6.75a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 6.75v10.5a2.25 2.25 0 002.25 2.25zm.75-12h9v9h-9v-9z" /></svg>,
+    '/dashboard/signals': <svg className="w-4 h-4 sm:w-[18px] sm:h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M9.348 14.651a3.75 3.75 0 010-5.303m5.304 0a3.75 3.75 0 010 5.303m-7.425 2.122a6.75 6.75 0 010-9.546m9.546 0a6.75 6.75 0 010 9.546M5.106 18.894c-3.808-3.808-3.808-9.98 0-13.789m13.788 0c3.808 3.808 3.808 9.981 0 13.79M12 12h.008v.007H12V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>,
+    '/dashboard/trades': <svg className="w-4 h-4 sm:w-[18px] sm:h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>,
+    '/dashboard/performance': <svg className="w-4 h-4 sm:w-[18px] sm:h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" /></svg>,
+    '/dashboard/settings': <svg className="w-4 h-4 sm:w-[18px] sm:h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
+  };
+
   const navItems = [
-    { href: '/dashboard', label: t('nav.dashboard'), icon: '📊' },
-    { href: '/dashboard/signals-otc', label: t('nav.signalsOtc'), icon: '⚡' },
-    { href: '/dashboard/bot', label: t('nav.tradingBot'), icon: '🤖' },
-    { href: '/dashboard/signals', label: t('nav.signalsLive'), icon: '📡' },
-    { href: '/dashboard/trades', label: t('nav.myTrades'), icon: '💼' },
-    { href: '/dashboard/performance', label: t('nav.performance'), icon: '📈' },
-    { href: '/dashboard/settings', label: t('nav.settings'), icon: '⚙️' },
+    { href: '/dashboard', label: t('nav.dashboard') },
+    { href: '/dashboard/signals-otc', label: t('nav.signalsOtc') },
+    { href: '/dashboard/bot', label: t('nav.tradingBot') },
+    { href: '/dashboard/signals', label: t('nav.signalsLive') },
+    { href: '/dashboard/trades', label: t('nav.myTrades') },
+    { href: '/dashboard/performance', label: t('nav.performance') },
+    { href: '/dashboard/settings', label: t('nav.settings') },
   ];
 
   // Fetch user data (including subscription) on mount
@@ -59,7 +71,43 @@ export default function DashboardLayout({
   // User menu state
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [profileSubOpen, setProfileSubOpen] = useState(false);
+  const [profileEditOpen, setProfileEditOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
+
+  // Profile form state for user menu
+  const [menuProfile, setMenuProfile] = useState({ firstName: '', lastName: '', email: '', phone: '' });
+  const [menuProfileSaving, setMenuProfileSaving] = useState(false);
+  const [menuProfileMsg, setMenuProfileMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Sync profile form with user data
+  useEffect(() => {
+    if (user) {
+      setMenuProfile({
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        email: user.email || '',
+        phone: (user as any).phone || '',
+      });
+    }
+  }, [user]);
+
+  const handleMenuSaveProfile = async () => {
+    setMenuProfileSaving(true);
+    setMenuProfileMsg(null);
+    try {
+      await authApi.updateProfile({
+        firstName: menuProfile.firstName,
+        lastName: menuProfile.lastName,
+        phone: menuProfile.phone,
+      });
+      await initAuth();
+      setMenuProfileMsg({ type: 'success', text: t('settings.saveSuccess') });
+    } catch (err: any) {
+      setMenuProfileMsg({ type: 'error', text: err?.response?.data?.message || t('settings.saveError') });
+    } finally {
+      setMenuProfileSaving(false);
+    }
+  };
 
   useEffect(() => {
     const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
@@ -77,6 +125,7 @@ export default function DashboardLayout({
       if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
         setUserMenuOpen(false);
         setProfileSubOpen(false);
+        setProfileEditOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -213,7 +262,7 @@ export default function DashboardLayout({
             {/* User Menu Dropdown */}
             <div className="relative" ref={userMenuRef}>
               <button
-                onClick={() => { setUserMenuOpen(!userMenuOpen); setProfileSubOpen(false); }}
+                onClick={() => { setUserMenuOpen(!userMenuOpen); setProfileSubOpen(false); setProfileEditOpen(false); setMenuProfileMsg(null); }}
                 className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border hover:bg-secondary/50 transition-colors"
               >
                 <div className="w-7 h-7 bg-secondary rounded-full flex items-center justify-center">
@@ -223,7 +272,69 @@ export default function DashboardLayout({
               </button>
 
               {userMenuOpen && (
-                <div className="absolute right-0 top-full mt-1 w-56 bg-card border border-border rounded-xl shadow-xl py-1 z-50 animate-slide-in">
+                <div className={cn('absolute right-0 top-full mt-1 bg-card border border-border rounded-xl shadow-xl py-1 z-50 animate-slide-in', profileEditOpen ? 'w-80' : 'w-56')}>
+                  {/* Profile Edit Form View */}
+                  {profileEditOpen ? (
+                    <div className="px-4 py-3">
+                      <button onClick={() => { setProfileEditOpen(false); setMenuProfileMsg(null); }} className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors mb-3">
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+                        {t('menu.back')}
+                      </button>
+                      <h4 className="text-sm font-semibold mb-3">{t('settings.profileInfo')}</h4>
+                      <div className="space-y-3">
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="text-xs font-medium mb-1 block text-muted-foreground">{t('settings.firstName')}</label>
+                            <input
+                              value={menuProfile.firstName}
+                              onChange={e => setMenuProfile(prev => ({ ...prev, firstName: e.target.value }))}
+                              className="w-full px-3 py-2 text-sm bg-secondary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs font-medium mb-1 block text-muted-foreground">{t('settings.lastName')}</label>
+                            <input
+                              value={menuProfile.lastName}
+                              onChange={e => setMenuProfile(prev => ({ ...prev, lastName: e.target.value }))}
+                              className="w-full px-3 py-2 text-sm bg-secondary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                            />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium mb-1 block text-muted-foreground">{t('settings.email')}</label>
+                          <input
+                            value={menuProfile.email}
+                            disabled
+                            className="w-full px-3 py-2 text-sm bg-secondary/50 border border-border rounded-lg text-muted-foreground cursor-not-allowed"
+                          />
+                          <p className="text-[10px] text-muted-foreground mt-0.5">{t('settings.emailReadonly')}</p>
+                        </div>
+                        <div>
+                          <label className="text-xs font-medium mb-1 block text-muted-foreground">{t('settings.phone')}</label>
+                          <input
+                            value={menuProfile.phone}
+                            onChange={e => setMenuProfile(prev => ({ ...prev, phone: e.target.value }))}
+                            className="w-full px-3 py-2 text-sm bg-secondary border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                            placeholder="+33 6 00 00 00 00"
+                          />
+                        </div>
+                        {menuProfileMsg && (
+                          <p className={cn('text-xs font-medium', menuProfileMsg.type === 'success' ? 'text-profit' : 'text-loss')}>
+                            {menuProfileMsg.text}
+                          </p>
+                        )}
+                        <button
+                          onClick={handleMenuSaveProfile}
+                          disabled={menuProfileSaving}
+                          className="w-full px-4 py-2 text-sm bg-primary text-primary-foreground font-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
+                        >
+                          {menuProfileSaving ? '...' : t('settings.save')}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    /* Normal Menu View */
+                    <>
                   <Link href="/dashboard" onClick={() => setUserMenuOpen(false)} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-secondary/50 transition-colors">
                     <svg className="w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
                     {t('menu.home')}
@@ -232,7 +343,7 @@ export default function DashboardLayout({
                   <div className="relative">
                     <button onClick={() => setProfileSubOpen(!profileSubOpen)} className="w-full flex items-center justify-between px-4 py-2.5 text-sm text-foreground hover:bg-secondary/50 transition-colors">
                       <div className="flex items-center gap-3">
-                        <svg className="w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                        <svg className="w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573-1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                         {t('menu.profileSettings')}
                       </div>
                       <svg className={cn('w-3 h-3 text-muted-foreground transition-transform', profileSubOpen && 'rotate-90')} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
@@ -242,6 +353,10 @@ export default function DashboardLayout({
                         <button onClick={() => setProfileSubOpen(false)} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-primary hover:bg-secondary/50 transition-colors border-b border-border/50 mb-1">
                           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
                           {t('menu.back')}
+                        </button>
+                        <button onClick={() => { setProfileSubOpen(false); setProfileEditOpen(true); setMenuProfileMsg(null); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-secondary/50 transition-colors">
+                          <svg className="w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                          {t('menu.editProfile')}
                         </button>
                         <button onClick={() => { setUserMenuOpen(false); router.push('/dashboard/settings?tab=subscription'); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-foreground hover:bg-secondary/50 transition-colors">
                           <svg className="w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
@@ -278,6 +393,8 @@ export default function DashboardLayout({
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
                     {t('menu.logout')}
                   </button>
+                    </>
+                  )}
                 </div>
               )}
             </div>
@@ -299,7 +416,7 @@ export default function DashboardLayout({
                   : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
               )}
             >
-              <span className="text-base">{item.icon}</span>
+              {navIcons[item.href]}
               {item.label}
             </Link>
           ))}

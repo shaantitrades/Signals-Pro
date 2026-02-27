@@ -43,8 +43,6 @@ const otcAssets = [
 const otcTimeframes = [
   { value: 'M1', label: '1Min' },
   { value: 'M2', label: '2Min' },
-  { value: 'M3', label: '3Min' },
-  { value: 'M4', label: '4Min' },
   { value: 'M5', label: '5Min' },
   { value: 'M15', label: '15Min' },
   { value: 'M30', label: '30Min' },
@@ -414,7 +412,7 @@ export default function SignalsOTCPage() {
         {/* Left: Trading Bot Settings */}
         <div className="signal-card p-4 sm:p-6">
           <div className="flex items-center gap-3 mb-1">
-            <span className="text-xl">🔒</span>
+            <svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 011.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.56.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.893.149c-.425.07-.765.383-.93.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 01-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.397.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 01-.12-1.45l.527-.737c.25-.35.273-.806.108-1.204-.165-.397-.505-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.107-1.204l-.527-.738a1.125 1.125 0 01.12-1.45l.773-.773a1.125 1.125 0 011.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894zM15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
             <h3 className="text-lg font-bold">{t('sigOtc.botSettings')}</h3>
           </div>
           <p className="text-sm text-muted-foreground mb-6">{t('sigOtc.configureSettings')}</p>
@@ -593,7 +591,7 @@ export default function SignalsOTCPage() {
         <div className="signal-card">
           <div className="p-4 sm:p-5 border-b border-border">
             <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M3 17h4v-6H3v6zm5 0h4V7H8v10zm5 0h4V3h-4v14z"/></svg>
+              <svg className="w-5 h-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9.348 14.651a3.75 3.75 0 010-5.303m5.304 0a3.75 3.75 0 010 5.303m-7.425 2.122a6.75 6.75 0 010-9.546m9.546 0a6.75 6.75 0 010 9.546M5.106 18.894c-3.808-3.808-3.808-9.98 0-13.789m13.788 0c3.808 3.808 3.808 9.981 0 13.79M12 12h.008v.007H12V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>
               <h3 className="text-lg font-bold">{t('sigOtc.activeSignals')}</h3>
             </div>
           </div>
@@ -603,7 +601,7 @@ export default function SignalsOTCPage() {
               /* Empty state */
               <div className="flex flex-col items-center justify-center py-12 text-center">
                 <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-                  <svg className="w-8 h-8 text-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M3 17h4v-6H3v6zm5 0h4V7H8v10zm5 0h4V3h-4v14z"/></svg>
+                  <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9.348 14.651a3.75 3.75 0 010-5.303m5.304 0a3.75 3.75 0 010 5.303m-7.425 2.122a6.75 6.75 0 010-9.546m9.546 0a6.75 6.75 0 010 9.546M5.106 18.894c-3.808-3.808-3.808-9.98 0-13.789m13.788 0c3.808 3.808 3.808 9.981 0 13.79M12 12h.008v.007H12V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" /></svg>
                 </div>
                 <p className="font-semibold text-foreground mb-2">{t('sigOtc.noActive')}</p>
                 <p className="text-sm text-muted-foreground max-w-[280px]">
