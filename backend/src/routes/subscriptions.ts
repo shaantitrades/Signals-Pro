@@ -81,6 +81,16 @@ subscriptionRouter.post('/create-checkout', authenticate, async (req: AuthReques
     const fullUser = await prisma.user.findUnique({ where: { id: user.id } });
     let stripeCustomerId = fullUser?.stripeCustomerId;
 
+    // Verify existing customer still exists in Stripe (handles account migration)
+    if (stripeCustomerId) {
+      try {
+        await stripe.customers.retrieve(stripeCustomerId);
+      } catch (err: any) {
+        console.warn(`[Stripe] Customer ${stripeCustomerId} not found, creating new one`);
+        stripeCustomerId = null;
+      }
+    }
+
     if (!stripeCustomerId) {
       const customer = await stripe.customers.create({
         email: fullUser!.email,
