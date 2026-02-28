@@ -145,7 +145,7 @@ function playSignalSound(existingCtx?: AudioContext | null) {
     gain.gain.linearRampToValueAtTime(0, now + 0.7);
     osc.start(now);
     osc.stop(now + 0.7);
-  } catch {
+  } catch (_e) {
     // Audio not supported — fail silently
   }
 }
@@ -246,7 +246,7 @@ export default function SignalsPage() {
 
         return { ...s, currentPrice: livePrice, pnlPips };
       }));
-    } catch {
+    } catch (_e) {
       // Silent fail — prices will just stay at entry price
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -333,7 +333,12 @@ export default function SignalsPage() {
           <div className="flex items-center justify-center gap-1">
             <span className={cn('w-2 h-2 rounded-full', error ? 'bg-loss' : 'bg-profit', !error && 'animate-pulse')} />
             <p className="text-2xl font-bold">{loading ? '...' : 'LIVE'}</p>
-          </
+          </div>
+          <p className="text-xs text-muted-foreground">
+            {error ? '⚠ Reconnect' : `${t('sig.realTime')} • ${lastRefresh ? lastRefresh.toLocaleTimeString() : '--:--:--'}`}
+          </p>
+        </div>
+      </div>
 
       {/* Sound Toggle */}
       <div className="flex justify-end -mt-2">
@@ -358,11 +363,6 @@ export default function SignalsPage() {
         >
           {soundEnabled ? '🔔' : '🔕'} {soundEnabled ? t('sig.soundOn') : t('sig.soundOff')}
         </button>
-      </div>div>
-          <p className="text-xs text-muted-foreground">
-            {error ? '⚠ Reconnect' : `${t('sig.realTime')} • ${lastRefresh ? lastRefresh.toLocaleTimeString() : '--:--:--'}`}
-          </p>
-        </div>
       </div>
 
       {/* Loading State */}
