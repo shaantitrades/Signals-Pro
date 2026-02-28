@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     'Découvrez comment MarketSignals24 utilise l\'intelligence artificielle et le machine learning pour générer des signaux de trading en temps réel pour le forex, les cryptos et les options binaires.',
   keywords:
-    'signaux trading IA, signaux trading automatisés, machine learning trading, intelligence artificielle trading, signaux algorithmiques, IA signaux forex',
+    'MarketSignals24, signaux trading IA, signaux trading automatisés, machine learning trading, intelligence artificielle trading, signaux algorithmiques, IA signaux forex',
   alternates: {
     canonical: 'https://marketsignals24.com/fr/signaux-ia',
     languages: {

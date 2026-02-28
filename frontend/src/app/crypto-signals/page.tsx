@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     'Real-time AI crypto trading signals for Bitcoin, Ethereum, BNB and 20+ altcoins. Precise entry, stop-loss and take-profit alerts. Sign up from €6.',
   keywords:
-    'crypto trading signals, bitcoin signals, ethereum signals, altcoin signals, BTC signals, ETH signals, cryptocurrency alerts, crypto buy sell signals, AI crypto signals',
+    'MarketSignals24, crypto trading signals, bitcoin signals, ethereum signals, altcoin signals, BTC signals, ETH signals, cryptocurrency alerts, crypto buy sell signals, AI crypto signals',
   alternates: {
     canonical: 'https://marketsignals24.com/crypto-signals',
   },

@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     'Erhalten Sie KI-gestützte Forex-Signale für EUR/USD, GBP/USD, USD/JPY und über 30 Währungspaare. Präzise Einstieg, Stop-Loss und Take-Profit. Ab 6€.',
   keywords:
-    'Forex Signale, Trading Signale Forex, Forex Alerts, Live Forex Signale, beste Forex Signale, EUR/USD Signale, KI Trading Forex, genaue Forex Signale',
+    'MarketSignals24, Forex Signale, Trading Signale Forex, Forex Alerts, Live Forex Signale, beste Forex Signale, EUR/USD Signale, KI Trading Forex, genaue Forex Signale',
   alternates: {
     canonical: 'https://marketsignals24.com/de/forex-signale',
     languages: {

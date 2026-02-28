@@ -43,11 +43,19 @@ const discountPercent: Record<string, number> = {
 
 const popularSlug = 'weekly';
 
+// Static fallback plans — always available, no API required
+const fallbackPlans: Plan[] = [
+  { id: 'plan-24h', name: 'Pass 24h', slug: 'pass-24h', priceEur: 6, durationDays: 1, features: '[]', stripePriceId: null, sortOrder: 1 },
+  { id: 'plan-48h', name: 'Pass 48h', slug: 'pass-48h', priceEur: 10, durationDays: 2, features: '[]', stripePriceId: null, sortOrder: 2 },
+  { id: 'plan-weekly', name: 'Weekly', slug: 'weekly', priceEur: 25, durationDays: 7, features: '[]', stripePriceId: null, sortOrder: 3 },
+  { id: 'plan-monthly', name: 'Monthly', slug: 'monthly', priceEur: 85, durationDays: 30, features: '[]', stripePriceId: null, sortOrder: 4 },
+];
+
 export default function TarifsPage() {
   const { t } = useI18n();
   const router = useRouter();
-  const [plans, setPlans] = useState<Plan[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [plans, setPlans] = useState<Plan[]>(fallbackPlans);
+  const [loading, setLoading] = useState(false);
   const [checkoutSlug, setCheckoutSlug] = useState<string | null>(null);
   const [cryptoSlug, setCryptoSlug] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -63,26 +71,17 @@ export default function TarifsPage() {
     }
   }, []);
 
-  // Static fallback plans shown when API is unreachable
-  const fallbackPlans: Plan[] = [
-    { id: 'plan-24h', name: 'Pass 24h', slug: 'pass-24h', priceEur: 6, durationDays: 1, features: '[]', stripePriceId: null, sortOrder: 1 },
-    { id: 'plan-48h', name: 'Pass 48h', slug: 'pass-48h', priceEur: 10, durationDays: 2, features: '[]', stripePriceId: null, sortOrder: 2 },
-    { id: 'plan-weekly', name: 'Weekly', slug: 'weekly', priceEur: 25, durationDays: 7, features: '[]', stripePriceId: null, sortOrder: 3 },
-    { id: 'plan-monthly', name: 'Monthly', slug: 'monthly', priceEur: 85, durationDays: 30, features: '[]', stripePriceId: null, sortOrder: 4 },
-  ];
-
-  // Fetch plans from API
+  // Try to fetch plans from API; if it fails, fallback is already loaded
   useEffect(() => {
     api
       .get('/subscriptions/plans')
       .then((res) => {
-        const data = res.data.data || [];
-        setPlans(data.length > 0 ? data : fallbackPlans);
+        const data = res.data?.data || [];
+        if (data.length > 0) setPlans(data);
       })
       .catch(() => {
-        setPlans(fallbackPlans);
-      })
-      .finally(() => setLoading(false));
+        // fallbackPlans already set as initial state — nothing to do
+      });
   }, []);
 
   const features = [
@@ -110,8 +109,13 @@ export default function TarifsPage() {
         setError(t('pricing.errorCheckout'));
       }
     } catch (err: any) {
-      const msg = err.response?.data?.error || t('pricing.errorCheckout');
-      setError(msg);
+      console.error('Checkout error:', err);
+      if (!err.response) {
+        setError(t('pricing.errorNetwork'));
+      } else {
+        const msg = err.response?.data?.error || t('pricing.errorCheckout');
+        setError(msg);
+      }
     } finally {
       setCheckoutSlug(null);
     }
@@ -136,8 +140,13 @@ export default function TarifsPage() {
         setError(t('pricing.errorCheckout'));
       }
     } catch (err: any) {
-      const msg = err.response?.data?.error || t('pricing.errorCheckout');
-      setError(msg);
+      console.error('Crypto payment error:', err);
+      if (!err.response) {
+        setError(t('pricing.errorNetwork'));
+      } else {
+        const msg = err.response?.data?.error || t('pricing.errorCheckout');
+        setError(msg);
+      }
     } finally {
       setCryptoSlug(null);
     }
@@ -209,14 +218,8 @@ export default function TarifsPage() {
             </div>
           )}
 
-          {/* Loading */}
-          {loading ? (
-            <div className="flex justify-center py-20">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-            </div>
-          ) : (
-            /* Plans Grid */
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          {/* Plans Grid — always rendered, fallback plans pre-loaded */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               {plans.map((plan) => {
                 const isPopular = plan.slug === popularSlug;
                 const price = typeof plan.priceEur === 'string' ? parseFloat(plan.priceEur) : plan.priceEur;
@@ -334,7 +337,6 @@ export default function TarifsPage() {
                 );
               })}
             </div>
-          )}
 
           {/* Bottom note */}
           <p className="text-center text-sm text-muted-foreground mt-10">

@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     'Discover how MarketSignals24 uses artificial intelligence and machine learning to generate real-time trading signals for forex, crypto and binary options.',
   keywords:
-    'AI trading signals, automated trading signals, machine learning trading, artificial intelligence trading, algorithmic signals, AI forex signals, smart trading alerts',
+    'MarketSignals24, AI trading signals, automated trading signals, machine learning trading, artificial intelligence trading, algorithmic signals, AI forex signals, smart trading alerts',
   alternates: {
     canonical: 'https://marketsignals24.com/ai-trading-signals',
   },

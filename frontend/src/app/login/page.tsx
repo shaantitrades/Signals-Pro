@@ -57,7 +57,11 @@ export default function LoginPage() {
       localStorage.setItem('refreshToken', data.data.tokens.refreshToken);
       window.location.href = '/dashboard';
     } catch (err: any) {
-      setError(err.message);
+      if (!err.message || err.message === 'Failed to fetch') {
+        setError(t('pricing.errorNetwork'));
+      } else {
+        setError(err.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -99,7 +103,11 @@ export default function LoginPage() {
       localStorage.setItem('refreshToken', data.data.tokens.refreshToken);
       window.location.href = '/dashboard';
     } catch (err: any) {
-      setError(err.message);
+      if (err.name === 'TypeError' || err.message === 'Failed to fetch') {
+        setError(t('pricing.errorNetwork'));
+      } else {
+        setError(err.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -138,24 +146,7 @@ export default function LoginPage() {
                 </div>
               )}
             </>
-          ) : (
-            <>
-              <button
-                type="button"
-                onClick={() => setError('Configurez NEXT_PUBLIC_GOOGLE_CLIENT_ID dans .env.local')}
-                className="w-full flex items-center justify-center gap-3 py-3 px-4 bg-white text-gray-800 font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors"
-              >
-                <GoogleIcon />
-                Se connecter avec Google
-              </button>
-              <div className="relative my-5">
-                <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-card px-3 text-muted-foreground">{t('auth.or')}</span>
-                </div>
-              </div>
-            </>
-          )}
+          ) : null}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (

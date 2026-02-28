@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     'Recevez des signaux forex alimentés par l\'IA pour EUR/USD, GBP/USD, USD/JPY et 30+ paires. Entrée, stop-loss et take-profit précis. À partir de 6 €.',
   keywords:
-    'signaux forex, signaux trading forex, alertes forex, signaux forex en direct, meilleurs signaux forex, signaux EUR/USD, IA trading forex, signaux forex fiables',
+    'MarketSignals24, signaux forex, signaux trading forex, alertes forex, signaux forex en direct, meilleurs signaux forex, signaux EUR/USD, IA trading forex, signaux forex fiables',
   alternates: {
     canonical: 'https://marketsignals24.com/fr/signaux-forex',
     languages: {
