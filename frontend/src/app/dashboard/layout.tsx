@@ -389,11 +389,6 @@ export default function DashboardLayout({
                     )}
                   </div>
 
-                  <button onClick={() => { setUserMenuOpen(false); window.location.href = 'mailto:support@Market Signals24.com'; }} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-foreground hover:bg-secondary/50 transition-colors">
-                    <svg className="w-4 h-4 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                    {t('menu.customerService')}
-                  </button>
-
                   <div className="border-t border-border my-1" />
 
                   <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-loss hover:bg-secondary/50 transition-colors">
