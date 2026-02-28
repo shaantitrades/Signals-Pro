@@ -19,6 +19,7 @@ import { errorHandler } from './middleware/errorHandler';
 import { initializeWebSocket } from './websocket';
 import { initializeRedis } from './services/redis';
 import { initializeSignalMonitor } from './services/signalMonitor';
+import { prisma } from './lib/prisma';
 
 dotenv.config();
 
@@ -117,6 +118,36 @@ app.use('/api/assets', assetRouter);
 app.use(errorHandler);
 
 // ============================================================================
+// Auto-seed subscription plans (ensures plans exist in production DB)
+// ============================================================================
+
+async function seedPlans() {
+  const planData = [
+    { slug: 'pass-24h', name: 'Pass 24h', priceEur: 6, durationDays: 1, sortOrder: 1, stripePriceId: 'price_1T5LVF8uXGeIyMMqbiHBpsFh' },
+    { slug: 'pass-48h', name: 'Pass 48h', priceEur: 10, durationDays: 2, sortOrder: 2, stripePriceId: 'price_1T5M4u8uXGeIyMMqcQgTyCol' },
+    { slug: 'weekly', name: 'Hebdomadaire', priceEur: 25, durationDays: 7, sortOrder: 3, stripePriceId: 'price_1T5Laa8uXGeIyMMqw7ia4HOp' },
+    { slug: 'monthly', name: 'Mensuel', priceEur: 85, durationDays: 30, sortOrder: 4, stripePriceId: 'price_1T5LbF8uXGeIyMMq1Du3EpUL' },
+  ];
+
+  for (const p of planData) {
+    await prisma.subscriptionPlan.upsert({
+      where: { slug: p.slug },
+      update: { priceEur: p.priceEur, stripePriceId: p.stripePriceId, sortOrder: p.sortOrder },
+      create: {
+        name: p.name,
+        slug: p.slug,
+        priceEur: p.priceEur,
+        durationDays: p.durationDays,
+        sortOrder: p.sortOrder,
+        stripePriceId: p.stripePriceId,
+        features: JSON.stringify({ signals: true, bot: true, dashboard: true }),
+      },
+    });
+  }
+  console.log('✅ Subscription plans seeded');
+}
+
+// ============================================================================
 // Start Server
 // ============================================================================
 
@@ -124,7 +155,10 @@ async function start() {
   try {
     // Initialize Redis
     await initializeRedis();
-    console.log('Ã¢Å“â€¦ Redis connected');
+    console.log('✅ Redis connected');
+
+    // Auto-seed subscription plans
+    await seedPlans();
 
     // Initialize WebSocket
     initializeWebSocket(server);

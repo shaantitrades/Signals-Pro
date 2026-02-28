@@ -124,6 +124,32 @@ const strengthFilters = [
   { value: 'moderate', labelKey: '', label: '70-79%', min: 70 },
 ];
 
+// Signal notification sound — synthesized "tiiiiing" via Web Audio API
+function playSignalSound(existingCtx?: AudioContext | null) {
+  try {
+    const ctx = existingCtx && existingCtx.state !== 'closed'
+      ? existingCtx
+      : new (window.AudioContext || (window as any).webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sine';
+    const now = ctx.currentTime;
+    // Ting-ting-ting-tiiiing pattern
+    osc.frequency.setValueAtTime(880, now);
+    osc.frequency.setValueAtTime(880, now + 0.12);
+    osc.frequency.setValueAtTime(1046, now + 0.24);
+    osc.frequency.setValueAtTime(1318, now + 0.36);
+    gain.gain.setValueAtTime(0.3, now);
+    gain.gain.linearRampToValueAtTime(0, now + 0.7);
+    osc.start(now);
+    osc.stop(now + 0.7);
+  } catch {
+    // Audio not supported — fail silently
+  }
+}
+
 export default function SignalsPage() {
   const { t } = useI18n();
   const [signals, setSignals] = useState<Signal[]>([]);
@@ -136,6 +162,9 @@ export default function SignalsPage() {
   const [sortBy, setSortBy] = useState<'confidence' | 'pnl' | 'recent'>('confidence');
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
   const [expandedSignal, setExpandedSignal] = useState<string | null>(null);
+  const [soundEnabled, setSoundEnabled] = useState(false);
+  const audioCtxRef = useRef<AudioContext | null>(null);
+  const prevSignalCountRef = useRef(0);
 
   // Fetch real signals from the backend API (DB-backed, always available)
   const fetchSignals = useCallback(async () => {
@@ -181,6 +210,11 @@ export default function SignalsPage() {
       }
 
       setSignals(allSignals);
+      // Play sound when new signals appear
+      if (soundEnabled && allSignals.length > prevSignalCountRef.current && prevSignalCountRef.current > 0) {
+        playSignalSound(audioCtxRef.current);
+      }
+      prevSignalCountRef.current = allSignals.length;
       setLastRefresh(new Date());
       setError(null);
     } catch (e: any) {
@@ -299,7 +333,32 @@ export default function SignalsPage() {
           <div className="flex items-center justify-center gap-1">
             <span className={cn('w-2 h-2 rounded-full', error ? 'bg-loss' : 'bg-profit', !error && 'animate-pulse')} />
             <p className="text-2xl font-bold">{loading ? '...' : 'LIVE'}</p>
-          </div>
+          </
+
+      {/* Sound Toggle */}
+      <div className="flex justify-end -mt-2">
+        <button
+          onClick={() => {
+            if (!soundEnabled) {
+              // Unlock AudioContext on user gesture
+              if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
+                audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+              }
+              void audioCtxRef.current.resume();
+              playSignalSound(audioCtxRef.current);
+            }
+            setSoundEnabled(!soundEnabled);
+          }}
+          className={cn(
+            'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors',
+            soundEnabled
+              ? 'bg-profit/15 text-profit border border-profit/30'
+              : 'bg-secondary text-muted-foreground hover:text-foreground border border-border'
+          )}
+        >
+          {soundEnabled ? '🔔' : '🔕'} {soundEnabled ? t('sig.soundOn') : t('sig.soundOff')}
+        </button>
+      </div>div>
           <p className="text-xs text-muted-foreground">
             {error ? '⚠ Reconnect' : `${t('sig.realTime')} • ${lastRefresh ? lastRefresh.toLocaleTimeString() : '--:--:--'}`}
           </p>
@@ -530,6 +589,16 @@ export default function SignalsPage() {
                   {signal.pnlPips >= 0 ? '+' : ''}{signal.pnlPips} pips
                 </span>
               </div>
+
+              {/* Tap hint */}
+              {expandedSignal !== signal.id && (
+                <div className="flex items-center justify-center gap-1 mt-2 text-[11px] text-primary/70 animate-pulse">
+                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                  {t('sig.tapToExpand')}
+                </div>
+              )}
 
               {/* Expanded Details */}
               {expandedSignal === signal.id && (
