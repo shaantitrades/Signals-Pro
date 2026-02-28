@@ -57,7 +57,6 @@ export default function TarifsPage() {
   const [plans, setPlans] = useState<Plan[]>(fallbackPlans);
   const [loading, setLoading] = useState(false);
   const [checkoutSlug, setCheckoutSlug] = useState<string | null>(null);
-  const [cryptoSlug, setCryptoSlug] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Check for payment=cancelled query param
@@ -118,37 +117,6 @@ export default function TarifsPage() {
       }
     } finally {
       setCheckoutSlug(null);
-    }
-  };
-
-  const handleCrypto = async (slug: string) => {
-    setCryptoSlug(slug);
-    setError(null);
-
-    const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
-    if (!token) {
-      router.push(`/login?redirect=/tarifs`);
-      return;
-    }
-
-    try {
-      const res = await api.post('/nowpayments/create-payment', { planSlug: slug });
-      const url = res.data?.data?.url;
-      if (url) {
-        window.location.href = url;
-      } else {
-        setError(t('pricing.errorCheckout'));
-      }
-    } catch (err: any) {
-      console.error('Crypto payment error:', err);
-      if (!err.response) {
-        setError(t('pricing.errorNetwork'));
-      } else {
-        const msg = err.response?.data?.error || t('pricing.errorCheckout');
-        setError(msg);
-      }
-    } finally {
-      setCryptoSlug(null);
     }
   };
 
@@ -292,7 +260,7 @@ export default function TarifsPage() {
                     <button
                       onClick={() => handleCheckout(plan.slug)}
                       disabled={checkoutSlug !== null}
-                      className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white rounded-lg px-4 py-2.5 mb-3 transition-colors cursor-pointer font-semibold"
+                      className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white rounded-lg px-4 py-2.5 transition-colors cursor-pointer font-semibold"
                     >
                       {checkoutSlug === plan.slug ? (
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
@@ -303,32 +271,6 @@ export default function TarifsPage() {
                           </svg>
                           <span className="text-[12px] uppercase tracking-wide">
                             {t('pricing.buyStripe')}
-                          </span>
-                        </>
-                      )}
-                    </button>
-
-                    {/* Crypto separator */}
-                    <p className="text-[11px] text-muted-foreground uppercase tracking-wide mb-2 text-center">
-                      {t('pricing.orPayCrypto')}
-                    </p>
-
-                    {/* Crypto button */}
-                    <button
-                      onClick={() => handleCrypto(plan.slug)}
-                      disabled={cryptoSlug !== null}
-                      className="flex items-center justify-between w-full bg-primary hover:bg-primary/90 disabled:opacity-60 text-white rounded-lg px-4 py-2.5 transition-colors cursor-pointer"
-                    >
-                      {cryptoSlug === plan.slug ? (
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mx-auto"></div>
-                      ) : (
-                        <>
-                          <div className="flex flex-col">
-                            <span className="text-sm font-semibold">{t('pricing.cryptoPayment')}</span>
-                            <span className="text-xs text-white/70">{t('pricing.cryptoCoins')}</span>
-                          </div>
-                          <span className="text-xs font-semibold uppercase tracking-wide">
-                            {t('pricing.choose')}
                           </span>
                         </>
                       )}

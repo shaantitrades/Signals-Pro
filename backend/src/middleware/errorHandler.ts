@@ -27,10 +27,11 @@ export function errorHandler(
 
   console.error('❌ Unhandled Error:', err);
 
+  // Surface useful error messages even in production (avoid "Internal server error")
+  const message = err.message || 'Internal server error';
+
   res.status(500).json({
     success: false,
-    error: process.env.NODE_ENV === 'production' 
-      ? 'Internal server error' 
-      : err.message,
+    error: message,
   });
 }

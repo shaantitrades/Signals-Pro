@@ -39,8 +39,19 @@ subscriptionRouter.get('/plans', async (_req, res, next) => {
 
 subscriptionRouter.post('/create-checkout', authenticate, async (req: AuthRequest, res: Response, next) => {
   try {
+    // Validate Stripe is configured
+    const stripeKey = process.env.STRIPE_SECRET_KEY || '';
+    if (!stripeKey || stripeKey === 'sk_test_placeholder') {
+      console.error('[Stripe] STRIPE_SECRET_KEY not configured');
+      return res.status(503).json({ success: false, error: 'Payment system is not configured. Please contact support.' });
+    }
+
     const { planSlug } = req.body;
     const user = req.user!;
+
+    if (!planSlug) {
+      return res.status(400).json({ success: false, error: 'planSlug is required' });
+    }
 
     const plan = await prisma.subscriptionPlan.findUnique({
       where: { slug: planSlug },
@@ -113,8 +124,22 @@ subscriptionRouter.post('/create-checkout', authenticate, async (req: AuthReques
       success: true,
       data: { url: session.url },
     });
-  } catch (error) {
-    console.error('[Stripe] create-checkout error:', error);
+  } catch (error: any) {
+    console.error('[Stripe] create-checkout error:', error?.message || error);
+    // Surface Stripe-specific errors to the client
+    if (error?.type && error.type.startsWith('Stripe')) {
+      return res.status(502).json({
+        success: false,
+        error: `Stripe error: ${error.message}`,
+      });
+    }
+    // Surface raw message for better debugging
+    if (error?.message) {
+      return res.status(500).json({
+        success: false,
+        error: error.message,
+      });
+    }
     next(error);
   }
 });
