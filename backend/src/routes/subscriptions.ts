@@ -119,6 +119,12 @@ subscriptionRouter.post('/create-checkout', authenticate, async (req: AuthReques
       mode: 'subscription',
       success_url: `${frontendUrl}/dashboard/signals?payment=success&plan=${plan.slug}`,
       cancel_url: `${frontendUrl}/tarifs?payment=cancelled`,
+      client_reference_id: user.id,
+      metadata: {
+        userId: user.id,
+        planId: plan.id,
+        planSlug: plan.slug,
+      },
       subscription_data: {
         metadata: {
           userId: user.id,
@@ -381,12 +387,42 @@ subscriptionRouter.post('/webhook', async (req: Request, res: Response) => {
  * Creates or updates the user's subscription and records the payment.
  */
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
-  const userId = session.metadata?.userId;
-  const planId = session.metadata?.planId;
+  let userId = session.metadata?.userId;
+  let planId = session.metadata?.planId;
 
-  if (!userId || !planId) {
-    console.error('[Stripe Webhook] checkout.session.completed missing metadata:', session.metadata);
+  // Fallback: try client_reference_id for userId
+  if (!userId && session.client_reference_id) {
+    userId = session.client_reference_id;
+  }
+
+  // Fallback: try to get metadata from the Stripe subscription object
+  if ((!userId || !planId) && session.subscription) {
+    try {
+      const stripeSub = await stripe.subscriptions.retrieve(String(session.subscription));
+      if (!userId) userId = stripeSub.metadata?.userId;
+      if (!planId) planId = stripeSub.metadata?.planId;
+    } catch (err) {
+      console.error('[Stripe Webhook] Failed to retrieve subscription for metadata fallback:', err);
+    }
+  }
+
+  // Last resort: find user by Stripe customer ID
+  if (!userId && session.customer) {
+    const user = await prisma.user.findFirst({
+      where: { stripeCustomerId: String(session.customer) },
+    });
+    if (user) userId = user.id;
+  }
+
+  if (!userId) {
+    console.error('[Stripe Webhook] checkout.session.completed: could not determine userId from metadata, client_reference_id, or customer:', session.metadata);
     return;
+  }
+
+  // If planId is still missing, try to find it from subscription_data metadata or the plan slug in session metadata
+  if (!planId && session.metadata?.planSlug) {
+    const plan = await prisma.subscriptionPlan.findUnique({ where: { slug: session.metadata.planSlug } });
+    if (plan) planId = plan.id;
   }
 
   const plan = await prisma.subscriptionPlan.findUnique({ where: { id: planId } });

@@ -46,6 +46,45 @@ export default function DashboardLayout({
     initAuth();
   }, [initAuth]);
 
+  // After Stripe/crypto payment redirect, poll initAuth until subscription is active
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('payment') !== 'success') return;
+
+    setPaymentActivating(true);
+    let attempts = 0;
+    const maxAttempts = 30; // poll for up to ~60 seconds (crypto can be slower)
+    const pollInterval = setInterval(async () => {
+      attempts++;
+      await initAuth();
+      const { hasActiveSubscription } = useAuthStore.getState();
+      if (hasActiveSubscription()) {
+        clearInterval(pollInterval);
+        setPaymentActivating(false);
+        setShowPaymentSuccess(true);
+        // Clean URL params after activation
+        const url = new URL(window.location.href);
+        url.searchParams.delete('payment');
+        url.searchParams.delete('plan');
+        window.history.replaceState({}, '', url.pathname);
+        // Auto-dismiss after 8 seconds
+        setTimeout(() => setShowPaymentSuccess(false), 8000);
+      } else if (attempts >= maxAttempts) {
+        clearInterval(pollInterval);
+        setPaymentActivating(false);
+        // Still show success — webhook might just be slow, page refresh will fix
+        setShowPaymentSuccess(true);
+        const url = new URL(window.location.href);
+        url.searchParams.delete('payment');
+        url.searchParams.delete('plan');
+        window.history.replaceState({}, '', url.pathname);
+        setTimeout(() => setShowPaymentSuccess(false), 8000);
+      }
+    }, 2000);
+
+    return () => clearInterval(pollInterval);
+  }, [initAuth]);
+
   // Theme state — sync with the script in root layout that already set the class
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [mounted, setMounted] = useState(false);
@@ -73,6 +112,8 @@ export default function DashboardLayout({
   const [profileSubOpen, setProfileSubOpen] = useState(false);
   const [profileEditOpen, setProfileEditOpen] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
+  const [paymentActivating, setPaymentActivating] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   // Profile form state for user menu
@@ -476,6 +517,60 @@ export default function DashboardLayout({
           </div>
         </div>
       </footer>
+
+      {/* Payment Activating Banner */}
+      {paymentActivating && (
+        <div className="fixed top-0 left-0 right-0 z-[110] bg-primary/95 text-primary-foreground py-3 px-4 text-center animate-in slide-in-from-top duration-300">
+          <div className="flex items-center justify-center gap-3">
+            <div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full" />
+            <span className="text-sm font-medium">{t('payment.activating')}</span>
+          </div>
+        </div>
+      )}
+
+      {/* Payment Success Premium Popup */}
+      {showPaymentSuccess && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="relative bg-card border border-border rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4 text-center animate-in zoom-in-95 duration-300">
+            <button
+              onClick={() => setShowPaymentSuccess(false)}
+              className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="1" y1="1" x2="13" y2="13"/><line x1="13" y1="1" x2="1" y2="13"/>
+              </svg>
+            </button>
+
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <span className="text-2xl">👑</span>
+              <h2 className="text-xl font-bold text-green-500">{t('welcome.title')}</h2>
+            </div>
+
+            <p className="text-sm text-muted-foreground mb-6">
+              {t('welcome.desc')}
+            </p>
+
+            <div className="flex justify-center mb-5">
+              <div className="w-20 h-20 rounded-full bg-green-500 flex items-center justify-center shadow-lg shadow-green-500/30">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </div>
+            </div>
+
+            <p className="text-sm text-muted-foreground mb-4">
+              {t('welcome.bottom')}
+            </p>
+
+            <button
+              onClick={() => setShowPaymentSuccess(false)}
+              className="px-6 py-2.5 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors"
+            >
+              {t('payment.startTrading')}
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Logout Confirmation Modal */}
       {showLogoutConfirm && (

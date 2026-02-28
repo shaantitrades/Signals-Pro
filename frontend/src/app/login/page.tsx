@@ -133,7 +133,7 @@ export default function LoginPage() {
         </div>
 
         <div className="signal-card p-6">
-          {/* Google Sign-In */}
+          {/* Google Sign-In — temporarily hidden
           {GOOGLE_CLIENT_ID ? (
             <>
               <div id="google-signin-btn" className="flex justify-center" />
@@ -147,6 +147,7 @@ export default function LoginPage() {
               )}
             </>
           ) : null}
+          */}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (

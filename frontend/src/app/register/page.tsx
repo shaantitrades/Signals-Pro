@@ -146,7 +146,7 @@ export default function RegisterPage() {
         </div>
 
         <div className="signal-card p-6">
-          {/* Google Sign-Up */}
+          {/* Google Sign-Up — temporarily hidden
           {GOOGLE_CLIENT_ID ? (
             <>
               <div id="google-signup-btn" className="flex justify-center" />
@@ -160,6 +160,7 @@ export default function RegisterPage() {
               )}
             </>
           ) : null}
+          */}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (

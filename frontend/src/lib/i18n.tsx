@@ -138,6 +138,8 @@ const translations: Record<LangCode, Record<string, string>> = {
     'welcome.title': 'Welcome Premium User!',
     'welcome.desc': 'You now have complete access to all trading signals and premium features.',
     'welcome.bottom': 'Your premium subscription is active. Enjoy unlimited access to our AI-powered trading signals!',
+    'payment.activating': 'Activating your subscription... Please wait.',
+    'payment.startTrading': 'Start Trading Now',
 
     // Dashboard
     'dash.activeSignals': 'Active Signals',
@@ -804,6 +806,8 @@ const translations: Record<LangCode, Record<string, string>> = {
     'welcome.title': 'Bienvenue Utilisateur Premium !',
     'welcome.desc': 'Vous avez maintenant un accès complet à tous les signaux de trading et aux fonctionnalités premium.',
     'welcome.bottom': 'Votre abonnement premium est actif. Profitez d\'un accès illimité à nos signaux de trading propulsés par l\'IA !',
+    'payment.activating': 'Activation de votre abonnement en cours... Veuillez patienter.',
+    'payment.startTrading': 'Commencer à Trader',
 
     // Dashboard
     'dash.activeSignals': 'Signaux Actifs',
