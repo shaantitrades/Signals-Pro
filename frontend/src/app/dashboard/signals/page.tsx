@@ -124,6 +124,161 @@ const strengthFilters = [
   { value: 'moderate', labelKey: '', label: '70-79%', min: 70 },
 ];
 
+// ============================================================================
+// localStorage helpers — persist seen signal IDs and trigger times
+// ============================================================================
+const SEEN_IDS_KEY = 'ms24_live_seenIds';
+const TRIGGER_TIMES_KEY = 'ms24_live_triggerTimes';
+
+function getSeenIds(): Set<string> {
+  try { return new Set(JSON.parse(localStorage.getItem(SEEN_IDS_KEY) || '[]')); }
+  catch { return new Set(); }
+}
+function persistSeenIds(ids: Set<string>) {
+  try {
+    const arr = Array.from(ids);
+    if (arr.length > 500) arr.splice(0, arr.length - 500);
+    localStorage.setItem(SEEN_IDS_KEY, JSON.stringify(arr));
+  } catch {}
+}
+function getTriggerTime(id: string): string {
+  try { return (JSON.parse(localStorage.getItem(TRIGGER_TIMES_KEY) || '{}') as Record<string, string>)[id] || ''; }
+  catch { return ''; }
+}
+function saveTriggerTime(id: string, time: string) {
+  try {
+    const times = JSON.parse(localStorage.getItem(TRIGGER_TIMES_KEY) || '{}') as Record<string, string>;
+    const keys = Object.keys(times);
+    if (keys.length > 300) delete times[keys[0]];
+    times[id] = time;
+    localStorage.setItem(TRIGGER_TIMES_KEY, JSON.stringify(times));
+  } catch {}
+}
+
+function matchesFilters(s: Signal, catFilter: string, strFilter: string, riskFilter: string): boolean {
+  if (catFilter && s.category !== catFilter) return false;
+  if (strFilter) {
+    const f = strengthFilters.find(sf => sf.value === strFilter);
+    if (f && s.confidence < f.min) return false;
+  }
+  if (riskFilter && s.riskLevel !== riskFilter) return false;
+  return true;
+}
+
+// ============================================================================
+// SignalPopup — popup 15 secondes pour tout nouveau signal correspondant aux filtres
+// ============================================================================
+function SignalPopup({ signal, onClose, t }: {
+  signal: Signal;
+  onClose: () => void;
+  t: (key: string) => string;
+}) {
+  const [remaining, setRemaining] = useState(15);
+  const isBuy = signal.action === 'BUY';
+
+  // Joue le son à l'ouverture
+  useEffect(() => {
+    playSignalSound();
+  }, []);
+
+  useEffect(() => {
+    if (remaining <= 0) { onClose(); return; }
+    const timer = setTimeout(() => setRemaining(r => r - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [remaining, onClose]);
+
+  const pct = (remaining / 15) * 100;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 p-4">
+      <div className="relative bg-card border border-border rounded-2xl shadow-2xl w-full max-w-sm animate-in slide-in-from-bottom sm:zoom-in-95 duration-300">
+        {/* Countdown bar */}
+        <div className="h-1.5 rounded-t-2xl overflow-hidden bg-secondary">
+          <div
+            className={cn('h-full transition-all duration-1000 ease-linear', isBuy ? 'bg-profit' : 'bg-loss')}
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+
+        <div className="p-5">
+          {/* Header */}
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <div className="flex items-center gap-1.5 mb-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-profit animate-pulse" />
+                <span className="text-[11px] text-muted-foreground font-medium uppercase tracking-wide">Nouveau Signal Live</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-2xl font-bold">{signal.asset}</span>
+                <span className={cn(
+                  'px-2.5 py-0.5 rounded font-bold text-sm',
+                  isBuy ? 'bg-profit/20 text-profit' : 'bg-loss/20 text-loss'
+                )}>
+                  {signal.action}
+                </span>
+              </div>
+            </div>
+            <div className="flex flex-col items-end gap-1.5">
+              <button
+                onClick={onClose}
+                className="w-7 h-7 flex items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors text-sm"
+              >
+                ✕
+              </button>
+              <span className="text-xs font-bold tabular-nums" style={{ color: remaining <= 5 ? 'var(--color-loss)' : undefined }}>
+                {remaining}s
+              </span>
+            </div>
+          </div>
+
+          {/* Confidence */}
+          <div className="mb-4">
+            <div className="flex justify-between text-xs mb-1">
+              <span className="text-muted-foreground">{t('sig.confidence')}</span>
+              <span className={cn('font-bold', signal.confidence >= 90 ? 'text-profit' : 'text-signal-strong')}>
+                {signal.confidence}%
+              </span>
+            </div>
+            <div className="h-2 bg-secondary rounded-full overflow-hidden">
+              <div
+                className={cn('h-full rounded-full', signal.confidence >= 90 ? 'bg-profit' : 'bg-signal-strong')}
+                style={{ width: `${signal.confidence}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Prices */}
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            <div className="bg-secondary/50 rounded-lg p-2 text-center">
+              <span className="text-[10px] text-muted-foreground block">{t('sig.entry')}</span>
+              <span className="text-xs font-bold font-mono">{formatPrice(signal.entryPrice)}</span>
+            </div>
+            <div className="bg-profit/10 rounded-lg p-2 text-center">
+              <span className="text-[10px] text-muted-foreground block">TP1</span>
+              <span className="text-xs font-bold font-mono text-profit">{formatPrice(signal.tp1)}</span>
+            </div>
+            <div className="bg-loss/10 rounded-lg p-2 text-center">
+              <span className="text-[10px] text-muted-foreground block">SL</span>
+              <span className="text-xs font-bold font-mono text-loss">{formatPrice(signal.sl)}</span>
+            </div>
+          </div>
+
+          {/* Meta */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className={cn('px-1.5 py-0.5 rounded text-[10px] font-medium', getRiskLevelColor(signal.riskLevel))}>
+                {signal.riskLevel}
+              </span>
+              <span className="text-xs text-muted-foreground">{signal.timeframe} • {signal.category}</span>
+            </div>
+            <span className="text-xs text-muted-foreground">{signal.createdAt}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // Signal notification sound — synthesized "tiiiiing" via Web Audio API
 function playSignalSound(existingCtx?: AudioContext | null) {
   try {
@@ -165,6 +320,13 @@ export default function SignalsPage() {
   const [soundEnabled, setSoundEnabled] = useState(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
   const prevSignalCountRef = useRef(0);
+  // New-signal detection
+  const seenSignalIdsRef = useRef<Set<string>>(new Set());
+  const isInitializedRef = useRef(false);
+  const categoryFilterRef = useRef('');
+  const strengthFilterRef = useRef('');
+  const riskFilterRef = useRef('');
+  const [newSignalPopup, setNewSignalPopup] = useState<Signal | null>(null);
 
   // Fetch real signals from the backend API (DB-backed, always available)
   const fetchSignals = useCallback(async () => {
@@ -209,11 +371,36 @@ export default function SignalsPage() {
         }
       }
 
-      setSignals(allSignals);
-      // Play sound when new signals appear
-      if (soundEnabled && allSignals.length > prevSignalCountRef.current && prevSignalCountRef.current > 0) {
-        playSignalSound(audioCtxRef.current);
+      // ── Detect truly new signals & match against active filters ──
+      const currentSeen = seenSignalIdsRef.current;
+      const newMatchingSignals: Signal[] = [];
+
+      for (const s of allSignals) {
+        const isNew = !currentSeen.has(s.id);
+        if (isNew) {
+          currentSeen.add(s.id);
+          // Save trigger time only on first detection
+          if (!getTriggerTime(s.id)) saveTriggerTime(s.id, s.createdAt);
+        }
+        if (isNew && isInitializedRef.current &&
+            matchesFilters(s, categoryFilterRef.current, strengthFilterRef.current, riskFilterRef.current)) {
+          newMatchingSignals.push(s);
+        }
       }
+
+      // Persist updated seen IDs
+      persistSeenIds(currentSeen);
+
+      // Trigger popup for the highest-confidence new matching signal
+      if (newMatchingSignals.length > 0) {
+        const best = newMatchingSignals.sort((a, b) => b.confidence - a.confidence)[0];
+        setNewSignalPopup(best);
+      }
+
+      // Mark as initialized after first successful fetch
+      isInitializedRef.current = true;
+
+      setSignals(allSignals);
       prevSignalCountRef.current = allSignals.length;
       setLastRefresh(new Date());
       setError(null);
@@ -252,6 +439,16 @@ export default function SignalsPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [signals.length]);
 
+  // Init seen IDs from localStorage (must be before fetchSignals runs)
+  useEffect(() => {
+    seenSignalIdsRef.current = getSeenIds();
+  }, []);
+
+  // Keep filter refs in sync so fetchSignals always sees latest values
+  useEffect(() => { categoryFilterRef.current = categoryFilter; }, [categoryFilter]);
+  useEffect(() => { strengthFilterRef.current = strengthFilter; }, [strengthFilter]);
+  useEffect(() => { riskFilterRef.current = riskFilter; }, [riskFilter]);
+
   // Initial load + auto-refresh every 60 seconds
   useEffect(() => {
     fetchSignals();
@@ -287,6 +484,15 @@ export default function SignalsPage() {
 
   return (
     <div className="space-y-6">
+      {/* New signal popup — Option B: only when matching active filters */}
+      {newSignalPopup && (
+        <SignalPopup
+          signal={newSignalPopup}
+          onClose={() => setNewSignalPopup(null)}
+          t={t}
+        />
+      )}
+
       {/* Market Closed Banner */}
       {!marketStatus.isOpen && (
         <div className="signal-card p-4 border-yellow-500/40 bg-yellow-500/5">
