@@ -227,11 +227,13 @@ export default function SignalsOTCPage() {
   const [otcAsset, setOtcAsset] = useState('EURUSD_OTC');
   const [otcTimeframe, setOtcTimeframe] = useState('M1');
   const [otcLoading, setOtcLoading] = useState(false);
+  const [searchAttempt, setSearchAttempt] = useState(0);
   const [otcSignals, setOtcSignals] = useState<OTCSignal[]>([]);
   const [otcError, setOtcError] = useState('');
   const [otcNoSignal, setOtcNoSignal] = useState(false);
   const [signalActive, setSignalActive] = useState(false);
   const expirationTimer = useRef<NodeJS.Timeout | null>(null);
+  const pollCancelRef = useRef(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
 
   // Popup states
@@ -304,56 +306,72 @@ export default function SignalsOTCPage() {
   }, []);
 
   const handleStartSignals = useCallback(async () => {
-    if (!isAuthenticated) {
-      window.location.href = '/login';
-      return;
-    }
-    if (!hasSubscription) {
-      setShowSubPopup(true);
-      return;
-    }
-    setOtcLoading(true);
-    // Unlock AudioContext during user gesture (before async API call)
+    if (!isAuthenticated) { window.location.href = '/login'; return; }
+    if (!hasSubscription) { setShowSubPopup(true); return; }
+
+    // Unlock AudioContext on user gesture
     try {
       if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
         audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
       }
       void audioCtxRef.current.resume();
     } catch {}
+
     setOtcError('');
     setOtcNoSignal(false);
     setSignalActive(true);
-    // Clear any previous expiration timer
+    setOtcLoading(true);
+    setSearchAttempt(0);
+    pollCancelRef.current = false;
     if (expirationTimer.current) clearTimeout(expirationTimer.current);
-    try {
-      const { data } = await signalsApi.generate('FOREX_OTC', otcAsset, otcTimeframe);
-      if (data.success && data.data) {
-        const newSignal = data.data;
-        setOtcSignals(prev => [newSignal, ...prev].slice(0, 10));
-        // Play notification sound
-        playSignalSound(audioCtxRef.current);
-        // Trigger both popup notifications
-        setToastSignal(newSignal);
-        setShowToast(true);
-        setTimeout(() => setShowBottomNotif(true), 400);
-        // Set expiration timer based on timeframe
-        const durationMs = (otcTimeframe === 'M1' ? 60 : otcTimeframe === 'M2' ? 120 : otcTimeframe === 'M3' ? 180 : otcTimeframe === 'M4' ? 240 : otcTimeframe === 'M5' ? 300 : otcTimeframe === 'M15' ? 900 : 1800) * 1000;
-        expirationTimer.current = setTimeout(() => {
-          setSignalActive(false);
-          setOtcSignals([]);
-        }, durationMs);
-      } else {
-        // No high-confidence signal found — this is expected and normal
-        setOtcNoSignal(true);
-        setSignalActive(false);
+
+    const MAX_ATTEMPTS = 10;
+    const DELAY_MS = 3000;
+
+    const sleep = (ms: number) => new Promise<void>(res => {
+      const t = setTimeout(res, ms);
+      // Allow early cancel
+      pollCancelRef.current && clearTimeout(t);
+    });
+
+    let found = false;
+    let lastError = '';
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      if (pollCancelRef.current) break;
+      setSearchAttempt(attempt);
+      try {
+        const { data } = await signalsApi.generate('FOREX_OTC', otcAsset, otcTimeframe);
+        if (data.success && data.data) {
+          const newSignal = data.data;
+          setOtcSignals(prev => [newSignal, ...prev].slice(0, 10));
+          playSignalSound(audioCtxRef.current);
+          setToastSignal(newSignal);
+          setShowToast(true);
+          setTimeout(() => setShowBottomNotif(true), 400);
+          const durationMs = (otcTimeframe === 'M1' ? 60 : otcTimeframe === 'M2' ? 120 : otcTimeframe === 'M3' ? 180 : otcTimeframe === 'M4' ? 240 : otcTimeframe === 'M5' ? 300 : otcTimeframe === 'M15' ? 900 : 1800) * 1000;
+          expirationTimer.current = setTimeout(() => { setSignalActive(false); setOtcSignals([]); }, durationMs);
+          found = true;
+          break;
+        }
+      } catch (err: any) {
+        lastError = err?.response?.data?.error || err?.message || 'Connection error';
       }
-    } catch (err: any) {
-      const msg = err?.response?.data?.error || err?.message || 'Connection error';
-      setOtcError(msg);
-      setSignalActive(false);
-    } finally {
-      setOtcLoading(false);
+      // Wait before next attempt (skip wait on last attempt)
+      if (attempt < MAX_ATTEMPTS && !pollCancelRef.current) {
+        await sleep(DELAY_MS);
+      }
     }
+
+    if (!pollCancelRef.current && !found) {
+      if (lastError) {
+        setOtcError(lastError);
+      } else {
+        setOtcNoSignal(true);
+      }
+      setSignalActive(false);
+    }
+    setOtcLoading(false);
+    setSearchAttempt(0);
   }, [otcAsset, otcTimeframe, isAuthenticated, hasSubscription]);
 
   // Signal duration in seconds based on timeframe
@@ -580,10 +598,23 @@ export default function SignalsOTCPage() {
                 <span>{t('sigOtc.startSignals')}</span>
               </>
             ) : otcLoading ? (
-              <>
-                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" /></svg>
-                <span>{t('sigOtc.searching')}</span>
-              </>
+              <div className="w-full flex flex-col items-center gap-2">
+                {/* Attempt counter */}
+                <div className="flex items-center gap-2">
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  <span className="text-sm font-semibold">{t('sigOtc.searching')} ({searchAttempt}/10)</span>
+                </div>
+                {/* Progress bar */}
+                <div className="w-full h-1.5 bg-primary/20 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-primary rounded-full transition-all duration-300"
+                    style={{ width: `${(searchAttempt / 10) * 100}%` }}
+                  />
+                </div>
+              </div>
             ) : signalActive ? (
               <>
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
