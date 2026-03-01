@@ -229,6 +229,7 @@ export default function SignalsOTCPage() {
   const [otcLoading, setOtcLoading] = useState(false);
   const [otcSignals, setOtcSignals] = useState<OTCSignal[]>([]);
   const [otcError, setOtcError] = useState('');
+  const [otcNoSignal, setOtcNoSignal] = useState(false);
   const [signalActive, setSignalActive] = useState(false);
   const expirationTimer = useRef<NodeJS.Timeout | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -320,6 +321,7 @@ export default function SignalsOTCPage() {
       void audioCtxRef.current.resume();
     } catch {}
     setOtcError('');
+    setOtcNoSignal(false);
     setSignalActive(true);
     // Clear any previous expiration timer
     if (expirationTimer.current) clearTimeout(expirationTimer.current);
@@ -341,7 +343,8 @@ export default function SignalsOTCPage() {
           setOtcSignals([]);
         }, durationMs);
       } else {
-        setOtcError(data.message || 'No signal found. Try again.');
+        // No high-confidence signal found — this is expected and normal
+        setOtcNoSignal(true);
         setSignalActive(false);
       }
     } catch (err: any) {
@@ -594,9 +597,28 @@ export default function SignalsOTCPage() {
             )}
           </button>
 
+          {/* No-signal info (amber, not red — this is expected behavior) */}
+          {otcNoSignal && !otcError && (
+            <div className="mt-3 flex items-start gap-2 bg-yellow-500/10 border border-yellow-500/30 rounded-lg px-3 py-2.5">
+              <svg className="w-4 h-4 text-yellow-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z" /></svg>
+              <p className="text-xs text-yellow-600 dark:text-yellow-400">
+                {t('sigOtc.noSignalInfo')}
+              </p>
+            </div>
+          )}
+
+          {/* Technical error */}
           {otcError && (
             <p className="mt-3 text-sm text-loss text-center">{otcError}</p>
           )}
+
+          {/* OTC disclaimer */}
+          <div className="mt-4 flex items-start gap-2 bg-secondary/40 rounded-lg px-3 py-2.5">
+            <svg className="w-3.5 h-3.5 text-muted-foreground shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
+            <p className="text-[11px] text-muted-foreground leading-relaxed">
+              {t('sigOtc.dataDisclaimer')}
+            </p>
+          </div>
         </div>
 
         {/* Right: Active Signals — Redesigned like realtimetradesignals.com */}
@@ -676,7 +698,7 @@ function ActiveSignalCard({ signal, duration, t }: { signal: OTCSignal; duration
           'text-lg font-bold tracking-wide',
           signal.action === 'BUY' ? 'text-profit' : 'text-loss'
         )}>
-          TRY, {signal.action} SIGNAL!
+          {signal.action === 'BUY' ? '▲' : '▼'} {signal.action} SIGNAL
         </p>
       </div>
 

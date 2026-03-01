@@ -41,26 +41,38 @@ class TechnicalAnalyzer:
         if total_weight == 0:
             return None
 
-        # Need at least 2 indicators agreeing for a valid signal
+        # Need ALL indicators agreeing for a valid signal (strict consensus)
         buy_count = sum(1 for ind in indicators if ind.signal == SignalAction.BUY)
         sell_count = sum(1 for ind in indicators if ind.signal == SignalAction.SELL)
+        n = len(indicators)
 
-        if max(buy_count, sell_count) < 2:
-            return None  # Not enough confluence
+        # Require unanimous agreement OR at least 2 strong indicators
+        # With RSI neutral zone excluded, we may have 2 indicators; both must agree
+        if n == 0:
+            return None
+        if n >= 3 and max(buy_count, sell_count) < 3:
+            return None  # 3 indicators available but not unanimous — no signal
+        if n == 2 and max(buy_count, sell_count) < 2:
+            return None  # Only 2 indicators (RSI neutral) — both must agree
+        if n == 1:
+            return None  # Single indicator is not reliable enough alone
 
         action = SignalAction.BUY if buy_score > sell_score else SignalAction.SELL
         raw_confidence = (max(buy_score, sell_score) / total_weight) * 100
 
         # Boost confidence when multiple indicators agree
         agreeing = buy_count if action == SignalAction.BUY else sell_count
-        if agreeing == 3:
+        if agreeing == 3 and n == 3:
             # All 3 indicators unanimous — strong signal
-            raw_confidence = min(98, max(raw_confidence + 15, 80))
-        elif agreeing == 2 and len(indicators) == 3:
-            # 2 out of 3 agree — decent signal, boost to ensure visibility
-            raw_confidence = min(95, max(raw_confidence + 10, 65))
+            raw_confidence = min(97, max(raw_confidence + 10, 78))
+        elif agreeing == 2 and n == 2:
+            # Both available indicators agree (RSI was neutral)
+            raw_confidence = min(90, max(raw_confidence + 5, 70))
+        else:
+            # Partial agreement — reduce confidence
+            raw_confidence = min(75, raw_confidence)
 
-        confidence = round(min(98, raw_confidence), 1)
+        confidence = round(min(97, raw_confidence), 1)
 
         # Calculate price levels
         current = float(df["close"].iloc[-1])
@@ -104,18 +116,14 @@ class TechnicalAnalyzer:
             results.append(IndicatorResult(name="RSI(14)", value=round(rsi, 2), signal=SignalAction.SELL, strength=90))
         elif rsi < 40:
             # RSI rising from below = bullish momentum
-            s = 60 if rsi > rsi_prev else 45
+            s = 65 if rsi > rsi_prev else 50
             results.append(IndicatorResult(name="RSI(14)", value=round(rsi, 2), signal=SignalAction.BUY, strength=s))
         elif rsi > 60:
             # RSI falling from above = bearish momentum
-            s = 60 if rsi < rsi_prev else 45
+            s = 65 if rsi < rsi_prev else 50
             results.append(IndicatorResult(name="RSI(14)", value=round(rsi, 2), signal=SignalAction.SELL, strength=s))
-        else:
-            # Neutral zone (40-60) — still contributes with weak signal
-            if rsi > rsi_prev:
-                results.append(IndicatorResult(name="RSI(14)", value=round(rsi, 2), signal=SignalAction.BUY, strength=30))
-            else:
-                results.append(IndicatorResult(name="RSI(14)", value=round(rsi, 2), signal=SignalAction.SELL, strength=30))
+        # Neutral zone (40-60): RSI gives NO signal — too ambiguous for reliable trading
+        # This prevents false signals in choppy/ranging markets
 
         # ── 2) MACD (12, 26, 9) ─────────────────────────────
         macd_obj = ta.trend.MACD(close, window_slow=26, window_fast=12, window_sign=9)

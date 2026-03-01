@@ -13,14 +13,14 @@ class Settings(BaseSettings):
     # Forex/Indices/Commodities via yfinance (Yahoo Finance) — zero config
 
     # ── Signal Configuration ──
-    signal_min_confidence: int = 55
+    signal_min_confidence: int = 72  # Raised from 55: require strong indicator consensus
     max_concurrent_signals: int = 10
     analysis_interval_seconds: int = 30
     backtest_lookback_days: int = 90
 
     # ── OTC Settings ──
     otc_signal_timeout: int = 30    # Max seconds to find a signal for OTC
-    otc_min_confidence: int = 50    # Lower threshold for fast OTC signals
+    otc_min_confidence: int = 75    # Raised from 50: OTC signals must be high-quality
 
     log_level: str = "INFO"
 

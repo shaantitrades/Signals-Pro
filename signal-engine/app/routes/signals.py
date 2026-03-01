@@ -64,44 +64,34 @@ async def generate_signal(category: AssetCategory, asset: str, timeframe: Timefr
 @router.get("/fast/{category}/{asset}/{timeframe}")
 async def fast_signal(category: AssetCategory, asset: str, timeframe: Timeframe):
     """
-    Fast signal generation — finds a signal within seconds.
+    Fast signal generation on the REQUESTED timeframe only.
+    Returns None if no high-confidence signal is found — does NOT fall back to other timeframes.
     Primary use: Forex OTC "Start Signals" feature.
-    Tries multiple timeframes if needed to find a valid signal.
     """
     if asset not in ASSETS.get(category, []):
         raise HTTPException(status_code=400, detail=f"Asset {asset} not available in {category}")
 
-    # For OTC, use lower confidence threshold for faster signal detection
+    # Use appropriate confidence threshold based on asset class
     min_conf = settings.otc_min_confidence if category == AssetCategory.FOREX_OTC else settings.signal_min_confidence
 
-    # Try the requested timeframe first
-    timeframes_to_try = [timeframe]
+    # Only analyze the REQUESTED timeframe — no silent fallback to other timeframes
+    try:
+        df = await data_provider.fetch_ohlcv(asset, timeframe.value, limit=100)
+        if df is None or df.empty:
+            return {"signal": None, "message": f"No market data for {asset}/{timeframe.value}", "fast_mode": True}
 
-    # If no signal found, try adjacent timeframes for more opportunities
-    tf_priority = [Timeframe.M1, Timeframe.M5, Timeframe.M15, Timeframe.M30, Timeframe.H1]
-    for tf in tf_priority:
-        if tf != timeframe and tf not in timeframes_to_try:
-            timeframes_to_try.append(tf)
-        if len(timeframes_to_try) >= 3:
-            break
+        result = analyzer.analyze(df, asset, category, timeframe)
+        if result and result.confidence >= min_conf:
+            return {
+                "signal": result.model_dump(),
+                "source_timeframe": timeframe.value,
+                "fast_mode": True,
+            }
+    except Exception as e:
+        logger.error(f"Fast signal error {asset}/{timeframe}: {e}")
+        return {"signal": None, "message": "Analysis error", "fast_mode": True}
 
-    for tf in timeframes_to_try:
-        try:
-            df = await data_provider.fetch_ohlcv(asset, tf.value, limit=100)
-            if df is None or df.empty:
-                continue
-
-            result = analyzer.analyze(df, asset, category, tf)
-            if result and result.confidence >= min_conf:
-                return {
-                    "signal": result.model_dump(),
-                    "source_timeframe": tf.value,
-                    "fast_mode": True,
-                }
-        except Exception as e:
-            logger.error(f"Fast signal error {asset}/{tf}: {e}")
-
-    return {"signal": None, "message": f"No signal found for {asset}", "fast_mode": True}
+    return {"signal": None, "message": f"No strong signal found for {asset} on {timeframe.value}", "fast_mode": True}
 
 
 @router.get("/scan/{category}/{timeframe}")
