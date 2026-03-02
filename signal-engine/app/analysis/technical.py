@@ -29,7 +29,7 @@ class TechnicalAnalyzer:
             logger.warning(f"Insufficient data for {asset} ({len(df)} candles, need {self.MIN_CANDLES})")
             return None
 
-        indicators = self._compute_indicators(df)
+        indicators = self._compute_indicators(df, category)
         if not indicators:
             return None
 
@@ -100,10 +100,11 @@ class TechnicalAnalyzer:
             reasoning=reasoning,
         )
 
-    def _compute_indicators(self, df: pd.DataFrame) -> list[IndicatorResult]:
-        """Compute RSI + MACD + EMA — fast and reliable."""
+    def _compute_indicators(self, df: pd.DataFrame, category: AssetCategory) -> list[IndicatorResult]:
+        """Compute RSI + EMA (all categories) + MACD (non-OTC only)."""
         results: list[IndicatorResult] = []
         close = df["close"]
+        use_macd = category != AssetCategory.FOREX_OTC
 
         # ── 1) RSI (14) ─────────────────────────────────────
         rsi_series = ta.momentum.RSIIndicator(close, window=14).rsi()
@@ -126,27 +127,25 @@ class TechnicalAnalyzer:
         # This prevents false signals in choppy/ranging markets
 
         # ── 2) MACD (12, 26, 9) ─────────────────────────────
-        macd_obj = ta.trend.MACD(close, window_slow=26, window_fast=12, window_sign=9)
-        macd_hist = macd_obj.macd_diff().iloc[-1]
-        macd_prev = macd_obj.macd_diff().iloc[-2]
-        macd_prev2 = macd_obj.macd_diff().iloc[-3] if len(df) > 30 else macd_prev
+        # Skipped for FOREX_OTC: MACD needs 26+ candles and slows down M1 signals
+        if use_macd:
+            macd_obj = ta.trend.MACD(close, window_slow=26, window_fast=12, window_sign=9)
+            macd_hist = macd_obj.macd_diff().iloc[-1]
+            macd_prev = macd_obj.macd_diff().iloc[-2]
+            macd_prev2 = macd_obj.macd_diff().iloc[-3] if len(df) > 30 else macd_prev
 
-        if macd_hist > 0 and macd_prev <= 0:
-            # Fresh bullish crossover — strongest signal
-            results.append(IndicatorResult(name="MACD", value=round(macd_hist, 6), signal=SignalAction.BUY, strength=85))
-        elif macd_hist < 0 and macd_prev >= 0:
-            # Fresh bearish crossover — strongest signal
-            results.append(IndicatorResult(name="MACD", value=round(macd_hist, 6), signal=SignalAction.SELL, strength=85))
-        elif macd_hist > 0 and macd_hist > macd_prev:
-            # Bullish momentum increasing
-            results.append(IndicatorResult(name="MACD", value=round(macd_hist, 6), signal=SignalAction.BUY, strength=55))
-        elif macd_hist < 0 and macd_hist < macd_prev:
-            # Bearish momentum increasing
-            results.append(IndicatorResult(name="MACD", value=round(macd_hist, 6), signal=SignalAction.SELL, strength=55))
-        elif macd_hist > 0:
-            results.append(IndicatorResult(name="MACD", value=round(macd_hist, 6), signal=SignalAction.BUY, strength=35))
-        else:
-            results.append(IndicatorResult(name="MACD", value=round(macd_hist, 6), signal=SignalAction.SELL, strength=35))
+            if macd_hist > 0 and macd_prev <= 0:
+                results.append(IndicatorResult(name="MACD", value=round(macd_hist, 6), signal=SignalAction.BUY, strength=85))
+            elif macd_hist < 0 and macd_prev >= 0:
+                results.append(IndicatorResult(name="MACD", value=round(macd_hist, 6), signal=SignalAction.SELL, strength=85))
+            elif macd_hist > 0 and macd_hist > macd_prev:
+                results.append(IndicatorResult(name="MACD", value=round(macd_hist, 6), signal=SignalAction.BUY, strength=55))
+            elif macd_hist < 0 and macd_hist < macd_prev:
+                results.append(IndicatorResult(name="MACD", value=round(macd_hist, 6), signal=SignalAction.SELL, strength=55))
+            elif macd_hist > 0:
+                results.append(IndicatorResult(name="MACD", value=round(macd_hist, 6), signal=SignalAction.BUY, strength=35))
+            else:
+                results.append(IndicatorResult(name="MACD", value=round(macd_hist, 6), signal=SignalAction.SELL, strength=35))
 
         # ── 3) EMA Cross (9/21) ─────────────────────────────
         ema9 = ta.trend.EMAIndicator(close, window=9).ema_indicator()
