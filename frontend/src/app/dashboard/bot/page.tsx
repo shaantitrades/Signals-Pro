@@ -320,8 +320,8 @@ export default function BotPage() {
 
             {/* Price highlight */}
             <div className="bg-primary/10 border border-primary/20 rounded-xl px-4 py-3 mb-5">
-              <p className="text-xs text-muted-foreground mb-0.5">Accès complet dès</p>
-              <p className="text-3xl font-extrabold text-primary">6€<span className="text-base font-medium text-muted-foreground">/mois</span></p>
+              <p className="text-xs text-muted-foreground mb-0.5">Accès complet</p>
+              <p className="text-3xl font-extrabold text-primary">à partir de <span className="text-primary">6$</span></p>
             </div>
 
             {/* Features list */}
