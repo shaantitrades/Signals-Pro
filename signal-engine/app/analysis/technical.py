@@ -62,6 +62,17 @@ class TechnicalAnalyzer:
         action = SignalAction.BUY if buy_score > sell_score else SignalAction.SELL
         raw_confidence = (max(buy_score, sell_score) / total_weight) * 100
 
+        # ── Price Action Filter (OTC only) ──────────────────────────────
+        # Validates signal against actual recent candles to avoid lag-induced errors
+        # yfinance data can be 15-30s delayed on M1; recent candles reveal true direction
+        if category == AssetCategory.FOREX_OTC:
+            pa_result = self._price_action_filter(df, action)
+            if pa_result == "reject":
+                logger.debug(f"Price action filter rejected {action.value} signal — recent candles contradict")
+                return None
+            elif pa_result == "weak":
+                raw_confidence = max(0, raw_confidence - 12)
+
         # Boost confidence based on agreement level
         agreeing = buy_count if action == SignalAction.BUY else sell_count
         if agreeing == 3 and n == 3:
@@ -206,6 +217,42 @@ class TechnicalAnalyzer:
                 results.append(IndicatorResult(name="Stoch(5,3)", value=round(k, 2), signal=SignalAction.SELL, strength=45))
 
         return results
+
+    def _price_action_filter(self, df: pd.DataFrame, action: SignalAction) -> str:
+        """
+        Validate signal against recent candle price action.
+        Returns: 'ok', 'weak', or 'reject'
+
+        Logic:
+        - Look at last 5 candles body direction + recent momentum
+        - If 4+ candles strongly oppose the signal → reject
+        - If 3 candles oppose AND momentum is against → weak (reduce confidence)
+        - Otherwise → ok
+        """
+        last = df.tail(5)
+        bodies = last["close"] - last["open"]  # positive = bullish, negative = bearish
+
+        bullish_count = int((bodies > 0).sum())
+        bearish_count = int((bodies < 0).sum())
+
+        # Recent momentum: is price going up or down over last 5 candles?
+        momentum = float(df["close"].iloc[-1]) - float(df["close"].iloc[-6]) if len(df) > 6 else 0.0
+        momentum_bullish = momentum > 0
+
+        if action == SignalAction.BUY:
+            # BUY signal: check if recent candles are actually bearish
+            if bearish_count >= 4:
+                return "reject"  # 4+ of last 5 candles bearish — clearly wrong direction
+            if bearish_count >= 3 and not momentum_bullish:
+                return "weak"   # 3 bearish + downward momentum = weaker signal
+        else:  # SELL
+            # SELL signal: check if recent candles are actually bullish
+            if bullish_count >= 4:
+                return "reject"  # 4+ of last 5 candles bullish — clearly wrong direction
+            if bullish_count >= 3 and momentum_bullish:
+                return "weak"   # 3 bullish + upward momentum = weaker signal
+
+        return "ok"
 
     def _calculate_levels(
         self, action: SignalAction, price: float, atr: float, category: AssetCategory
