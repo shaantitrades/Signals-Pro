@@ -81,7 +81,13 @@ nowpaymentsRouter.post('/create-payment', authenticate, async (req: AuthRequest,
     }
 
     const priceEur = Number(plan.priceEur);
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const frontendUrl = (() => {
+      const raw = process.env.FRONTEND_URL || 'https://marketsignals24.com';
+      if (raw.includes('://62.') || raw.includes('://10.') || raw.includes('://172.') || raw.includes('://192.168.') || raw.startsWith('http://')) {
+        return 'https://marketsignals24.com';
+      }
+      return raw;
+    })();
 
     // Create NOWPayments invoice
     const invoice = await npFetch('/invoice', {

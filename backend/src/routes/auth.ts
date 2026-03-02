@@ -466,7 +466,13 @@ authRouter.post('/forgot-password', async (req: Request, res: Response, next: Ne
       data: { resetToken, resetTokenExp },
     });
 
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const frontendUrl = (() => {
+      const raw = process.env.FRONTEND_URL || 'https://marketsignals24.com';
+      if (raw.includes('://62.') || raw.includes('://10.') || raw.includes('://172.') || raw.includes('://192.168.') || raw.startsWith('http://')) {
+        return 'https://marketsignals24.com';
+      }
+      return raw;
+    })();
     const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
 
     // TODO: Send email with resetUrl when email service is configured
