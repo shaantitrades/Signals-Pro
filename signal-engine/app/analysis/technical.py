@@ -37,7 +37,7 @@ class TechnicalAnalyzer:
 
         action = indicators[0].signal
 
-        # Confiance fixe : croisement EMA5/10 dans le sens de EMA20 = setup de qualité
+        # Confiance fixe : croisement EMA5/7 dans le sens de EMA10 = setup de qualité
         confidence = 87.0
 
         # Calculate price levels
@@ -71,60 +71,59 @@ class TechnicalAnalyzer:
         Stratégie 3-EMA unifiée — identique pour tous les marchés.
 
         Règle :
-          EMA20 = filtre de tendance macro
-          EMA5 / EMA10 = déclencheur d'entrée (croisement dans le sens de EMA20)
+          EMA10 = filtre de tendance
+          EMA5 / EMA7 = déclencheur d'entrée (croisement dans le sens de EMA10)
 
-          BUY  : EMA5 > EMA20 ET EMA10 > EMA20
-                 → fresh cross EMA5 passe AU-DESSUS de EMA10
+          BUY  : EMA5 > EMA10 ET EMA7 > EMA10
+                 → fresh cross EMA5 passe AU-DESSUS de EMA7
 
-          SELL : EMA5 < EMA20 ET EMA10 < EMA20
-                 → fresh cross EMA5 passe EN-DESSOUS de EMA10
+          SELL : EMA5 < EMA10 ET EMA7 < EMA10
+                 → fresh cross EMA5 passe EN-DESSOUS de EMA7
 
           Tout autre cas = pas de signal (cross contre-tendance ignoré)
         """
         results: list[IndicatorResult] = []
 
-        # 50 candles : EMA20 a besoin d'historique pour être un vrai filtre de tendance
-        # Sur moins de candles, EMA20 ≈ EMA5 → filtre inutile
-        if len(df) > 50:
-            df = df.tail(50).reset_index(drop=True)
+        # 30 candles suffisent : EMA10 a besoin de moins d'historique
+        if len(df) > 30:
+            df = df.tail(30).reset_index(drop=True)
 
         close = df["close"]
 
         # ── Calcul des 3 EMAs ───────────────────────────────────────────────
         ema5_series  = ta.trend.EMAIndicator(close, window=5).ema_indicator()
+        ema7_series  = ta.trend.EMAIndicator(close, window=7).ema_indicator()
         ema10_series = ta.trend.EMAIndicator(close, window=10).ema_indicator()
-        ema20_series = ta.trend.EMAIndicator(close, window=20).ema_indicator()
 
         ema5_now  = float(ema5_series.iloc[-1])
         ema5_prev = float(ema5_series.iloc[-2])
-        ema10_now  = float(ema10_series.iloc[-1])
-        ema10_prev = float(ema10_series.iloc[-2])
-        ema20_now  = float(ema20_series.iloc[-1])
+        ema7_now  = float(ema7_series.iloc[-1])
+        ema7_prev = float(ema7_series.iloc[-2])
+        ema10_now = float(ema10_series.iloc[-1])
 
-        ema_diff = round(ema5_now - ema10_now, 6)
+        ema_diff = round(ema5_now - ema7_now, 6)
 
-        # ── Filtre de tendance EMA20 ────────────────────────────────────────
-        # Les deux EMAs rapides doivent être du même côté de EMA20
-        bullish_trend = ema5_now > ema20_now and ema10_now > ema20_now
-        bearish_trend = ema5_now < ema20_now and ema10_now < ema20_now
+        # ── Filtre de tendance EMA10 ────────────────────────────────────────
+        # Les deux EMAs rapides (EMA5 et EMA7) doivent être du même côté de EMA10
+        bullish_trend = ema5_now > ema10_now and ema7_now > ema10_now
+        bearish_trend = ema5_now < ema10_now and ema7_now < ema10_now
 
-        # ── Déclencheur : croisement frais EMA5 / EMA10 ───────────────────
-        crossed_up   = ema5_now > ema10_now and ema5_prev <= ema10_prev
-        crossed_down = ema5_now < ema10_now and ema5_prev >= ema10_prev
+        # ── Déclencheur : croisement frais EMA5 / EMA7 ────────────────────
+        crossed_up   = ema5_now > ema7_now and ema5_prev <= ema7_prev
+        crossed_down = ema5_now < ema7_now and ema5_prev >= ema7_prev
 
         if bullish_trend and crossed_up:
-            # EMA5 croise EMA10 à la hausse, les deux au-dessus de EMA20 → BUY confirmé
+            # EMA5 croise EMA7 à la hausse, les deux au-dessus de EMA10 → BUY confirmé
             results.append(IndicatorResult(
-                name="EMA(5/10/20)",
+                name="EMA(5/7/10)",
                 value=ema_diff,
                 signal=SignalAction.BUY,
                 strength=90,
             ))
         elif bearish_trend and crossed_down:
-            # EMA5 croise EMA10 à la baisse, les deux en-dessous de EMA20 → SELL confirmé
+            # EMA5 croise EMA7 à la baisse, les deux en-dessous de EMA10 → SELL confirmé
             results.append(IndicatorResult(
-                name="EMA(5/10/20)",
+                name="EMA(5/7/10)",
                 value=ema_diff,
                 signal=SignalAction.SELL,
                 strength=90,
@@ -185,13 +184,13 @@ class TechnicalAnalyzer:
         """Generate human-readable analysis reasoning."""
         ind = indicators[0] if indicators else None
         direction = "haussière" if action == SignalAction.BUY else "baissière"
-        cross = "EMA5 croise EMA10 à la hausse" if action == SignalAction.BUY else "EMA5 croise EMA10 à la baisse"
+        cross = "EMA5 croise EMA7 à la hausse" if action == SignalAction.BUY else "EMA5 croise EMA7 à la baisse"
         above_below = "au-dessus" if action == SignalAction.BUY else "en-dessous"
 
         lines = [
             f"Signal {action.value} (confiance: {confidence}%)",
-            f"✅ Tendance {direction} confirmée : EMA5 et EMA10 {above_below} de EMA20",
-            f"✅ Déclencheur : {cross} (EMA5/10 diff={ind.value if ind else 'N/A'})",
+            f"✅ Tendance {direction} confirmée : EMA5 et EMA7 {above_below} de EMA10",
+            f"✅ Déclencheur : {cross} (EMA5/7 diff={ind.value if ind else 'N/A'})",
         ]
         return " | ".join(lines)
 
