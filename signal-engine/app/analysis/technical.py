@@ -110,11 +110,11 @@ class TechnicalAnalyzer:
         results: list[IndicatorResult] = []
         use_macd = category != AssetCategory.FOREX_OTC
 
-        # For OTC M1: use only the last 50 candles to stay reactive to current price
-        # Using 5 days of data (7000+ candles) causes EMA to track the WEEKLY trend,
-        # not the current micro-trend — this creates a persistent directional bias
-        if not use_macd and len(df) > 50:  # FOREX_OTC
-            df = df.tail(50).reset_index(drop=True)
+        # For OTC M1: use only the last 20 candles to stay reactive to current price
+        # Min 20 needed: EMA5(5), EMA10(10), RSI(14), Stoch(5,3,3)(8) all require data
+        # Less than 20 would produce NaN values in RSI and Stochastic
+        if not use_macd and len(df) > 20:  # FOREX_OTC
+            df = df.tail(20).reset_index(drop=True)
 
         close = df["close"]
 
@@ -159,45 +159,44 @@ class TechnicalAnalyzer:
             else:
                 results.append(IndicatorResult(name="MACD", value=round(macd_hist, 6), signal=SignalAction.SELL, strength=35))
 
-        # ── 3) EMA — Price vs EMA9 (OTC) or EMA9/21 cross (others) ────────
-        ema9 = ta.trend.EMAIndicator(close, window=9).ema_indicator()
-        ema9_now = float(ema9.iloc[-1])
-        ema9_prev = float(ema9.iloc[-2])
+        # ── 3) EMA — Price vs EMA5 (OTC) or EMA5/10 cross (others) ────────
+        ema5 = ta.trend.EMAIndicator(close, window=5).ema_indicator()
+        ema5_now = float(ema5.iloc[-1])
+        ema5_prev = float(ema5.iloc[-2])
         price_now = float(close.iloc[-1])
 
-        if not use_macd:  # FOREX_OTC: price vs EMA9, more reactive than lagging cross
-            # Price ABOVE EMA9 + EMA9 rising → bullish momentum on current candles
-            # Price BELOW EMA9 + EMA9 falling → bearish momentum on current candles
-            # This is 50/50 balanced and reflects the actual current micro-trend
-            ema9_rising = ema9_now > ema9_prev
-            price_above = price_now > ema9_now
+        if not use_macd:  # FOREX_OTC: price vs EMA5 — very reactive to last 5 candles
+            # Price ABOVE EMA5 + EMA5 rising → bullish micro-trend
+            # Price BELOW EMA5 + EMA5 falling → bearish micro-trend
+            ema5_rising = ema5_now > ema5_prev
+            price_above = price_now > ema5_now
 
-            if price_above and ema9_rising:
-                results.append(IndicatorResult(name="EMA9", value=round(ema9_now, 6), signal=SignalAction.BUY, strength=75))
-            elif not price_above and not ema9_rising:
-                results.append(IndicatorResult(name="EMA9", value=round(ema9_now, 6), signal=SignalAction.SELL, strength=75))
+            if price_above and ema5_rising:
+                results.append(IndicatorResult(name="EMA5", value=round(ema5_now, 6), signal=SignalAction.BUY, strength=75))
+            elif not price_above and not ema5_rising:
+                results.append(IndicatorResult(name="EMA5", value=round(ema5_now, 6), signal=SignalAction.SELL, strength=75))
             elif price_above:
-                results.append(IndicatorResult(name="EMA9", value=round(ema9_now, 6), signal=SignalAction.BUY, strength=45))
+                results.append(IndicatorResult(name="EMA5", value=round(ema5_now, 6), signal=SignalAction.BUY, strength=45))
             else:
-                results.append(IndicatorResult(name="EMA9", value=round(ema9_now, 6), signal=SignalAction.SELL, strength=45))
+                results.append(IndicatorResult(name="EMA5", value=round(ema5_now, 6), signal=SignalAction.SELL, strength=45))
 
-        else:  # Non-OTC: classic EMA9/21 cross
-            ema21 = ta.trend.EMAIndicator(close, window=21).ema_indicator()
-            ema21_now = float(ema21.iloc[-1])
-            ema21_prev = float(ema21.iloc[-2])
-            ema_diff = ema9_now - ema21_now
-            ema_diff_prev = ema9_prev - ema21_prev
+        else:  # Non-OTC: EMA5/10 cross
+            ema10 = ta.trend.EMAIndicator(close, window=10).ema_indicator()
+            ema10_now = float(ema10.iloc[-1])
+            ema10_prev = float(ema10.iloc[-2])
+            ema_diff = ema5_now - ema10_now
+            ema_diff_prev = ema5_prev - ema10_prev
 
-            if ema9_now > ema21_now and ema9_prev <= ema21_prev:
-                results.append(IndicatorResult(name="EMA(9/21)", value=round(ema_diff, 6), signal=SignalAction.BUY, strength=90))
-            elif ema9_now < ema21_now and ema9_prev >= ema21_prev:
-                results.append(IndicatorResult(name="EMA(9/21)", value=round(ema_diff, 6), signal=SignalAction.SELL, strength=90))
-            elif ema9_now > ema21_now:
+            if ema5_now > ema10_now and ema5_prev <= ema10_prev:
+                results.append(IndicatorResult(name="EMA(5/10)", value=round(ema_diff, 6), signal=SignalAction.BUY, strength=90))
+            elif ema5_now < ema10_now and ema5_prev >= ema10_prev:
+                results.append(IndicatorResult(name="EMA(5/10)", value=round(ema_diff, 6), signal=SignalAction.SELL, strength=90))
+            elif ema5_now > ema10_now:
                 s = 60 if abs(ema_diff) > abs(ema_diff_prev) else 45
-                results.append(IndicatorResult(name="EMA(9/21)", value=round(ema_diff, 6), signal=SignalAction.BUY, strength=s))
+                results.append(IndicatorResult(name="EMA(5/10)", value=round(ema_diff, 6), signal=SignalAction.BUY, strength=s))
             else:
                 s = 60 if abs(ema_diff) > abs(ema_diff_prev) else 45
-                results.append(IndicatorResult(name="EMA(9/21)", value=round(ema_diff, 6), signal=SignalAction.SELL, strength=s))
+                results.append(IndicatorResult(name="EMA(5/10)", value=round(ema_diff, 6), signal=SignalAction.SELL, strength=s))
 
         # ── 4) Stochastic (5,3,3) — FOREX_OTC only ──────────────────────
         # Only votes on CLEAR signals: oversold/overbought or fresh K/D crossings
