@@ -306,27 +306,51 @@ export default function BotPage() {
                 <line x1="1" y1="1" x2="13" y2="13"/><line x1="13" y1="1" x2="1" y2="13"/>
               </svg>
             </button>
-            <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-3xl">🔒</span>
+
+            {/* Header */}
+            <div className="flex justify-center mb-3">
+              <div className="w-16 h-16 rounded-full bg-yellow-500/10 flex items-center justify-center">
+                <span className="text-3xl">👑</span>
               </div>
             </div>
-            <h3 className="text-xl font-bold mb-2">{t('bot.subRequired')}</h3>
-            <p className="text-sm text-muted-foreground mb-6">
-              {t('bot.subRequiredDesc')}
+            <h3 className="text-xl font-bold mb-1">Fonctionnalité Premium</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Forex, OTC et Matières Premières sont réservés aux membres Premium.
             </p>
+
+            {/* Price highlight */}
+            <div className="bg-primary/10 border border-primary/20 rounded-xl px-4 py-3 mb-5">
+              <p className="text-xs text-muted-foreground mb-0.5">Accès complet dès</p>
+              <p className="text-3xl font-extrabold text-primary">6€<span className="text-base font-medium text-muted-foreground">/mois</span></p>
+            </div>
+
+            {/* Features list */}
+            <ul className="text-sm text-left space-y-2 mb-6">
+              {[
+                '✅ Signaux Forex, OTC, Commodities',
+                '✅ Trading Bot sur tous les marchés',
+                '✅ Signaux Live illimités',
+                '✅ Alertes en temps réel',
+                '✅ Accès prioritaire aux nouveaux signaux',
+              ].map((f) => (
+                <li key={f} className="flex items-center gap-2">
+                  <span className="flex-1">{f}</span>
+                </li>
+              ))}
+            </ul>
+
             <div className="flex gap-3 justify-center">
               <button
                 onClick={() => setShowSubPopup(false)}
                 className="px-5 py-2.5 rounded-lg border border-border text-sm font-medium hover:bg-secondary transition-colors"
               >
-                {t('bot.close')}
+                Plus tard
               </button>
               <a
                 href="/tarifs"
                 className="px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-bold hover:bg-primary/90 transition-colors"
               >
-                {t('bot.subRequiredCta')}
+                Passer Premium →
               </a>
             </div>
           </div>
@@ -344,25 +368,38 @@ export default function BotPage() {
               {t('bot.category')}
             </h3>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-              {categories.map((cat) => (
-                <button
-                  key={cat.value}
-                  onClick={() => {
-                    setSelectedCategory(cat.value);
-                    setSelectedAssets([]);
-                  }}
-                  className={cn(
-                    'p-4 rounded-xl border text-center transition-all duration-200',
-                    selectedCategory === cat.value
-                      ? 'border-primary bg-primary/10 ring-1 ring-primary'
-                      : 'border-border hover:border-primary/30 hover:bg-secondary/50'
-                  )}
-                >
-                  <span className="text-2xl block mb-1">{cat.icon}</span>
-                  <span className="font-medium text-sm block">{t(cat.labelKey)}</span>
-                  <span className="text-xs text-muted-foreground">{t(cat.descKey)}</span>
-                </button>
-              ))}
+              {categories.map((cat) => {
+                const isPremiumCat = ['FOREX_OTC', 'FOREX', 'COMMODITIES'].includes(cat.value);
+                const isLocked = isPremiumCat && !hasSubscription;
+                return (
+                  <button
+                    key={cat.value}
+                    onClick={() => {
+                      if (isLocked) {
+                        setShowSubPopup(true);
+                        return;
+                      }
+                      setSelectedCategory(cat.value);
+                      setSelectedAssets([]);
+                    }}
+                    className={cn(
+                      'relative p-4 rounded-xl border text-center transition-all duration-200',
+                      selectedCategory === cat.value
+                        ? 'border-primary bg-primary/10 ring-1 ring-primary'
+                        : isLocked
+                          ? 'border-border opacity-75 hover:border-yellow-500/50 hover:bg-yellow-500/5'
+                          : 'border-border hover:border-primary/30 hover:bg-secondary/50'
+                    )}
+                  >
+                    {isLocked && (
+                      <span className="absolute top-1.5 right-1.5 text-xs">🔒</span>
+                    )}
+                    <span className="text-2xl block mb-1">{cat.icon}</span>
+                    <span className="font-medium text-sm block">{t(cat.labelKey)}</span>
+                    <span className="text-xs text-muted-foreground">{t(cat.descKey)}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
