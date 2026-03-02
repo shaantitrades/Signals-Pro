@@ -629,9 +629,16 @@ export default function BotPage() {
                     <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
                       {signal.confidence}%
                     </span>
-                    <span className="text-xs bg-profit/10 text-profit px-2 py-0.5 rounded">
-                      LIVE
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      {signal.timeframe && (
+                        <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded font-mono">
+                          {signal.timeframe}
+                        </span>
+                      )}
+                      <span className="text-xs bg-profit/10 text-profit px-2 py-0.5 rounded">
+                        LIVE
+                      </span>
+                    </div>
                   </div>
                 </div>
               ))}
