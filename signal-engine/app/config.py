@@ -20,7 +20,7 @@ class Settings(BaseSettings):
 
     # ── OTC Settings ──
     otc_signal_timeout: int = 30    # Max seconds to find a signal for OTC
-    otc_min_confidence: int = 75    # Raised from 50: OTC signals must be high-quality
+    otc_min_confidence: int = 70    # Lowered from 75: Stochastic+EMA gives reliable 2/3 consensus
 
     log_level: str = "INFO"
 

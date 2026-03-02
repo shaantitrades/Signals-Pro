@@ -46,27 +46,32 @@ class TechnicalAnalyzer:
         sell_count = sum(1 for ind in indicators if ind.signal == SignalAction.SELL)
         n = len(indicators)
 
-        # Require unanimous agreement OR at least 2 strong indicators
-        # With RSI neutral zone excluded, we may have 2 indicators; both must agree
+        # OTC: 2 indicators agreeing is enough (Stochastic always present)
+        # Non-OTC: all 3 must agree (strict quality for live signals)
         if n == 0:
             return None
-        if n >= 3 and max(buy_count, sell_count) < 3:
-            return None  # 3 indicators available but not unanimous — no signal
+        if n >= 3:
+            required = 2 if category == AssetCategory.FOREX_OTC else 3
+            if max(buy_count, sell_count) < required:
+                return None
         if n == 2 and max(buy_count, sell_count) < 2:
-            return None  # Only 2 indicators (RSI neutral) — both must agree
+            return None  # Both indicators must agree
         if n == 1:
-            return None  # Single indicator is not reliable enough alone
+            return None  # Single indicator not reliable enough
 
         action = SignalAction.BUY if buy_score > sell_score else SignalAction.SELL
         raw_confidence = (max(buy_score, sell_score) / total_weight) * 100
 
-        # Boost confidence when multiple indicators agree
+        # Boost confidence based on agreement level
         agreeing = buy_count if action == SignalAction.BUY else sell_count
         if agreeing == 3 and n == 3:
-            # All 3 indicators unanimous — strong signal
+            # All 3 unanimous — very strong signal
             raw_confidence = min(97, max(raw_confidence + 10, 78))
+        elif agreeing == 2 and n == 3:
+            # Majority 2/3 — good signal (OTC only)
+            raw_confidence = min(88, max(raw_confidence + 5, 72))
         elif agreeing == 2 and n == 2:
-            # Both available indicators agree (RSI was neutral)
+            # Both agree — solid signal
             raw_confidence = min(90, max(raw_confidence + 5, 70))
         else:
             # Partial agreement — reduce confidence
@@ -170,6 +175,35 @@ class TechnicalAnalyzer:
         else:
             s = 60 if abs(ema_diff) > abs(ema_diff_prev) else 45
             results.append(IndicatorResult(name="EMA(9/21)", value=round(ema_diff, 6), signal=SignalAction.SELL, strength=s))
+
+        # ── 4) Stochastic (5,3,3) — FOREX_OTC only ──────────
+        # Fast oscillator ideal for M1: always votes, avoids RSI neutral-zone gaps
+        if not use_macd:  # i.e., FOREX_OTC
+            stoch = ta.momentum.StochasticOscillator(
+                df["high"], df["low"], close, window=5, smooth_window=3
+            )
+            k = stoch.stoch().iloc[-1]
+            k_prev = stoch.stoch().iloc[-2]
+            d = stoch.stoch_signal().iloc[-1]
+
+            if k < 20:
+                # Oversold — strong buy
+                results.append(IndicatorResult(name="Stoch(5,3)", value=round(k, 2), signal=SignalAction.BUY, strength=85))
+            elif k > 80:
+                # Overbought — strong sell
+                results.append(IndicatorResult(name="Stoch(5,3)", value=round(k, 2), signal=SignalAction.SELL, strength=85))
+            elif k > d and k_prev <= d:
+                # K crosses above D — bullish crossover
+                results.append(IndicatorResult(name="Stoch(5,3)", value=round(k, 2), signal=SignalAction.BUY, strength=70))
+            elif k < d and k_prev >= d:
+                # K crosses below D — bearish crossover
+                results.append(IndicatorResult(name="Stoch(5,3)", value=round(k, 2), signal=SignalAction.SELL, strength=70))
+            elif k > d:
+                # K above D — upward bias
+                results.append(IndicatorResult(name="Stoch(5,3)", value=round(k, 2), signal=SignalAction.BUY, strength=45))
+            else:
+                # K below D — downward bias
+                results.append(IndicatorResult(name="Stoch(5,3)", value=round(k, 2), signal=SignalAction.SELL, strength=45))
 
         return results
 
