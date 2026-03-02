@@ -112,6 +112,9 @@ export default function BotPage() {
   const [activeSignals, setActiveSignals] = useState<any[]>([]);
   const [loadingActive, setLoadingActive] = useState(true);
 
+  // ── Bot Session Signals (signals found during current bot run) ──
+  const [botSignals, setBotSignals] = useState<any[]>([]);
+
   // Fetch active signals from backend API (DB-backed)
   useEffect(() => {
     async function fetchActiveSignals() {
@@ -231,14 +234,9 @@ export default function BotPage() {
               setPopupVisible(true);
               playSignalSound();
 
-              // Auto-hide popup after 15 seconds
-              setTimeout(() => setPopupVisible(false), 15000);
-            }
-          }
+                // Add to bot session signals (keep last 4, newest first)
+                setBotSignals(prev => [signal, ...prev].slice(0, 4));
 
-          if (!cancelled) scheduleNext();
-        }, delay);
-      };
       scheduleNext();
 
       return () => {
@@ -269,6 +267,7 @@ export default function BotPage() {
     if (isBotRunning) {
       setPopupVisible(false);
       setSignalPopup(null);
+      setBotSignals([]);
     }
     setIsBotRunning(!isBotRunning);
   };
@@ -614,74 +613,86 @@ export default function BotPage() {
           <div className="signal-card">
             <div className="p-4 border-b border-border flex items-center justify-between">
               <h3 className="font-semibold">{t('bot.activeSignals')}</h3>
-              <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
-                {loadingActive ? '...' : activeSignals.length} {t('bot.active')}
-              </span>
+              {isBotRunning && (
+                <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
+                  {botSignals.length} {t('bot.active')}
+                </span>
+              )}
             </div>
-            {loadingActive ? (
-              <div className="p-6 text-center text-muted-foreground">
-                <div className="animate-spin text-xl mb-1">⏳</div>
-                <p className="text-xs">Loading...</p>
+            {!isBotRunning ? (
+              <div className="p-8 text-center text-muted-foreground">
+                <p className="text-3xl mb-3">🤖</p>
+                <p className="text-sm font-medium mb-1">Bot non démarré</p>
+                <p className="text-xs">Configurez et démarrez le bot pour voir les signaux</p>
               </div>
-            ) : activeSignals.length === 0 ? (
-              <div className="p-6 text-center text-muted-foreground">
-                <p className="text-sm">📡</p>
-                <p className="text-xs">No active signals right now</p>
+            ) : botSignals.length === 0 ? (
+              <div className="p-8 text-center text-muted-foreground">
+                <div className="flex justify-center mb-3">
+                  <span className="w-2 h-2 bg-profit rounded-full animate-pulse inline-block" />
+                </div>
+                <p className="text-sm font-medium text-profit mb-1">Bot actif — en attente...</p>
+                <p className="text-xs">Les signaux apparaîtront ici</p>
               </div>
             ) : (
-            <div className="divide-y divide-border">
-              {activeSignals.map((signal) => (
-                <div key={signal.id} className="p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold">{signal.asset}</span>
-                      <span className={cn(
-                        'signal-badge text-xs',
-                        signal.action === 'BUY' ? 'signal-badge-buy' : 'signal-badge-sell'
-                      )}>
-                        {signal.action}
-                      </span>
-                    </div>
-                    <span className="text-xs text-muted-foreground">{signal.time}</span>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-2 text-xs mb-3">
-                    <div>
-                      <span className="text-muted-foreground">{t('bot.entry')} : </span>
-                      <span className="font-medium">{signal.entryPrice > 0 ? signal.entryPrice : '—'}</span>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">TP1 : </span>
-                      <span className="font-medium text-profit">{signal.tp1 > 0 ? signal.tp1 : '—'}</span>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">SL : </span>
-                      <span className="font-medium text-loss">{signal.sl > 0 ? signal.sl : '—'}</span>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">{t('bot.confidence')} : </span>
-                      <span className="font-medium">{signal.confidence}%</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
-                      {signal.confidence}%
-                    </span>
-                    <div className="flex items-center gap-1.5">
-                      {signal.timeframe && (
-                        <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded font-mono">
-                          {signal.timeframe}
+              <div className="divide-y divide-border">
+                {botSignals.map((signal, idx) => (
+                  <div key={signal.id ?? idx} className={cn('p-4', idx === 0 && 'bg-profit/5')}>
+                    {idx === 0 && (
+                      <div className="flex items-center gap-1 mb-2">
+                        <span className="w-1.5 h-1.5 bg-profit rounded-full animate-pulse" />
+                        <span className="text-xs text-profit font-medium">Dernier signal</span>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold">{signal.asset}</span>
+                        <span className={cn(
+                          'signal-badge text-xs',
+                          signal.action === 'BUY' ? 'signal-badge-buy' : 'signal-badge-sell'
+                        )}>
+                          {signal.action}
                         </span>
-                      )}
-                      <span className="text-xs bg-profit/10 text-profit px-2 py-0.5 rounded">
-                        LIVE
+                      </div>
+                      <span className="text-xs text-muted-foreground">{signal.time}</span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2 text-xs mb-3">
+                      <div>
+                        <span className="text-muted-foreground">{t('bot.entry')} : </span>
+                        <span className="font-medium">{signal.entryPrice > 0 ? signal.entryPrice : '—'}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">TP1 : </span>
+                        <span className="font-medium text-profit">{signal.tp1 > 0 ? signal.tp1 : '—'}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">SL : </span>
+                        <span className="font-medium text-loss">{signal.sl > 0 ? signal.sl : '—'}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground">{t('bot.confidence')} : </span>
+                        <span className="font-medium">{signal.confidence}%</span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                        {signal.confidence}%
                       </span>
+                      <div className="flex items-center gap-1.5">
+                        {signal.timeframe && (
+                          <span className="text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded font-mono">
+                            {signal.timeframe}
+                          </span>
+                        )}
+                        <span className="text-xs bg-profit/10 text-profit px-2 py-0.5 rounded">
+                          LIVE
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
             )}
           </div>
 
@@ -765,6 +776,11 @@ export default function BotPage() {
                     )}>
                       {signalPopup.action}
                     </span>
+                    {selectedTimeframes.length === timeframes.length && signalPopup.timeframe && (
+                      <span className="px-2 py-1 rounded-lg text-xs font-mono bg-muted text-muted-foreground border border-border">
+                        {signalPopup.timeframe}
+                      </span>
+                    )}
                   </div>
                   <div className="text-right">
                     <span className="text-sm text-muted-foreground">{t('dash.confidence')}</span>
