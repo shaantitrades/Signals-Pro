@@ -20,10 +20,8 @@ interface RecentSignal {
 
 export default function DashboardPage() {
   const { t } = useI18n();
-  const { isAuthenticated, hasActiveSubscription } = useAuthStore();
-  const hasSubscription = hasActiveSubscription();
+  const { isAuthenticated } = useAuthStore();
   const [showWelcome, setShowWelcome] = useState(false);
-  const [showSubPopup, setShowSubPopup] = useState(false);
   const [recentSignals, setRecentSignals] = useState<RecentSignal[]>([]);
   const [stats, setStats] = useState({ activeSignals: 0, categories: 0 });
   const [loading, setLoading] = useState(true);
@@ -127,44 +125,7 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {/* Subscription Required Popup */}
-      {showSubPopup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 animate-in fade-in duration-200">
-          <div className="relative bg-card border border-border rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 text-center animate-in zoom-in-95 duration-200">
-            <button
-              onClick={() => setShowSubPopup(false)}
-              className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <line x1="1" y1="1" x2="13" y2="13"/><line x1="13" y1="1" x2="1" y2="13"/>
-              </svg>
-            </button>
-            <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-3xl">🔒</span>
-              </div>
-            </div>
-            <h3 className="text-xl font-bold mb-2">{t('bot.subRequired')}</h3>
-            <p className="text-sm text-muted-foreground mb-6">
-              {t('bot.subRequiredDesc')}
-            </p>
-            <div className="flex gap-3 justify-center">
-              <button
-                onClick={() => setShowSubPopup(false)}
-                className="px-5 py-2.5 rounded-lg border border-border text-sm font-medium hover:bg-secondary transition-colors"
-              >
-                {t('bot.close')}
-              </button>
-              <a
-                href="/tarifs"
-                className="px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-bold hover:bg-primary/90 transition-colors"
-              >
-                {t('bot.subRequiredCta')}
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Subscription Required Popup — kept for future use */}
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -244,18 +205,9 @@ export default function DashboardPage() {
       <div className="signal-card">
         <div className="flex items-center justify-between p-4 border-b border-border">
           <h2 className="font-semibold">{t('dash.recentSignals')}</h2>
-          {hasSubscription ? (
-            <Link href="/dashboard/signals" className="text-sm text-primary hover:underline">
-              {t('dash.seeAll')}
-            </Link>
-          ) : (
-            <button
-              onClick={() => setShowSubPopup(true)}
-              className="text-sm text-primary hover:underline"
-            >
-              {t('dash.seeAll')}
-            </button>
-          )}
+          <Link href="/dashboard/signals" className="text-sm text-primary hover:underline">
+            {t('dash.seeAll')}
+          </Link>
         </div>
         {loading ? (
           <div className="p-8 text-center text-muted-foreground">

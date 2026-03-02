@@ -259,8 +259,10 @@ export default function BotPage() {
   }, [isBotRunning, selectedCategory, selectedAssets, selectedTimeframes, minConfidence, playSignalSound]);
 
   const handleStartStop = () => {
-    // Gate: non-subscribers cannot start the bot
-    if (!isBotRunning && !hasSubscription) {
+    // Gate: non-subscribers can use Bot for Crypto + Indices freely
+    // Only OTC and Forex require a subscription
+    const premiumOnlyCategories = ['FOREX_OTC', 'FOREX', 'COMMODITIES'];
+    if (!isBotRunning && !hasSubscription && premiumOnlyCategories.includes(selectedCategory || '')) {
       setShowSubPopup(true);
       return;
     }
@@ -557,12 +559,12 @@ export default function BotPage() {
                     'px-5 py-2.5 sm:px-8 sm:py-3 rounded-xl font-bold text-base sm:text-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap relative',
                     isBotRunning
                       ? 'bg-loss text-white hover:bg-loss/90 shadow-lg shadow-loss/20'
-                      : !hasSubscription
+                      : (!hasSubscription && ['FOREX_OTC', 'FOREX', 'COMMODITIES'].includes(selectedCategory || ''))
                         ? 'bg-profit/60 text-white cursor-pointer shadow-lg shadow-profit/10'
                         : 'bg-profit text-white hover:bg-profit/90 shadow-lg shadow-profit/20'
                   )}
                 >
-                  {!hasSubscription && !isBotRunning && <span className="mr-1">🔒</span>}
+                  {!hasSubscription && !isBotRunning && ['FOREX_OTC', 'FOREX', 'COMMODITIES'].includes(selectedCategory || '') && <span className="mr-1">🔒</span>}
                   {isBotRunning ? t('bot.stop') : t('bot.start')}
                 </button>
               </div>
