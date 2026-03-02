@@ -46,6 +46,31 @@ export default function DashboardLayout({
     initAuth();
   }, [initAuth]);
 
+  // Periodic subscription refresh every 5 minutes + precise timer at expiry
+  useEffect(() => {
+    // Poll every 5 min to detect expiry
+    const interval = setInterval(() => {
+      initAuth();
+    }, 5 * 60 * 1000);
+
+    // Precise timer: fire exactly when subscription expires
+    const sub = useAuthStore.getState().user?.subscription;
+    if (sub?.currentPeriodEnd && (sub.status === 'ACTIVE' || sub.status === 'TRIAL')) {
+      const msUntilExpiry = new Date(sub.currentPeriodEnd).getTime() - Date.now();
+      if (msUntilExpiry > 0) {
+        const expiryTimeout = setTimeout(() => {
+          initAuth();
+        }, msUntilExpiry + 2000); // +2s buffer for server propagation
+        return () => {
+          clearInterval(interval);
+          clearTimeout(expiryTimeout);
+        };
+      }
+    }
+
+    return () => clearInterval(interval);
+  }, [initAuth]);
+
   // After Stripe/crypto payment redirect, poll initAuth until subscription is active
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
