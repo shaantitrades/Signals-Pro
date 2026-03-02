@@ -1,9 +1,8 @@
 """
-Core Technical Analysis Engine — 3-EMA Trend System
-Stratégie : EMA20 filtre la tendance, croisement EMA5/EMA10 déclenche l'entrée.
-Signal BUY  : EMA5 > EMA20 ET EMA10 > EMA20 → EMA5 croise EMA10 à la hausse
-Signal SELL : EMA5 < EMA20 ET EMA10 < EMA20 → EMA5 croise EMA10 à la baisse
-Applicable à tous les marchés : OTC, Forex, Crypto, Indices, Commodities.
+Core Technical Analysis Engine - Multi-EMA Vote System (Always-On)
+Strategie pour Pocket Option : CHAQUE check retourne BUY ou SELL.
+4 votes EMA (Prix/EMA5, EMA5/EMA7, EMA7/EMA10, EMA5/EMA10) -> score -4 a +4.
+Confiance : 92%(4/4) | 85%(3/4) | 78%(2/4) | 72%(1/4) | 70%(tie)
 """
 import pandas as pd
 import ta
@@ -16,31 +15,18 @@ from app.models import (
 
 
 class TechnicalAnalyzer:
-    """3-EMA trend-following signal engine (EMA5 / EMA10 / EMA20)."""
+    """Multi-EMA always-on signal engine - optimise Pocket Option."""
 
-    # 50 candles minimum: EMA20 needs enough history to be a meaningful trend filter
-    MIN_CANDLES = 50
+    MIN_CANDLES = 15
 
     def analyze(self, df: pd.DataFrame, asset: str, category: AssetCategory, timeframe: Timeframe) -> AnalysisResult | None:
-        """
-        Analyse technique 3-EMA.
-        Signal valide uniquement si croisement EMA5/EMA10 dans le sens de EMA20.
-        """
+        """Retourne TOUJOURS un signal BUY ou SELL. Confiance 70-92%."""
         if len(df) < self.MIN_CANDLES:
             logger.warning(f"Insufficient data for {asset} ({len(df)} candles, need {self.MIN_CANDLES})")
             return None
 
-        # Système 3-EMA : _compute_indicators retourne 0 (pas de signal) ou 1 (signal validé)
-        indicators = self._compute_indicators(df, category)
-        if not indicators:
-            return None
+        indicators, action, confidence = self._compute_indicators(df, category)
 
-        action = indicators[0].signal
-
-        # Confiance fixe : croisement EMA5/7 dans le sens de EMA10 = setup de qualité
-        confidence = 87.0
-
-        # Calculate price levels
         current = float(df["close"].iloc[-1])
         atr = float(ta.volatility.AverageTrueRange(
             df["high"], df["low"], df["close"], window=14
@@ -66,71 +52,50 @@ class TechnicalAnalyzer:
             reasoning=reasoning,
         )
 
-    def _compute_indicators(self, df: pd.DataFrame, category: AssetCategory) -> list[IndicatorResult]:
+    def _compute_indicators(
+        self, df: pd.DataFrame, category: AssetCategory
+    ) -> tuple[list[IndicatorResult], SignalAction, float]:
         """
-        Stratégie 3-EMA unifiée — identique pour tous les marchés.
-
-        Règle :
-          EMA10 = filtre de tendance
-          EMA5 / EMA7 = déclencheur d'entrée (croisement dans le sens de EMA10)
-
-          BUY  : EMA5 > EMA10 ET EMA7 > EMA10
-                 → fresh cross EMA5 passe AU-DESSUS de EMA7
-
-          SELL : EMA5 < EMA10 ET EMA7 < EMA10
-                 → fresh cross EMA5 passe EN-DESSOUS de EMA7
-
-          Tout autre cas = pas de signal (cross contre-tendance ignoré)
+        4 votes EMA -> toujours BUY ou SELL.
+          V1: prix > EMA5   V2: EMA5 > EMA7   V3: EMA7 > EMA10   V4: EMA5 > EMA10
+        Score +4 a -4 -> direction + confiance.
         """
-        results: list[IndicatorResult] = []
-
-        # 30 candles suffisent : EMA10 a besoin de moins d'historique
-        if len(df) > 30:
-            df = df.tail(30).reset_index(drop=True)
+        if len(df) > 20:
+            df = df.tail(20).reset_index(drop=True)
 
         close = df["close"]
+        price_now = float(close.iloc[-1])
 
-        # ── Calcul des 3 EMAs ───────────────────────────────────────────────
-        ema5_series  = ta.trend.EMAIndicator(close, window=5).ema_indicator()
-        ema7_series  = ta.trend.EMAIndicator(close, window=7).ema_indicator()
-        ema10_series = ta.trend.EMAIndicator(close, window=10).ema_indicator()
+        ema5  = float(ta.trend.EMAIndicator(close, window=5).ema_indicator().iloc[-1])
+        ema7  = float(ta.trend.EMAIndicator(close, window=7).ema_indicator().iloc[-1])
+        ema10 = float(ta.trend.EMAIndicator(close, window=10).ema_indicator().iloc[-1])
 
-        ema5_now  = float(ema5_series.iloc[-1])
-        ema5_prev = float(ema5_series.iloc[-2])
-        ema7_now  = float(ema7_series.iloc[-1])
-        ema7_prev = float(ema7_series.iloc[-2])
-        ema10_now = float(ema10_series.iloc[-1])
+        v1 = 1 if price_now > ema5  else -1
+        v2 = 1 if ema5      > ema7  else -1
+        v3 = 1 if ema7      > ema10 else -1
+        v4 = 1 if ema5      > ema10 else -1
+        score = v1 + v2 + v3 + v4
 
-        ema_diff = round(ema5_now - ema7_now, 6)
+        if score > 0:
+            action = SignalAction.BUY
+        elif score < 0:
+            action = SignalAction.SELL
+        else:
+            action = SignalAction.BUY if ema5 > ema10 else SignalAction.SELL
 
-        # ── Filtre de tendance EMA10 ────────────────────────────────────────
-        # Les deux EMAs rapides (EMA5 et EMA7) doivent être du même côté de EMA10
-        bullish_trend = ema5_now > ema10_now and ema7_now > ema10_now
-        bearish_trend = ema5_now < ema10_now and ema7_now < ema10_now
+        abs_score = abs(score)
+        confidence = {4: 92.0, 3: 85.0, 2: 78.0, 1: 72.0, 0: 70.0}[abs_score]
 
-        # ── Déclencheur : croisement frais EMA5 / EMA7 ────────────────────
-        crossed_up   = ema5_now > ema7_now and ema5_prev <= ema7_prev
-        crossed_down = ema5_now < ema7_now and ema5_prev >= ema7_prev
+        score_str = f"+{score}" if score >= 0 else str(score)
+        indicator = IndicatorResult(
+            name=f"EMA-Score({score_str}/4)",
+            value=round(ema5 - ema10, 6),
+            signal=action,
+            strength=abs_score * 25,
+        )
 
-        if bullish_trend and crossed_up:
-            # EMA5 croise EMA7 à la hausse, les deux au-dessus de EMA10 → BUY confirmé
-            results.append(IndicatorResult(
-                name="EMA(5/7/10)",
-                value=ema_diff,
-                signal=SignalAction.BUY,
-                strength=90,
-            ))
-        elif bearish_trend and crossed_down:
-            # EMA5 croise EMA7 à la baisse, les deux en-dessous de EMA10 → SELL confirmé
-            results.append(IndicatorResult(
-                name="EMA(5/7/10)",
-                value=ema_diff,
-                signal=SignalAction.SELL,
-                strength=90,
-            ))
-        # Tous les autres cas (cross contre-tendance, pas de cross, tendance mixte) → rien
-
-        return results
+        logger.debug(f"Votes V1={v1} V2={v2} V3={v3} V4={v4} score={score} -> {action.value} {confidence}%")
+        return [indicator], action, confidence
 
     def _calculate_levels(
         self, action: SignalAction, price: float, atr: float, category: AssetCategory
@@ -181,16 +146,14 @@ class TechnicalAnalyzer:
         return RiskLevel.MEDIUM
 
     def _generate_reasoning(self, indicators: list[IndicatorResult], action: SignalAction, confidence: float) -> str:
-        """Generate human-readable analysis reasoning."""
         ind = indicators[0] if indicators else None
-        direction = "haussière" if action == SignalAction.BUY else "baissière"
-        cross = "EMA5 croise EMA7 à la hausse" if action == SignalAction.BUY else "EMA5 croise EMA7 à la baisse"
-        above_below = "au-dessus" if action == SignalAction.BUY else "en-dessous"
-
+        direction = "haussiere" if action == SignalAction.BUY else "baissiere"
+        score_label = ind.name if ind else "N/A"
+        strength = {92.0: "Parfait (4/4)", 85.0: "Fort (3/4)", 78.0: "Modere (2/4)", 72.0: "Leger (1/4)", 70.0: "Tie"}
         lines = [
-            f"Signal {action.value} (confiance: {confidence}%)",
-            f"✅ Tendance {direction} confirmée : EMA5 et EMA7 {above_below} de EMA10",
-            f"✅ Déclencheur : {cross} (EMA5/7 diff={ind.value if ind else 'N/A'})",
+            f"Signal {action.value} ({confidence}%)",
+            f"Tendance {direction} - {strength.get(confidence, score_label)}",
+            f"Votes EMA: Prix/EMA5 | EMA5/EMA7 | EMA7/EMA10 | EMA5/EMA10 -> {score_label}",
         ]
         return " | ".join(lines)
 
