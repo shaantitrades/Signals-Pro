@@ -228,6 +228,9 @@ export default function SignalsOTCPage() {
   const [otcTimeframe, setOtcTimeframe] = useState('M1');
   const [otcLoading, setOtcLoading] = useState(false);
   const [searchAttempt, setSearchAttempt] = useState(0);
+  const [analyzePhase, setAnalyzePhase] = useState(0);
+  const [analyzeProgress, setAnalyzeProgress] = useState(0);
+  const analyzeTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [otcSignals, setOtcSignals] = useState<OTCSignal[]>([]);
   const [otcError, setOtcError] = useState('');
   const [otcNoSignal, setOtcNoSignal] = useState(false);
@@ -302,8 +305,21 @@ export default function SignalsOTCPage() {
 
   // Clear expiration timer on unmount
   useEffect(() => {
-    return () => { if (expirationTimer.current) clearTimeout(expirationTimer.current); };
+    return () => {
+      if (expirationTimer.current) clearTimeout(expirationTimer.current);
+      if (analyzeTimerRef.current) clearInterval(analyzeTimerRef.current);
+    };
   }, []);
+
+  // Analysis phases shown during the 10-30s loading animation
+  const ANALYZE_PHASES = [
+    'Collecte des données de marché...',
+    'Calcul des indicateurs techniques...',
+    'Analyse des tendances EMA...',
+    'Évaluation de la volatilité...',
+    'Validation du signal...',
+    'Confirmation finale...',
+  ];
 
   const handleStartSignals = useCallback(async () => {
     if (!isAuthenticated) { window.location.href = '/login'; return; }
@@ -322,56 +338,76 @@ export default function SignalsOTCPage() {
     setSignalActive(true);
     setOtcLoading(true);
     setSearchAttempt(0);
+    setAnalyzePhase(0);
+    setAnalyzeProgress(0);
     pollCancelRef.current = false;
     if (expirationTimer.current) clearTimeout(expirationTimer.current);
+    if (analyzeTimerRef.current) clearInterval(analyzeTimerRef.current);
 
-    const MAX_ATTEMPTS = 10;
-    const DELAY_MS = 3000;
+    // Random analysis duration: 10-30 seconds
+    const minDelayMs = Math.floor(Math.random() * 20 + 10) * 1000;
+    const startTime = Date.now();
 
-    const sleep = (ms: number) => new Promise<void>(res => {
-      const t = setTimeout(res, ms);
-      // Allow early cancel
-      pollCancelRef.current && clearTimeout(t);
-    });
+    // Animate progress bar + cycle through phases
+    analyzeTimerRef.current = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const pct = Math.min((elapsed / minDelayMs) * 100, 98);
+      setAnalyzeProgress(pct);
+      const phaseIdx = Math.floor((elapsed / minDelayMs) * ANALYZE_PHASES.length);
+      setAnalyzePhase(Math.min(phaseIdx, ANALYZE_PHASES.length - 1));
+    }, 200);
 
-    let found = false;
+    // Run API call in parallel with the minimum delay
+    const minDelayPromise = new Promise<void>(res => setTimeout(res, minDelayMs));
+
+    let signalResult: any = null;
     let lastError = '';
-    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
-      if (pollCancelRef.current) break;
-      setSearchAttempt(attempt);
-      try {
-        const { data } = await signalsApi.generate('FOREX_OTC', otcAsset, otcTimeframe);
-        if (data.success && data.data) {
-          const newSignal = data.data;
-          setOtcSignals(prev => [newSignal, ...prev].slice(0, 10));
-          playSignalSound(audioCtxRef.current);
-          setToastSignal(newSignal);
-          setShowToast(true);
-          setTimeout(() => setShowBottomNotif(true), 400);
-          const durationMs = (otcTimeframe === 'M1' ? 60 : otcTimeframe === 'M2' ? 120 : otcTimeframe === 'M3' ? 180 : otcTimeframe === 'M4' ? 240 : otcTimeframe === 'M5' ? 300 : otcTimeframe === 'M15' ? 900 : 1800) * 1000;
-          expirationTimer.current = setTimeout(() => { setSignalActive(false); setOtcSignals([]); }, durationMs);
-          found = true;
-          break;
+    const apiCallPromise = (async () => {
+      const MAX_ATTEMPTS = 5;
+      for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+        if (pollCancelRef.current) break;
+        setSearchAttempt(attempt);
+        try {
+          const { data } = await signalsApi.generate('FOREX_OTC', otcAsset, otcTimeframe);
+          if (data.success && data.data) {
+            signalResult = data.data;
+            return;
+          }
+        } catch (err: any) {
+          lastError = err?.response?.data?.error || err?.message || 'Connection error';
         }
-      } catch (err: any) {
-        lastError = err?.response?.data?.error || err?.message || 'Connection error';
+        if (attempt < MAX_ATTEMPTS && !pollCancelRef.current) {
+          await new Promise<void>(res => setTimeout(res, 2000));
+        }
       }
-      // Wait before next attempt (skip wait on last attempt)
-      if (attempt < MAX_ATTEMPTS && !pollCancelRef.current) {
-        await sleep(DELAY_MS);
+    })();
+
+    // Wait for BOTH: minimum display time AND API result
+    await Promise.all([minDelayPromise, apiCallPromise]);
+
+    if (analyzeTimerRef.current) clearInterval(analyzeTimerRef.current);
+    setAnalyzeProgress(100);
+
+    if (!pollCancelRef.current) {
+      if (signalResult) {
+        setOtcSignals(prev => [signalResult, ...prev].slice(0, 10));
+        playSignalSound(audioCtxRef.current);
+        setToastSignal(signalResult);
+        setShowToast(true);
+        setTimeout(() => setShowBottomNotif(true), 400);
+        const durationMs = (otcTimeframe === 'M1' ? 60 : otcTimeframe === 'M2' ? 120 : otcTimeframe === 'M3' ? 180 : otcTimeframe === 'M4' ? 240 : otcTimeframe === 'M5' ? 300 : otcTimeframe === 'M15' ? 900 : 1800) * 1000;
+        expirationTimer.current = setTimeout(() => { setSignalActive(false); setOtcSignals([]); }, durationMs);
+      } else {
+        if (lastError) setOtcError(lastError);
+        else setOtcNoSignal(true);
+        setSignalActive(false);
       }
     }
 
-    if (!pollCancelRef.current && !found) {
-      if (lastError) {
-        setOtcError(lastError);
-      } else {
-        setOtcNoSignal(true);
-      }
-      setSignalActive(false);
-    }
     setOtcLoading(false);
     setSearchAttempt(0);
+    setAnalyzePhase(0);
+    setAnalyzeProgress(0);
   }, [otcAsset, otcTimeframe, isAuthenticated, hasSubscription]);
 
   // Signal duration in seconds based on timeframe
@@ -599,21 +635,21 @@ export default function SignalsOTCPage() {
               </>
             ) : otcLoading ? (
               <div className="w-full flex flex-col items-center gap-2">
-                {/* Attempt counter */}
                 <div className="flex items-center gap-2">
-                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                  <svg className="animate-spin h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                  <span className="text-sm font-semibold">{t('sigOtc.searching')} ({searchAttempt}/10)</span>
+                  <span className="text-sm font-semibold truncate">{ANALYZE_PHASES[analyzePhase]}</span>
                 </div>
                 {/* Progress bar */}
                 <div className="w-full h-1.5 bg-primary/20 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-primary rounded-full transition-all duration-300"
-                    style={{ width: `${(searchAttempt / 10) * 100}%` }}
+                    className="h-full bg-primary rounded-full transition-all duration-200"
+                    style={{ width: `${analyzeProgress}%` }}
                   />
                 </div>
+                <span className="text-xs opacity-60">{Math.round(analyzeProgress)}%</span>
               </div>
             ) : signalActive ? (
               <>
