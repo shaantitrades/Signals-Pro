@@ -77,9 +77,11 @@ export default function LoginPage() {
         client_id: GOOGLE_CLIENT_ID,
         callback: handleGoogleResponse,
       });
+      const btnEl = document.getElementById('google-signin-btn');
+      const btnWidth = Math.min(400, (btnEl?.parentElement?.offsetWidth || 400) - 0);
       window.google?.accounts.id.renderButton(
-        document.getElementById('google-signin-btn'),
-        { theme: 'filled_black', size: 'large', width: 400, text: 'signin_with', locale: 'fr' }
+        btnEl,
+        { theme: 'filled_black', size: 'large', width: btnWidth, text: 'signin_with', locale: 'fr' }
       );
       setGoogleReady(true);
     };
@@ -133,10 +135,10 @@ export default function LoginPage() {
         </div>
 
         <div className="signal-card p-6">
-          {/* Google Sign-In — temporarily hidden
+          {/* Google Sign-In */}
           {GOOGLE_CLIENT_ID ? (
             <>
-              <div id="google-signin-btn" className="flex justify-center" />
+              <div id="google-signin-btn" className="flex justify-center w-full overflow-hidden" />
               {googleReady && (
                 <div className="relative my-5">
                   <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
@@ -147,7 +149,6 @@ export default function LoginPage() {
               )}
             </>
           ) : null}
-          */}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
