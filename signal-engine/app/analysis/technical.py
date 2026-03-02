@@ -118,25 +118,34 @@ class TechnicalAnalyzer:
 
         close = df["close"]
 
-        # ── 1) RSI (14) ─────────────────────────────────────
+        # ── 1) RSI (14) — DIRECTIONNEL (momentum-following) ─────────────────────────────────────
+        # RSI est utilisé en MODE DIRECTIONNEL, pas en mode niveau.
+        # Quand le prix monte → RSI monte → BUY (aligné avec EMA5)
+        # Quand le prix descend → RSI descend → SELL (aligné avec EMA5)
+        # ⚠️ L'ancien mode (RSI<40=BUY, RSI>60=SELL) était ANTI-tendance
+        #    et conflictait toujours avec EMA5 (qui est pro-tendance) → biais SELL permanent
         rsi_series = ta.momentum.RSIIndicator(close, window=14).rsi()
-        rsi = rsi_series.iloc[-1]
-        rsi_prev = rsi_series.iloc[-2]
+        rsi = float(rsi_series.iloc[-1])
+        rsi_prev = float(rsi_series.iloc[-2])
+        rsi_delta = rsi - rsi_prev  # positif = RSI monte = momentum haussier
 
         if rsi < 30:
-            results.append(IndicatorResult(name="RSI(14)", value=round(rsi, 2), signal=SignalAction.BUY, strength=90))
+            # Survente profonde: BUY si RSI se stabilise ou remonte (confirmation du retournement)
+            if rsi_delta >= -0.5:
+                results.append(IndicatorResult(name="RSI(14)", value=round(rsi, 2), signal=SignalAction.BUY, strength=90))
+            # Si RSI continue de chuter: pas de vote (couteau qui tombe)
         elif rsi > 70:
-            results.append(IndicatorResult(name="RSI(14)", value=round(rsi, 2), signal=SignalAction.SELL, strength=90))
-        elif rsi < 40:
-            # RSI rising from below = bullish momentum
-            s = 65 if rsi > rsi_prev else 50
-            results.append(IndicatorResult(name="RSI(14)", value=round(rsi, 2), signal=SignalAction.BUY, strength=s))
-        elif rsi > 60:
-            # RSI falling from above = bearish momentum
-            s = 65 if rsi < rsi_prev else 50
-            results.append(IndicatorResult(name="RSI(14)", value=round(rsi, 2), signal=SignalAction.SELL, strength=s))
-        # Neutral zone (40-60): RSI gives NO signal — too ambiguous for reliable trading
-        # This prevents false signals in choppy/ranging markets
+            # Surachat profond: SELL si RSI ralentit ou redescend
+            if rsi_delta <= 0.5:
+                results.append(IndicatorResult(name="RSI(14)", value=round(rsi, 2), signal=SignalAction.SELL, strength=90))
+            # Si RSI continue de monter: pas de vote (ne pas se battre contre la tendance)
+        elif rsi_delta > 1.0:
+            # RSI monte fort → momentum haussier confirmé
+            results.append(IndicatorResult(name="RSI(14)", value=round(rsi, 2), signal=SignalAction.BUY, strength=65))
+        elif rsi_delta < -1.0:
+            # RSI descend fort → momentum baissier confirmé
+            results.append(IndicatorResult(name="RSI(14)", value=round(rsi, 2), signal=SignalAction.SELL, strength=65))
+        # RSI plat (changement < 1.0): pas de vote — marché sans direction claire
 
         # ── 2) MACD (12, 26, 9) ─────────────────────────────
         # Skipped for FOREX_OTC: MACD needs 26+ candles and slows down M1 signals
@@ -199,8 +208,9 @@ class TechnicalAnalyzer:
                 results.append(IndicatorResult(name="EMA(5/10)", value=round(ema_diff, 6), signal=SignalAction.SELL, strength=s))
 
         # ── 4) Stochastic (5,3,3) — FOREX_OTC only ──────────────────────
-        # Only votes on CLEAR signals: oversold/overbought or fresh K/D crossings
-        # Removed weak K>D / K<D votes — those caused permanent SELL bias in ranging markets
+        # Trend-aware: overbought in an UPTREND = strong trend (NOT a sell signal)
+        # Oversold in a DOWNTREND = strong trend (NOT a buy signal)
+        # Only counter-trend signals when Stoch contradicts the EMA5 direction
         if not use_macd:  # i.e., FOREX_OTC
             stoch = ta.momentum.StochasticOscillator(
                 df["high"], df["low"], close, window=5, smooth_window=3
@@ -209,10 +219,19 @@ class TechnicalAnalyzer:
             k_prev = float(stoch.stoch().iloc[-2])
             d = float(stoch.stoch_signal().iloc[-1])
 
+            # Trend context from EMA5 (already computed above)
+            uptrend = price_now > ema5_now and ema5_rising
+            downtrend = price_now < ema5_now and not ema5_rising
+
             if k < 20:
-                results.append(IndicatorResult(name="Stoch(5,3)", value=round(k, 2), signal=SignalAction.BUY, strength=85))
+                # Oversold → BUY only if NOT in confirmed downtrend (avoid catching falling knives)
+                if not downtrend:
+                    results.append(IndicatorResult(name="Stoch(5,3)", value=round(k, 2), signal=SignalAction.BUY, strength=85))
             elif k > 80:
-                results.append(IndicatorResult(name="Stoch(5,3)", value=round(k, 2), signal=SignalAction.SELL, strength=85))
+                # Overbought → SELL only if NOT in confirmed uptrend
+                # In an uptrend, overbought = strong momentum, NOT a reversal
+                if not uptrend:
+                    results.append(IndicatorResult(name="Stoch(5,3)", value=round(k, 2), signal=SignalAction.SELL, strength=85))
             elif k > d and k_prev <= d:
                 # Fresh K crosses above D — bullish momentum starting
                 results.append(IndicatorResult(name="Stoch(5,3)", value=round(k, 2), signal=SignalAction.BUY, strength=70))
