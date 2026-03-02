@@ -236,9 +236,17 @@ export default function BotPage() {
               setPopupVisible(true);
               playSignalSound();
 
-                // Add to bot session signals (keep last 4, newest first)
-                setBotSignals(prev => [signal, ...prev].slice(0, 4));
+              // Add to bot session signals (keep last 4, newest first)
+              setBotSignals(prev => [signal, ...prev].slice(0, 4));
 
+              // Auto-hide popup after 15 seconds
+              setTimeout(() => setPopupVisible(false), 15000);
+            }
+          }
+
+          if (!cancelled) scheduleNext();
+        }, delay);
+      };
       scheduleNext();
 
       return () => {
