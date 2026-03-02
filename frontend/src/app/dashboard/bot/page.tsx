@@ -70,8 +70,10 @@ async function fetchRealSignal(
     if (!res.ok) return null;
     const data = await res.json();
     if (data.signals && data.signals.length > 0) {
-      // Find a signal matching the requested asset
-      const match = data.signals.find((s: any) => s.asset === asset);
+      // Find a signal matching the requested asset AND one of the selected timeframes
+      const match = data.signals.find((s: any) =>
+        s.asset === asset && (timeframes.length === 0 || timeframes.includes(s.timeframe))
+      );
       if (match) {
         return {
           id: match.id || `${asset}-${Date.now()}`,
@@ -82,7 +84,7 @@ async function fetchRealSignal(
           sl: match.sl,
           confidence: Math.round(match.confidence),
           timeframe: match.timeframe,
-          time: 'now',
+          time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
           category,
         };
       }
