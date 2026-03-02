@@ -332,6 +332,19 @@ authRouter.get('/me', authenticate, async (req: AuthRequest, res: Response, next
       throw new AppError('User not found', 404);
     }
 
+    // Auto-expire subscription if past currentPeriodEnd
+    if (
+      user.subscription &&
+      (user.subscription.status === 'ACTIVE' || user.subscription.status === 'TRIAL') &&
+      user.subscription.currentPeriodEnd < new Date()
+    ) {
+      await prisma.subscription.update({
+        where: { id: user.subscription.id },
+        data: { status: 'EXPIRED' },
+      });
+      (user.subscription as any).status = 'EXPIRED';
+    }
+
     res.json({
       success: true,
       data: {

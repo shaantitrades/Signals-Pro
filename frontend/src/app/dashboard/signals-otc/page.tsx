@@ -769,7 +769,7 @@ function ActiveSignalCard({ signal, duration, t }: { signal: OTCSignal; duration
         </div>
         <div className="h-2 bg-secondary rounded-full overflow-hidden">
           <div
-            className={cn('h-full rounded-full transition-all duration-1000', signal.confidenceScore >= 80 ? 'bg-loss' : signal.confidenceScore >= 60 ? 'bg-yellow-500' : 'bg-profit')}
+            className={cn('h-full rounded-full transition-all duration-1000', signal.action === 'BUY' ? 'bg-profit' : 'bg-loss')}
             style={{ width: `${signal.confidenceScore}%` }}
           />
         </div>
@@ -783,7 +783,7 @@ function ActiveSignalCard({ signal, duration, t }: { signal: OTCSignal; duration
         </div>
         <div className="h-2 bg-secondary rounded-full overflow-hidden">
           <div
-            className={cn('h-full rounded-full transition-all duration-1000', timePct > 50 ? 'bg-loss' : timePct > 20 ? 'bg-yellow-500' : 'bg-muted-foreground')}
+            className={cn('h-full rounded-full transition-all duration-1000', signal.action === 'BUY' ? 'bg-profit' : 'bg-loss')}
             style={{ width: `${timePct}%` }}
           />
         </div>
