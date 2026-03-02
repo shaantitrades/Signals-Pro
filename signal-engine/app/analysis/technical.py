@@ -62,17 +62,6 @@ class TechnicalAnalyzer:
         action = SignalAction.BUY if buy_score > sell_score else SignalAction.SELL
         raw_confidence = (max(buy_score, sell_score) / total_weight) * 100
 
-        # ── Price Action Filter (OTC only) ──────────────────────────────
-        # Validates signal against actual recent candles to avoid lag-induced errors
-        # yfinance data can be 15-30s delayed on M1; recent candles reveal true direction
-        if category == AssetCategory.FOREX_OTC:
-            pa_result = self._price_action_filter(df, action)
-            if pa_result == "reject":
-                logger.debug(f"Price action filter rejected {action.value} signal — recent candles contradict")
-                return None
-            elif pa_result == "weak":
-                raw_confidence = max(0, raw_confidence - 12)
-
         # Boost confidence based on agreement level
         agreeing = buy_count if action == SignalAction.BUY else sell_count
         if agreeing == 3 and n == 3:
@@ -119,8 +108,15 @@ class TechnicalAnalyzer:
     def _compute_indicators(self, df: pd.DataFrame, category: AssetCategory) -> list[IndicatorResult]:
         """Compute RSI + EMA (all categories) + MACD (non-OTC only)."""
         results: list[IndicatorResult] = []
-        close = df["close"]
         use_macd = category != AssetCategory.FOREX_OTC
+
+        # For OTC M1: use only the last 50 candles to stay reactive to current price
+        # Using 5 days of data (7000+ candles) causes EMA to track the WEEKLY trend,
+        # not the current micro-trend — this creates a persistent directional bias
+        if not use_macd and len(df) > 50:  # FOREX_OTC
+            df = df.tail(50).reset_index(drop=True)
+
+        close = df["close"]
 
         # ── 1) RSI (14) ─────────────────────────────────────
         rsi_series = ta.momentum.RSIIndicator(close, window=14).rsi()
@@ -163,96 +159,70 @@ class TechnicalAnalyzer:
             else:
                 results.append(IndicatorResult(name="MACD", value=round(macd_hist, 6), signal=SignalAction.SELL, strength=35))
 
-        # ── 3) EMA Cross (9/21) ─────────────────────────────
+        # ── 3) EMA — Price vs EMA9 (OTC) or EMA9/21 cross (others) ────────
         ema9 = ta.trend.EMAIndicator(close, window=9).ema_indicator()
-        ema21 = ta.trend.EMAIndicator(close, window=21).ema_indicator()
-        ema9_now = ema9.iloc[-1]
-        ema21_now = ema21.iloc[-1]
-        ema9_prev = ema9.iloc[-2]
-        ema21_prev = ema21.iloc[-2]
-        ema_diff = ema9_now - ema21_now
-        ema_diff_prev = ema9_prev - ema21_prev
+        ema9_now = float(ema9.iloc[-1])
+        ema9_prev = float(ema9.iloc[-2])
+        price_now = float(close.iloc[-1])
 
-        if ema9_now > ema21_now and ema9_prev <= ema21_prev:
-            # Fresh golden cross
-            results.append(IndicatorResult(name="EMA(9/21)", value=round(ema_diff, 6), signal=SignalAction.BUY, strength=90))
-        elif ema9_now < ema21_now and ema9_prev >= ema21_prev:
-            # Fresh death cross
-            results.append(IndicatorResult(name="EMA(9/21)", value=round(ema_diff, 6), signal=SignalAction.SELL, strength=90))
-        elif ema9_now > ema21_now:
-            # EMA gap widening = stronger trend
-            s = 60 if abs(ema_diff) > abs(ema_diff_prev) else 45
-            results.append(IndicatorResult(name="EMA(9/21)", value=round(ema_diff, 6), signal=SignalAction.BUY, strength=s))
-        else:
-            s = 60 if abs(ema_diff) > abs(ema_diff_prev) else 45
-            results.append(IndicatorResult(name="EMA(9/21)", value=round(ema_diff, 6), signal=SignalAction.SELL, strength=s))
+        if not use_macd:  # FOREX_OTC: price vs EMA9, more reactive than lagging cross
+            # Price ABOVE EMA9 + EMA9 rising → bullish momentum on current candles
+            # Price BELOW EMA9 + EMA9 falling → bearish momentum on current candles
+            # This is 50/50 balanced and reflects the actual current micro-trend
+            ema9_rising = ema9_now > ema9_prev
+            price_above = price_now > ema9_now
 
-        # ── 4) Stochastic (5,3,3) — FOREX_OTC only ──────────
-        # Fast oscillator ideal for M1: always votes, avoids RSI neutral-zone gaps
+            if price_above and ema9_rising:
+                results.append(IndicatorResult(name="EMA9", value=round(ema9_now, 6), signal=SignalAction.BUY, strength=75))
+            elif not price_above and not ema9_rising:
+                results.append(IndicatorResult(name="EMA9", value=round(ema9_now, 6), signal=SignalAction.SELL, strength=75))
+            elif price_above:
+                results.append(IndicatorResult(name="EMA9", value=round(ema9_now, 6), signal=SignalAction.BUY, strength=45))
+            else:
+                results.append(IndicatorResult(name="EMA9", value=round(ema9_now, 6), signal=SignalAction.SELL, strength=45))
+
+        else:  # Non-OTC: classic EMA9/21 cross
+            ema21 = ta.trend.EMAIndicator(close, window=21).ema_indicator()
+            ema21_now = float(ema21.iloc[-1])
+            ema21_prev = float(ema21.iloc[-2])
+            ema_diff = ema9_now - ema21_now
+            ema_diff_prev = ema9_prev - ema21_prev
+
+            if ema9_now > ema21_now and ema9_prev <= ema21_prev:
+                results.append(IndicatorResult(name="EMA(9/21)", value=round(ema_diff, 6), signal=SignalAction.BUY, strength=90))
+            elif ema9_now < ema21_now and ema9_prev >= ema21_prev:
+                results.append(IndicatorResult(name="EMA(9/21)", value=round(ema_diff, 6), signal=SignalAction.SELL, strength=90))
+            elif ema9_now > ema21_now:
+                s = 60 if abs(ema_diff) > abs(ema_diff_prev) else 45
+                results.append(IndicatorResult(name="EMA(9/21)", value=round(ema_diff, 6), signal=SignalAction.BUY, strength=s))
+            else:
+                s = 60 if abs(ema_diff) > abs(ema_diff_prev) else 45
+                results.append(IndicatorResult(name="EMA(9/21)", value=round(ema_diff, 6), signal=SignalAction.SELL, strength=s))
+
+        # ── 4) Stochastic (5,3,3) — FOREX_OTC only ──────────────────────
+        # Only votes on CLEAR signals: oversold/overbought or fresh K/D crossings
+        # Removed weak K>D / K<D votes — those caused permanent SELL bias in ranging markets
         if not use_macd:  # i.e., FOREX_OTC
             stoch = ta.momentum.StochasticOscillator(
                 df["high"], df["low"], close, window=5, smooth_window=3
             )
-            k = stoch.stoch().iloc[-1]
-            k_prev = stoch.stoch().iloc[-2]
-            d = stoch.stoch_signal().iloc[-1]
+            k = float(stoch.stoch().iloc[-1])
+            k_prev = float(stoch.stoch().iloc[-2])
+            d = float(stoch.stoch_signal().iloc[-1])
 
             if k < 20:
-                # Oversold — strong buy
                 results.append(IndicatorResult(name="Stoch(5,3)", value=round(k, 2), signal=SignalAction.BUY, strength=85))
             elif k > 80:
-                # Overbought — strong sell
                 results.append(IndicatorResult(name="Stoch(5,3)", value=round(k, 2), signal=SignalAction.SELL, strength=85))
             elif k > d and k_prev <= d:
-                # K crosses above D — bullish crossover
+                # Fresh K crosses above D — bullish momentum starting
                 results.append(IndicatorResult(name="Stoch(5,3)", value=round(k, 2), signal=SignalAction.BUY, strength=70))
             elif k < d and k_prev >= d:
-                # K crosses below D — bearish crossover
+                # Fresh K crosses below D — bearish momentum starting
                 results.append(IndicatorResult(name="Stoch(5,3)", value=round(k, 2), signal=SignalAction.SELL, strength=70))
-            elif k > d:
-                # K above D — upward bias
-                results.append(IndicatorResult(name="Stoch(5,3)", value=round(k, 2), signal=SignalAction.BUY, strength=45))
-            else:
-                # K below D — downward bias
-                results.append(IndicatorResult(name="Stoch(5,3)", value=round(k, 2), signal=SignalAction.SELL, strength=45))
+            # No vote in neutral zone (20-80 without fresh cross) — avoids directional bias
 
         return results
-
-    def _price_action_filter(self, df: pd.DataFrame, action: SignalAction) -> str:
-        """
-        Validate signal against recent candle price action.
-        Returns: 'ok', 'weak', or 'reject'
-
-        Logic:
-        - Look at last 5 candles body direction + recent momentum
-        - If 4+ candles strongly oppose the signal → reject
-        - If 3 candles oppose AND momentum is against → weak (reduce confidence)
-        - Otherwise → ok
-        """
-        last = df.tail(5)
-        bodies = last["close"] - last["open"]  # positive = bullish, negative = bearish
-
-        bullish_count = int((bodies > 0).sum())
-        bearish_count = int((bodies < 0).sum())
-
-        # Recent momentum: is price going up or down over last 5 candles?
-        momentum = float(df["close"].iloc[-1]) - float(df["close"].iloc[-6]) if len(df) > 6 else 0.0
-        momentum_bullish = momentum > 0
-
-        if action == SignalAction.BUY:
-            # BUY signal: check if recent candles are actually bearish
-            if bearish_count >= 4:
-                return "reject"  # 4+ of last 5 candles bearish — clearly wrong direction
-            if bearish_count >= 3 and not momentum_bullish:
-                return "weak"   # 3 bearish + downward momentum = weaker signal
-        else:  # SELL
-            # SELL signal: check if recent candles are actually bullish
-            if bullish_count >= 4:
-                return "reject"  # 4+ of last 5 candles bullish — clearly wrong direction
-            if bullish_count >= 3 and momentum_bullish:
-                return "weak"   # 3 bullish + upward momentum = weaker signal
-
-        return "ok"
 
     def _calculate_levels(
         self, action: SignalAction, price: float, atr: float, category: AssetCategory
