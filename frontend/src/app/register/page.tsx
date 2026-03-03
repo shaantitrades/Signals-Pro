@@ -79,9 +79,11 @@ export default function RegisterPage() {
         client_id: GOOGLE_CLIENT_ID,
         callback: handleGoogleResponse,
       });
+      const btnEl = document.getElementById('google-signup-btn');
+      const btnWidth = Math.min(400, (btnEl?.parentElement?.offsetWidth || 400));
       window.google?.accounts.id.renderButton(
-        document.getElementById('google-signup-btn'),
-        { theme: 'filled_black', size: 'large', width: 400, text: 'signup_with', locale: 'fr' }
+        btnEl,
+        { theme: 'filled_black', size: 'large', width: btnWidth, text: 'signup_with', locale: 'fr' }
       );
       setGoogleReady(true);
     };
@@ -146,10 +148,10 @@ export default function RegisterPage() {
         </div>
 
         <div className="signal-card p-6">
-          {/* Google Sign-Up — temporarily hidden
+          {/* Google Sign-Up */}
           {GOOGLE_CLIENT_ID ? (
             <>
-              <div id="google-signup-btn" className="flex justify-center" />
+              <div id="google-signup-btn" className="flex justify-center w-full overflow-hidden" />
               {googleReady && (
                 <div className="relative my-5">
                   <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
@@ -160,7 +162,6 @@ export default function RegisterPage() {
               )}
             </>
           ) : null}
-          */}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
