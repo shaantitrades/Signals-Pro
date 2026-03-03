@@ -78,7 +78,7 @@ export default function LoginPage() {
         callback: handleGoogleResponse,
       });
       const btnEl = document.getElementById('google-signin-btn');
-      const btnWidth = Math.min(400, (btnEl?.parentElement?.offsetWidth || 400) - 0);
+      const btnWidth = Math.min(400, btnEl?.offsetWidth || Math.max(240, window.innerWidth - 80));
       window.google?.accounts.id.renderButton(
         btnEl,
         { theme: 'filled_black', size: 'large', width: btnWidth, text: 'signin_with', locale: 'fr' }

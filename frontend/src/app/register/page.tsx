@@ -80,7 +80,7 @@ export default function RegisterPage() {
         callback: handleGoogleResponse,
       });
       const btnEl = document.getElementById('google-signup-btn');
-      const btnWidth = Math.min(400, (btnEl?.parentElement?.offsetWidth || 400));
+      const btnWidth = Math.min(400, btnEl?.offsetWidth || Math.max(240, window.innerWidth - 80));
       window.google?.accounts.id.renderButton(
         btnEl,
         { theme: 'filled_black', size: 'large', width: btnWidth, text: 'signup_with', locale: 'fr' }
