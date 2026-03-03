@@ -50,18 +50,54 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ user: null, isAuthenticated: false, isLoading: false });
       return;
     }
-    try {
+    // Helper: try /me with a given token
+    const fetchMe = async (accessToken: string) => {
       const { data } = await axios.get(`${API_URL}/api/auth/me`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${accessToken}` },
       });
+      return data;
+    };
+    // Helper: refresh tokens
+    const tryRefresh = async (): Promise<string | null> => {
+      const refreshToken = localStorage.getItem('refreshToken');
+      if (!refreshToken) return null;
+      try {
+        const { data } = await axios.post(`${API_URL}/api/auth/refresh`, { refreshToken });
+        const { accessToken: newAccess, refreshToken: newRefresh } = data.data.tokens;
+        localStorage.setItem('accessToken', newAccess);
+        localStorage.setItem('refreshToken', newRefresh);
+        return newAccess;
+      } catch {
+        return null;
+      }
+    };
+    try {
+      const data = await fetchMe(token);
       if (data.success && data.data) {
         set({ user: data.data, isAuthenticated: true, isLoading: false });
-      } else {
-        set({ user: null, isAuthenticated: false, isLoading: false });
+        return;
       }
-    } catch {
-      set({ user: null, isAuthenticated: false, isLoading: false });
+    } catch (err: any) {
+      // Access token expired → try refresh
+      if (err?.response?.status === 401) {
+        const newToken = await tryRefresh();
+        if (newToken) {
+          try {
+            const data = await fetchMe(newToken);
+            if (data.success && data.data) {
+              set({ user: data.data, isAuthenticated: true, isLoading: false });
+              return;
+            }
+          } catch {
+            // refresh token also invalid
+          }
+        }
+      }
     }
+    // Could not authenticate at all
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    set({ user: null, isAuthenticated: false, isLoading: false });
   },
   hasActiveSubscription: () => {
     const user = get().user;
