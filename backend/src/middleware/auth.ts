@@ -1,7 +1,16 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import Stripe from 'stripe';
 import { prisma } from '../lib/prisma';
 import { AppError } from './errorHandler';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+  apiVersion: '2023-10-16' as any,
+});
+
+// Stripe statuses that mean the subscription is still alive (payment retrying)
+const STRIPE_ACTIVE_STATUSES = new Set(['active', 'trialing', 'past_due']);
+
 
 export interface AuthRequest extends Request {
   user?: {
@@ -71,17 +80,72 @@ export async function requireSubscription(req: AuthRequest, _res: Response, next
     where: { userId: req.user.id },
   });
 
-  if (!subscription || subscription.status !== 'ACTIVE') {
+  // ── Case 1: No subscription at all ───────────────────────────────────────
+  if (!subscription) {
     return next(new AppError('Active subscription required', 403));
   }
 
-  if (new Date() > subscription.currentPeriodEnd) {
-    await prisma.subscription.update({
-      where: { id: subscription.id },
-      data: { status: 'EXPIRED' },
-    });
-    return next(new AppError('Subscription expired', 403));
+  const now = new Date();
+  const locallyValid =
+    (subscription.status === 'ACTIVE' || subscription.status === 'TRIAL') &&
+    now <= subscription.currentPeriodEnd;
+
+  // ── Case 2: Locally valid → allow ────────────────────────────────────────
+  if (locallyValid) {
+    return next();
   }
 
-  next();
+  // ── Case 3: Expired/invalid locally, but has a Stripe subscription ID ───
+  // Do a live Stripe check: the webhook may be delayed or payment is retrying
+  if (subscription.stripeSubId) {
+    try {
+      const stripeSub = await stripe.subscriptions.retrieve(subscription.stripeSubId);
+
+      if (STRIPE_ACTIVE_STATUSES.has(stripeSub.status)) {
+        // Stripe considers it alive — sync our DB and allow access
+        const newPeriodEnd = new Date(stripeSub.current_period_end * 1000);
+        const newPeriodStart = new Date(stripeSub.current_period_start * 1000);
+
+        await prisma.subscription.update({
+          where: { id: subscription.id },
+          data: {
+            status: 'ACTIVE',
+            currentPeriodStart: newPeriodStart,
+            currentPeriodEnd: newPeriodEnd,
+            canceledAt: null,
+          },
+        });
+
+        console.log(
+          `[requireSubscription] 🔄 Live Stripe check: subscription ${subscription.id} ` +
+          `synced to ACTIVE (Stripe status: ${stripeSub.status}, period end: ${newPeriodEnd.toISOString()})`
+        );
+
+        return next();
+      }
+
+      // Stripe also considers it expired/canceled → update our DB and block
+      const finalStatus =
+        stripeSub.status === 'canceled' ? 'CANCELED' : 'EXPIRED';
+      await prisma.subscription.update({
+        where: { id: subscription.id },
+        data: { status: finalStatus },
+      });
+    } catch (err) {
+      // If Stripe is unreachable, fail open: grant a short grace period
+      // rather than blocking a potentially valid subscriber
+      console.error('[requireSubscription] Stripe live check failed — granting grace access:', err);
+      return next();
+    }
+  } else {
+    // No stripeSubId (crypto/manual) — expire locally
+    if (subscription.status === 'ACTIVE' || subscription.status === 'TRIAL') {
+      await prisma.subscription.update({
+        where: { id: subscription.id },
+        data: { status: 'EXPIRED' },
+      });
+    }
+  }
+
+  return next(new AppError('Subscription expired', 403));
 }

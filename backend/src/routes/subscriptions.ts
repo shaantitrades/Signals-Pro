@@ -593,15 +593,24 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
     },
   });
 
-  // Ensure subscription is active
-  if (subscription.status !== 'ACTIVE') {
-    await prisma.subscription.update({
-      where: { id: subscription.id },
-      data: { status: 'ACTIVE' },
-    });
+  // Retrieve Stripe subscription to get the updated billing period (handles renewal)
+  const updateData: Record<string, any> = { status: 'ACTIVE', canceledAt: null };
+  try {
+    const stripeSub = await stripe.subscriptions.retrieve(String(invoice.subscription));
+    updateData.currentPeriodStart = new Date(stripeSub.current_period_start * 1000);
+    updateData.currentPeriodEnd = new Date(stripeSub.current_period_end * 1000);
+    console.log(`[Stripe Webhook] 🔄 Subscription renewed, new period end: ${updateData.currentPeriodEnd}`);
+  } catch (err) {
+    console.warn('[Stripe Webhook] Could not retrieve subscription period on invoice paid:', err);
   }
 
-  console.log(`[Stripe Webhook] ✅ Invoice paid for subscription ${subscription.id}`);
+  // Always activate subscription and update billing period
+  await prisma.subscription.update({
+    where: { id: subscription.id },
+    data: updateData,
+  });
+
+  console.log(`[Stripe Webhook] ✅ Invoice paid, subscription ${subscription.id} is now ACTIVE`);
 }
 
 /**

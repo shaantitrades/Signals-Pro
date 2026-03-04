@@ -344,8 +344,8 @@ export default function SignalsOTCPage() {
     if (expirationTimer.current) clearTimeout(expirationTimer.current);
     if (analyzeTimerRef.current) clearInterval(analyzeTimerRef.current);
 
-    // Random analysis duration: 10-30 seconds
-    const minDelayMs = Math.floor(Math.random() * 20 + 10) * 1000;
+    // Fixed analysis duration: 30 seconds
+    const minDelayMs = 30000;
     const startTime = Date.now();
 
     // Animate progress bar + cycle through phases

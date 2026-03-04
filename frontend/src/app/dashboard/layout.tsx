@@ -46,6 +46,35 @@ export default function DashboardLayout({
     initAuth();
   }, [initAuth]);
 
+  // Re-check subscription whenever the user comes back to the tab or window
+  // — handles the case where a user renews days later via Stripe portal
+  useEffect(() => {
+    let lastVisibilityCheck = Date.now();
+    const handleVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        // Only re-fetch if tab was hidden for more than 30 seconds
+        if (Date.now() - lastVisibilityCheck > 30000) {
+          initAuth();
+        }
+        lastVisibilityCheck = Date.now();
+      } else {
+        lastVisibilityCheck = Date.now();
+      }
+    };
+    const handleFocus = () => {
+      if (Date.now() - lastVisibilityCheck > 30000) {
+        initAuth();
+        lastVisibilityCheck = Date.now();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    window.addEventListener('focus', handleFocus);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibility);
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, [initAuth]);
+
   // Periodic subscription refresh every 5 minutes + precise timer at expiry
   useEffect(() => {
     // Poll every 5 min to detect expiry
@@ -58,12 +87,24 @@ export default function DashboardLayout({
     if (sub?.currentPeriodEnd && (sub.status === 'ACTIVE' || sub.status === 'TRIAL')) {
       const msUntilExpiry = new Date(sub.currentPeriodEnd).getTime() - Date.now();
       if (msUntilExpiry > 0) {
-        const expiryTimeout = setTimeout(() => {
-          initAuth();
+        let renewalPollInterval: ReturnType<typeof setInterval> | null = null;
+        const expiryTimeout = setTimeout(async () => {
+          await initAuth();
+          // After expiry, poll every 30s for up to 10min to detect renewal
+          let pollCount = 0;
+          renewalPollInterval = setInterval(async () => {
+            pollCount++;
+            await initAuth();
+            const { hasActiveSubscription } = useAuthStore.getState();
+            if (hasActiveSubscription() || pollCount >= 20) {
+              if (renewalPollInterval) clearInterval(renewalPollInterval);
+            }
+          }, 30000);
         }, msUntilExpiry + 2000); // +2s buffer for server propagation
         return () => {
           clearInterval(interval);
           clearTimeout(expiryTimeout);
+          if (renewalPollInterval) clearInterval(renewalPollInterval);
         };
       }
     }

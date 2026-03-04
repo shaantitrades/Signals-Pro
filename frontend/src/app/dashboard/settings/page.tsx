@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useI18n } from '@/lib/i18n';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/lib/store';
-import { authApi, subscriptionsApi } from '@/lib/api';
+import { authApi } from '@/lib/api';
 
 export default function SettingsPage() {
   return (
@@ -250,19 +250,14 @@ function SettingsContent() {
                     <a href="/tarifs" className="block w-full py-2.5 bg-secondary text-foreground font-medium rounded-lg hover:bg-secondary/80 transition-colors text-center">
                       {t('settings.changePlan')}
                     </a>
-                    <button
-                      onClick={async () => {
-                        if (confirm(t('settings.cancelConfirm'))) {
-                          try {
-                            await subscriptionsApi.cancel();
-                            await initAuth();
-                          } catch {}
-                        }
-                      }}
-                      className="w-full py-2.5 text-loss hover:bg-loss/10 font-medium rounded-lg transition-colors"
+                    <a
+                      href="https://billing.stripe.com/p/login/5kQ3cpfb2cF10e78Jz73G00"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block w-full py-2.5 text-loss hover:bg-loss/10 font-medium rounded-lg transition-colors text-center"
                     >
                       {t('settings.cancelSub')}
-                    </button>
+                    </a>
                   </div>
                 </>
               ) : (
