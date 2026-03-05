@@ -432,7 +432,7 @@ export default function BotPage() {
                       : 'border-border hover:border-primary/30'
                   )}
                 >
-                  Tous
+                  {t('bot.all')}
                 </button>
                 {(assetsByCategory[selectedCategory] || []).map((asset) => (
                   <button

@@ -310,14 +310,14 @@ export default function SignalsOTCPage() {
     };
   }, []);
 
-  // Analysis phases shown during the 10-30s loading animation
+  // Analysis phases shown during the 30s loading animation
   const ANALYZE_PHASES = [
-    'Collecte des données de marché...',
-    'Calcul des indicateurs techniques...',
-    'Analyse des tendances EMA...',
-    'Évaluation de la volatilité...',
-    'Validation du signal...',
-    'Confirmation finale...',
+    t('sigOtc.phase1'),
+    t('sigOtc.phase2'),
+    t('sigOtc.phase3'),
+    t('sigOtc.phase4'),
+    t('sigOtc.phase5'),
+    t('sigOtc.phase6'),
   ];
 
   const handleStartSignals = useCallback(async () => {
