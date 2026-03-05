@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     'Get real-time, AI-powered forex trading signals for EUR/USD, GBP/USD, USD/JPY and 30+ major pairs. Win rates up to 87%. Start free today.',
   keywords:
-    'MarketSignals24, forex trading signals, live forex signals, AI forex signals, fx signals, forex alerts, EUR/USD signals, GBP/USD signals, best forex signals, accurate forex signals',
+    'MarketSignals24, forex trading signals, free forex signals, free forex signals live, best free forex signals, forex signals free trial, live forex signals, AI forex signals, fx signals, forex alerts, EUR/USD signals, GBP/USD signals, best forex signals, accurate forex signals, forex signal provider, daily forex signals, real-time forex signals, forex trading alerts',
   alternates: {
     canonical: 'https://marketsignals24.com/forex-signals',
     languages: {

@@ -19,7 +19,7 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   title: 'Market Signals24 - Professional Trading Signals Platform',
   description: 'Triple-validated trading signals for Forex, Crypto, Indices & Commodities. AI-powered signal generation with human expert validation.',
-  keywords: 'MarketSignals24, Market Signals 24, trading signals, forex signals, crypto signals, binary options signals, OTC signals, trading bot, AI trading signals, copy trading',
+  keywords: 'MarketSignals24, Market Signals 24, trading signals, free trading signals, free forex signals, free crypto signals, forex signals, crypto signals, binary options signals, OTC signals, trading bot, AI trading signals, copy trading, signal trading gratuit, señales trading gratis, kostenlose Trading Signale, meilleur signaux trading, best trading signals, live trading signals',
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: '48x48' },

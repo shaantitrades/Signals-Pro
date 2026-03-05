@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     'High-accuracy binary options and OTC trading signals for 1, 2 and 5-minute expiries. AI-powered UP/DOWN alerts for forex OTC pairs. Available 24/7.',
   keywords:
-    'MarketSignals24, binary options signals, OTC signals, 1 minute binary signals, binary trading signals, OTC trading signals, high low signals, binary options alerts, turbo signal, Pocket Option signals',
+    'MarketSignals24, binary options signals, free binary options signals, free OTC signals, binary signals free, OTC signals free, 1 minute binary signals, turbo signals free, binary trading signals, OTC trading signals, high low signals, binary options alerts, turbo signal, Pocket Option signals, Quotex signals, free turbo signals, free binary signals',
   alternates: {
     canonical: 'https://marketsignals24.com/binary-options-signals',
   },

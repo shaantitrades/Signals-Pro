@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     'Signaux de trading crypto alimentés par l\'IA pour Bitcoin, Ethereum, BNB et 20+ altcoins. Alertes d\'achat et de vente en temps réel avec entrée, SL et TP. À partir de 6€.',
   keywords:
-    'MarketSignals24, signaux crypto, signaux bitcoin, signaux ethereum, alertes crypto, signaux trading cryptomonnaie, signaux BTC ETH, IA crypto trading, signaux altcoins',
+    'MarketSignals24, signaux crypto, signaux crypto gratuits, signaux bitcoin gratuits, signal crypto gratuit, alertes crypto gratuites, signaux ethereum gratuits, meilleurs signaux crypto gratuits, signaux bitcoin, signaux ethereum, alertes crypto, signaux trading cryptomonnaie, signaux BTC ETH, IA crypto trading, signaux altcoins, signaux crypto temps réel',
   alternates: {
     canonical: 'https://marketsignals24.com/fr/signaux-crypto',
     languages: {

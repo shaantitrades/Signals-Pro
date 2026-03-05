@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     'Signaux options binaires et OTC générés par l\'IA pour des échéances de 1, 2 et 5 minutes. Alertes HAUT/BAS haute précision disponibles 24h/24, 7j/7.',
   keywords:
-    'MarketSignals24, signaux options binaires, signaux OTC, options binaires IA, signaux call put, signaux trading binaire, Pocket Option signaux, Quotex signaux, signal binaire 1 minute',
+    'MarketSignals24, signaux options binaires, signaux options binaires gratuits, signaux OTC gratuits, signal binaire gratuit, signaux turbo gratuits, signaux OTC, options binaires IA, signaux call put, signaux trading binaire, Pocket Option signaux, Quotex signaux, signal binaire 1 minute, signaux binaires gratuits, signal OTC gratuit',
   alternates: {
     canonical: 'https://marketsignals24.com/fr/signaux-options-binaires',
     languages: {
