@@ -318,20 +318,25 @@ subscriptionRouter.post('/sync', authenticate, async (req: AuthRequest, res: Res
       : null;
 
     const existing = fullUser.subscription;
-    const updateData = {
-      status: 'ACTIVE' as const,
+    const planIdToUse = plan?.id ?? existing?.planId ?? null;
+
+    const updateData: Record<string, any> = {
+      status: 'ACTIVE',
       stripeSubId: activeSub.id,
       currentPeriodStart: new Date(activeSub.current_period_start * 1000),
       currentPeriodEnd: new Date(activeSub.current_period_end * 1000),
-      canceledAt: null as Date | null,
-      ...(plan ? { planId: plan.id } : {}),
+      canceledAt: null,
+      ...(planIdToUse ? { planId: planIdToUse } : {}),
     };
 
     if (existing) {
       await prisma.subscription.update({ where: { id: existing.id }, data: updateData });
     } else {
+      if (!planIdToUse) {
+        return res.json({ success: false, message: 'Cannot create subscription: plan not identified', synced: false });
+      }
       await prisma.subscription.create({
-        data: { userId: user.id, planId: plan?.id || existing?.planId || '', ...updateData },
+        data: { userId: user.id, planId: planIdToUse, ...updateData },
       });
     }
 
