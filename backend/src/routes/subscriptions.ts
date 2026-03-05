@@ -645,9 +645,7 @@ async function handleSubscriptionUpdated(stripeSubscription: Stripe.Subscription
   if (resolvedUserId) emitSubscriptionUpdated(resolvedUserId);
 
   console.log(`[Stripe Webhook] ✅ Subscription updated for user ${resolvedUserId}: ${newStatus}`);
-  // Push to user's browser instantly so they don't need to refresh
-  const resolvedUserId = userId || subscription.userId;
-  if (resolvedUserId) emitSubscriptionUpdated(resolvedUserId);}
+}
 
 /**
  * Handle customer.subscription.deleted
@@ -747,9 +745,6 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
   emitSubscriptionUpdated(subscription.userId);
 
   console.log(`[Stripe Webhook] ✅ Invoice paid, subscription ${subscription.id} is now ACTIVE`);
-
-  // Push to user's browser instantly so they don't need to refresh
-  emitSubscriptionUpdated(subscription.userId);
 }
 
 /**
