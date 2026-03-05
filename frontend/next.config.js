@@ -8,6 +8,30 @@ const nextConfig = {
     NEXT_PUBLIC_SIGNAL_ENGINE_URL: process.env.NEXT_PUBLIC_SIGNAL_ENGINE_URL || 'http://localhost:8000',
     NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '',
   },
+  async headers() {
+    return [
+      {
+        // Never cache HTML pages — ensures users always get the latest deployment
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
+          },
+        ],
+      },
+      {
+        // Static assets (_next/static) can be cached long-term (they are content-hashed)
+        source: '/_next/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
