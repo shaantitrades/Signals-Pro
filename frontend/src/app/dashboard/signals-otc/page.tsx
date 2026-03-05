@@ -127,22 +127,21 @@ function BottomNotification({ signal, onClose, t }: { signal: OTCSignal; onClose
 }
 
 // ============================================================================
-// Countdown Timer Hook
+// Countdown Timer Hook — starts from the moment it is first mounted
 // ============================================================================
-function useCountdown(startTime: string | undefined, durationSec: number) {
+function useCountdown(durationSec: number) {
+  const mountedAt = useRef(Date.now());
   const [remaining, setRemaining] = useState(durationSec);
 
   useEffect(() => {
-    if (!startTime) { setRemaining(durationSec); return; }
-    const start = new Date(startTime).getTime();
     const update = () => {
-      const elapsed = Math.floor((Date.now() - start) / 1000);
+      const elapsed = Math.floor((Date.now() - mountedAt.current) / 1000);
       setRemaining(Math.max(0, durationSec - elapsed));
     };
     update();
     const iv = setInterval(update, 1000);
     return () => clearInterval(iv);
-  }, [startTime, durationSec]);
+  }, [durationSec]);
 
   const mins = Math.floor(remaining / 60);
   const secs = remaining % 60;
@@ -736,7 +735,7 @@ export default function SignalsOTCPage() {
 // Active Signal Card — matches realtimetradesignals.com layout
 // ============================================================================
 function ActiveSignalCard({ signal, duration, t }: { signal: OTCSignal; duration: number; t: (key: string, params?: Record<string, any>) => string }) {
-  const { label: timeLabel, pct: timePct } = useCountdown(signal.createdAt, duration);
+  const { label: timeLabel, pct: timePct } = useCountdown(duration);
   const info = deriveMarketInfo(signal);
   const assetLabel = formatAssetLabel(signal.asset);
   const genDate = signal.createdAt ? new Date(signal.createdAt).toLocaleString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '';
