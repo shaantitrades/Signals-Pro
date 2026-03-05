@@ -1,3 +1,0 @@
-src/routes/subscriptions.ts(339,9): error TS2322: Type '{ userId: string; planId: string; }' is not assignable to type '(Without<SubscriptionCreateInput, SubscriptionUncheckedCreateInput> & SubscriptionUncheckedCreateInput) | (Without<...> & SubscriptionCreateInput)'.
-  Type '{ userId: string; planId: string; }' is not assignable to type 'Without<SubscriptionCreateInput, SubscriptionUncheckedCreateInput> & SubscriptionUncheckedCreateInput'.
-    Type '{ userId: string; planId: string; }' is missing the following properties from type 'SubscriptionUncheckedCreateInput': currentPeriodStart, currentPeriodEnd
