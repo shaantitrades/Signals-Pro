@@ -21,7 +21,6 @@ interface RecentSignal {
 export default function DashboardPage() {
   const { t } = useI18n();
   const { isAuthenticated } = useAuthStore();
-  const [showWelcome, setShowWelcome] = useState(false);
   const [recentSignals, setRecentSignals] = useState<RecentSignal[]>([]);
   const [stats, setStats] = useState({ activeSignals: 0, categories: 0 });
   const [loading, setLoading] = useState(true);
@@ -71,61 +70,8 @@ export default function DashboardPage() {
     return () => clearInterval(interval);
   }, []);
 
-  useEffect(() => {
-    const seen = sessionStorage.getItem('welcome_popup_seen');
-    if (!seen) {
-      setShowWelcome(true);
-      sessionStorage.setItem('welcome_popup_seen', '1');
-      const timer = setTimeout(() => setShowWelcome(false), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, []);
-
   return (
     <div className="space-y-6">
-      {/* Welcome Premium Popup */}
-      {showWelcome && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 animate-in fade-in duration-300">
-          <div className="relative bg-card border border-border rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4 text-center animate-in zoom-in-95 duration-300">
-            {/* Close button */}
-            <button
-              onClick={() => setShowWelcome(false)}
-              className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <line x1="1" y1="1" x2="13" y2="13"/><line x1="13" y1="1" x2="1" y2="13"/>
-              </svg>
-            </button>
-
-            {/* Crown + Title */}
-            <div className="flex items-center justify-center gap-2 mb-3">
-              <span className="text-2xl">👑</span>
-              <h2 className="text-xl font-bold text-green-500">{t('welcome.title')}</h2>
-            </div>
-
-            {/* Description */}
-            <p className="text-sm text-muted-foreground mb-6">
-              {t('welcome.desc')}
-            </p>
-
-            {/* Green checkmark circle */}
-            <div className="flex justify-center mb-5">
-              <div className="w-20 h-20 rounded-full bg-green-500 flex items-center justify-center shadow-lg shadow-green-500/30">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12"/>
-                </svg>
-              </div>
-            </div>
-
-            {/* Bottom text */}
-            <p className="text-sm text-muted-foreground">
-              {t('welcome.bottom')}
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Subscription Required Popup — kept for future use */}
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

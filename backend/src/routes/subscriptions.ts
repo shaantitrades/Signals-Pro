@@ -267,6 +267,82 @@ subscriptionRouter.get('/status', authenticate, async (req: AuthRequest, res: Re
 });
 
 // ============================================================================
+// POST /api/subscriptions/sync - Manual sync with Stripe
+// ============================================================================
+
+subscriptionRouter.post('/sync', authenticate, async (req: AuthRequest, res: Response, next) => {
+  try {
+    const user = req.user!;
+
+    const stripeKey = process.env.STRIPE_SECRET_KEY || '';
+    if (!stripeKey || stripeKey === 'sk_test_placeholder') {
+      return res.status(503).json({ success: false, error: 'Payment system not configured' });
+    }
+
+    // Get full user with stripeCustomerId
+    const fullUser = await prisma.user.findUnique({
+      where: { id: user.id },
+      include: { subscription: { include: { plan: true } } },
+    });
+
+    if (!fullUser?.stripeCustomerId) {
+      return res.json({ success: true, message: 'No Stripe customer found', synced: false });
+    }
+
+    // Fetch active subscriptions from Stripe for this customer
+    const stripeSubscriptions = await stripe.subscriptions.list({
+      customer: fullUser.stripeCustomerId,
+      status: 'all',
+      limit: 5,
+    });
+
+    const activeSub = stripeSubscriptions.data.find(
+      (s) => s.status === 'active' || s.status === 'trialing'
+    );
+
+    if (!activeSub) {
+      // No active Stripe sub — check if local sub should be expired
+      if (fullUser.subscription?.status === 'ACTIVE') {
+        await prisma.subscription.update({
+          where: { id: fullUser.subscription.id },
+          data: { status: 'EXPIRED' },
+        });
+      }
+      return res.json({ success: true, message: 'No active Stripe subscription found', synced: false });
+    }
+
+    // Find the plan by Stripe price ID
+    const priceId = activeSub.items.data[0]?.price?.id;
+    const plan = priceId
+      ? await prisma.subscriptionPlan.findFirst({ where: { stripePriceId: priceId } })
+      : null;
+
+    const existing = fullUser.subscription;
+    const updateData = {
+      status: 'ACTIVE' as const,
+      stripeSubId: activeSub.id,
+      currentPeriodStart: new Date(activeSub.current_period_start * 1000),
+      currentPeriodEnd: new Date(activeSub.current_period_end * 1000),
+      canceledAt: null as Date | null,
+      ...(plan ? { planId: plan.id } : {}),
+    };
+
+    if (existing) {
+      await prisma.subscription.update({ where: { id: existing.id }, data: updateData });
+    } else {
+      await prisma.subscription.create({
+        data: { userId: user.id, planId: plan?.id || existing?.planId || '', ...updateData },
+      });
+    }
+
+    console.log(`[Sync] ✅ Subscription synced from Stripe for user ${user.id}`);
+    return res.json({ success: true, message: 'Subscription synced successfully', synced: true });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// ============================================================================
 // POST /api/subscriptions/cancel - Cancel subscription
 // ============================================================================
 
@@ -496,14 +572,31 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
  */
 async function handleSubscriptionUpdated(stripeSubscription: Stripe.Subscription) {
   const userId = stripeSubscription.metadata?.userId;
-  if (!userId) {
-    console.warn('[Stripe Webhook] subscription.updated missing userId in metadata');
-    return;
+
+  // Try multiple lookup strategies
+  let subscription = userId
+    ? await prisma.subscription.findUnique({ where: { userId } })
+    : null;
+
+  // Fallback 1: search by stripeSubId
+  if (!subscription) {
+    subscription = await prisma.subscription.findFirst({
+      where: { stripeSubId: stripeSubscription.id },
+    });
   }
 
-  const subscription = await prisma.subscription.findUnique({ where: { userId } });
+  // Fallback 2: search by Stripe customer ID
+  if (!subscription && stripeSubscription.customer) {
+    const user = await prisma.user.findFirst({
+      where: { stripeCustomerId: String(stripeSubscription.customer) },
+    });
+    if (user) {
+      subscription = await prisma.subscription.findUnique({ where: { userId: user.id } });
+    }
+  }
+
   if (!subscription) {
-    console.warn('[Stripe Webhook] No local subscription found for user:', userId);
+    console.warn('[Stripe Webhook] subscription.updated: no local subscription found for Stripe sub:', stripeSubscription.id);
     return;
   }
 
@@ -576,11 +669,31 @@ async function handleSubscriptionDeleted(stripeSubscription: Stripe.Subscription
 async function handleInvoicePaid(invoice: Stripe.Invoice) {
   if (!invoice.subscription) return;
 
-  const subscription = await prisma.subscription.findFirst({
+  let subscription = await prisma.subscription.findFirst({
     where: { stripeSubId: String(invoice.subscription) },
   });
 
-  if (!subscription) return;
+  // Fallback: find by Stripe customer ID
+  if (!subscription && invoice.customer) {
+    const user = await prisma.user.findFirst({
+      where: { stripeCustomerId: String(invoice.customer) },
+    });
+    if (user) {
+      subscription = await prisma.subscription.findUnique({ where: { userId: user.id } });
+      // Sync the stripeSubId so future lookups work
+      if (subscription) {
+        await prisma.subscription.update({
+          where: { id: subscription.id },
+          data: { stripeSubId: String(invoice.subscription) },
+        });
+      }
+    }
+  }
+
+  if (!subscription) {
+    console.warn('[Stripe Webhook] invoice.payment_succeeded: no subscription found for Stripe sub:', invoice.subscription);
+    return;
+  }
 
   // Record the payment
   await prisma.payment.create({

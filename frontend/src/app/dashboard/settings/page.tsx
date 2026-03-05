@@ -20,6 +20,32 @@ function SettingsContent() {
   const searchParams = useSearchParams();
   const { user, initAuth, hasActiveSubscription } = useAuthStore();
   const [activeTab, setActiveTab] = useState('notifications');
+  const [syncing, setSyncing] = useState(false);
+  const [syncMsg, setSyncMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  const handleSyncSubscription = async () => {
+    setSyncing(true);
+    setSyncMsg(null);
+    try {
+      const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api/subscriptions/sync`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      });
+      const data = await res.json();
+      if (data.success) {
+        await initAuth();
+        setSyncMsg({ type: 'success', text: t('settings.syncSuccess') });
+      } else {
+        setSyncMsg({ type: 'error', text: t('settings.syncFailed') });
+      }
+    } catch {
+      setSyncMsg({ type: 'error', text: t('settings.syncFailed') });
+    } finally {
+      setSyncing(false);
+      setTimeout(() => setSyncMsg(null), 5000);
+    }
+  };
 
   // Read ?tab= query param on mount
   useEffect(() => {
@@ -258,6 +284,20 @@ function SettingsContent() {
                     >
                       {t('settings.cancelSub')}
                     </a>
+                    <button
+                      onClick={handleSyncSubscription}
+                      disabled={syncing}
+                      className="flex items-center justify-center gap-2 w-full py-2.5 text-sm text-muted-foreground border border-dashed border-border rounded-lg hover:bg-secondary/30 transition-colors disabled:opacity-50"
+                    >
+                      {syncing ? (
+                        <><div className="animate-spin w-3.5 h-3.5 border-2 border-primary border-t-transparent rounded-full" />{t('settings.syncing')}</>
+                      ) : (
+                        <><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>{t('settings.syncSub')}</>
+                      )}
+                    </button>
+                    {syncMsg && (
+                      <p className={cn('text-xs text-center', syncMsg.type === 'success' ? 'text-profit' : 'text-loss')}>{syncMsg.text}</p>
+                    )}
                   </div>
                 </>
               ) : (
@@ -273,6 +313,23 @@ function SettingsContent() {
                   >
                     {t('bot.subRequiredCta')}
                   </a>
+                  <div className="mt-4 pt-4 border-t border-border">
+                    <p className="text-xs text-muted-foreground mb-2">Vous avez déjà payé ?</p>
+                    <button
+                      onClick={handleSyncSubscription}
+                      disabled={syncing}
+                      className="inline-flex items-center gap-2 px-4 py-2 text-sm border border-border rounded-lg hover:bg-secondary/50 transition-colors disabled:opacity-50"
+                    >
+                      {syncing ? (
+                        <><div className="animate-spin w-3.5 h-3.5 border-2 border-primary border-t-transparent rounded-full" />{t('settings.syncing')}</>
+                      ) : (
+                        <><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>{t('settings.syncSub')}</>
+                      )}
+                    </button>
+                    {syncMsg && (
+                      <p className={cn('text-xs mt-2', syncMsg.type === 'success' ? 'text-profit' : 'text-loss')}>{syncMsg.text}</p>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
