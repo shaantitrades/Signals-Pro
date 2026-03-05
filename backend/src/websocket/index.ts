@@ -140,3 +140,9 @@ export function notifyUser(userId: string, event: string, data: any) {
 
   io.to(`user:${userId}`).emit(event, data);
 }
+
+// Push subscription change to the user's browser in real-time
+export function emitSubscriptionUpdated(userId: string) {
+  if (!io) return;
+  io.to(`user:${userId}`).emit('subscription:updated');
+}

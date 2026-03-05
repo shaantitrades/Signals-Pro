@@ -2,6 +2,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import Stripe from 'stripe';
 import { prisma } from '../lib/prisma';
 import { authenticate, AuthRequest } from '../middleware/auth';
+import { emitSubscriptionUpdated } from '../websocket/index';
 
 export const subscriptionRouter = Router();
 
@@ -639,8 +640,14 @@ async function handleSubscriptionUpdated(stripeSubscription: Stripe.Subscription
     },
   });
 
-  console.log(`[Stripe Webhook] ✅ Subscription updated for user ${userId}: ${newStatus}`);
-}
+  // Notify the user's connected browser instantly
+  const resolvedUserId = userId || subscription.userId;
+  if (resolvedUserId) emitSubscriptionUpdated(resolvedUserId);
+
+  console.log(`[Stripe Webhook] ✅ Subscription updated for user ${resolvedUserId}: ${newStatus}`);
+  // Push to user's browser instantly so they don't need to refresh
+  const resolvedUserId = userId || subscription.userId;
+  if (resolvedUserId) emitSubscriptionUpdated(resolvedUserId);}
 
 /**
  * Handle customer.subscription.deleted
@@ -736,7 +743,13 @@ async function handleInvoicePaid(invoice: Stripe.Invoice) {
     data: updateData,
   });
 
+  // Notify the user's connected browser instantly
+  emitSubscriptionUpdated(subscription.userId);
+
   console.log(`[Stripe Webhook] ✅ Invoice paid, subscription ${subscription.id} is now ACTIVE`);
+
+  // Push to user's browser instantly so they don't need to refresh
+  emitSubscriptionUpdated(subscription.userId);
 }
 
 /**

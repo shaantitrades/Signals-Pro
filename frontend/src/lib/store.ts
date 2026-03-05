@@ -273,6 +273,12 @@ export const useWSStore = create<WSState>((set, get) => ({
       useSignalStore.getState().removeSignal(id);
     });
 
+    // Auto-refresh auth when subscription changes (Stripe webhook triggers this)
+    socket.on('subscription:updated', () => {
+      console.log('🔄 Subscription updated via WebSocket — refreshing auth...');
+      useAuthStore.getState().initAuth();
+    });
+
     // Latency measurement
     setInterval(() => {
       const start = Date.now();
