@@ -390,9 +390,12 @@ export default function SignalsOTCPage() {
 
     if (!pollCancelRef.current) {
       if (signalResult) {
-        setOtcSignals(prev => [signalResult, ...prev].slice(0, 10));
+        // Override createdAt with the display time so the countdown starts NOW
+        // (the API call runs in parallel with the 30s analysis, so createdAt is ~30s old)
+        const signalToDisplay = { ...signalResult, createdAt: new Date().toISOString() };
+        setOtcSignals(prev => [signalToDisplay, ...prev].slice(0, 10));
         playSignalSound(audioCtxRef.current);
-        setToastSignal(signalResult);
+        setToastSignal(signalToDisplay);
         setShowToast(true);
         setTimeout(() => setShowBottomNotif(true), 400);
         const durationMs = (otcTimeframe === 'M1' ? 60 : otcTimeframe === 'M2' ? 120 : otcTimeframe === 'M3' ? 180 : otcTimeframe === 'M4' ? 240 : otcTimeframe === 'M5' ? 300 : otcTimeframe === 'M15' ? 900 : 1800) * 1000;
