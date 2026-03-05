@@ -336,7 +336,15 @@ subscriptionRouter.post('/sync', authenticate, async (req: AuthRequest, res: Res
         return res.json({ success: false, message: 'Cannot create subscription: plan not identified', synced: false });
       }
       await prisma.subscription.create({
-        data: { userId: user.id, planId: planIdToUse, ...updateData },
+        data: {
+          userId: user.id,
+          planId: planIdToUse,
+          status: 'ACTIVE',
+          stripeSubId: activeSub.id,
+          currentPeriodStart: new Date(activeSub.current_period_start * 1000),
+          currentPeriodEnd: new Date(activeSub.current_period_end * 1000),
+          canceledAt: null,
+        },
       });
     }
 
