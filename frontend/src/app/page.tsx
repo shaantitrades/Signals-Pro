@@ -203,6 +203,73 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Partners */}
+      <section className="bg-white border-t border-gray-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+          <div className="text-center mb-10">
+            <span className="inline-block text-xs font-semibold tracking-widest uppercase text-gray-400 mb-2">{t('partners.label')}</span>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800">{t('partners.title')}</h2>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
+
+            {/* Partner 1 — multi-convert.com */}
+            <a
+              href="https://multi-convert.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex flex-col gap-3 bg-white border border-gray-200 rounded-2xl p-6 hover:border-violet-400 hover:shadow-lg transition-all shadow-sm"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center text-white font-bold text-sm shrink-0">
+                  M
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900 text-sm group-hover:text-violet-600 transition-colors">multi-convert.com</p>
+                  <p className="text-gray-400 text-xs">{t('partners.multiconvert.subtitle')}</p>
+                </div>
+                <svg className="w-4 h-4 text-gray-300 group-hover:text-violet-500 transition-colors ml-auto shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </div>
+              <p className="text-gray-500 text-xs leading-relaxed">{t('partners.multiconvert.desc')}</p>
+              <div className="flex flex-wrap gap-1.5 mt-1">
+                {[t('partners.tag.freeday'), t('partners.tag.privacy'), t('partners.tag.noai'), t('partners.tag.local')].map((tag) => (
+                  <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100">{tag}</span>
+                ))}
+              </div>
+            </a>
+
+            {/* Partner 2 — imparami.com */}
+            <a
+              href="https://imparami.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex flex-col gap-3 bg-white border border-gray-200 rounded-2xl p-6 hover:border-violet-400 hover:shadow-lg transition-all shadow-sm"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-pink-500 flex items-center justify-center text-white font-bold text-sm shrink-0">
+                  I
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900 text-sm group-hover:text-violet-600 transition-colors">imparami.com</p>
+                  <p className="text-gray-400 text-xs">{t('partners.imparami.subtitle')}</p>
+                </div>
+                <svg className="w-4 h-4 text-gray-300 group-hover:text-violet-500 transition-colors ml-auto shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </div>
+              <p className="text-gray-500 text-xs leading-relaxed">{t('partners.imparami.desc')}</p>
+              <div className="flex flex-wrap gap-1.5 mt-1">
+                {[t('partners.tag.tutors'), t('partners.tag.price'), t('partners.tag.subjects'), t('partners.tag.online')].map((tag) => (
+                  <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-violet-50 text-violet-600 border border-violet-100">{tag}</span>
+                ))}
+              </div>
+            </a>
+
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="bg-gradient-to-r from-[#1a1a2e] via-[#2d1b69] to-[#1a1a2e] text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
@@ -226,9 +293,15 @@ export default function Home() {
             <div>
               <h3 className="font-bold text-lg mb-3">{t('footer.support')}</h3>
               <ul className="space-y-2 text-sm">
-                <li><a href="mailto:support@Market Signals24.com" className="text-white/60 hover:text-white transition-colors">{t('footer.support.customer')}</a></li>
-                <li><a href="mailto:support@Market Signals24.com?subject=Become%20an%20Affiliate" className="text-white/60 hover:text-white transition-colors">{t('footer.support.affiliate')}</a></li>
+                <li><a href="mailto:support@marketsignals24.com" className="text-white/60 hover:text-white transition-colors">{t('footer.support.customer')}</a></li>
+                <li>
+                  <a href="mailto:support@marketsignals24.com" className="text-violet-400/80 hover:text-violet-300 transition-colors text-xs font-mono">
+                    support@marketsignals24.com
+                  </a>
+                </li>
+                <li><a href="mailto:support@marketsignals24.com?subject=Become%20an%20Affiliate" className="text-white/60 hover:text-white transition-colors">{t('footer.support.affiliate')}</a></li>
                 <li><span className="text-white/60 hover:text-white transition-colors cursor-pointer">{t('footer.support.faq')}</span></li>
+                <li><Link href="/blog" className="text-white/60 hover:text-white transition-colors">Blog</Link></li>
               </ul>
             </div>
             <div>
