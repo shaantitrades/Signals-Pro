@@ -212,33 +212,6 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
 
-            {/* Partner 1 — multi-convert.com */}
-            <a
-              href="https://multi-convert.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex flex-col gap-3 bg-card border border-border rounded-2xl p-6 hover:border-primary/40 hover:shadow-lg transition-all shadow-sm"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center text-white font-bold text-sm shrink-0">
-                  M
-                </div>
-                <div>
-                  <p className="font-semibold text-card-foreground text-sm group-hover:text-primary transition-colors">multi-convert.com</p>
-                  <p className="text-muted-foreground text-xs">{t('partners.multiconvert.subtitle')}</p>
-                </div>
-                <svg className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors ml-auto shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </div>
-              <p className="text-muted-foreground text-xs leading-relaxed">{t('partners.multiconvert.desc')}</p>
-              <div className="flex flex-wrap gap-1.5 mt-1">
-                {[t('partners.tag.freeday'), t('partners.tag.privacy'), t('partners.tag.noai'), t('partners.tag.local')].map((tag) => (
-                  <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-500 border border-blue-500/20">{tag}</span>
-                ))}
-              </div>
-            </a>
-
             {/* Partner 2 — imparami.com */}
             <a
               href="https://imparami.com"
