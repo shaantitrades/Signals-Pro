@@ -73,38 +73,6 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          title={t('dash.activeSignals')}
-          value={loading ? '...' : stats.activeSignals.toString()}
-          change={`${stats.categories} ${t('dash.today')}`}
-          changeType="positive"
-          icon="📡"
-        />
-        <StatCard
-          title={t('dash.liveSignals')}
-          value={loading ? '...' : recentSignals.length > 0 ? `${recentSignals.length}` : '0'}
-          change="Top 5"
-          changeType="positive"
-          icon="🎯"
-        />
-        <StatCard
-          title={t('dash.totalPips')}
-          value={loading ? '...' : stats.categories > 0 ? `${stats.categories} cat.` : '—'}
-          change={t('dash.thisWeek')}
-          changeType="positive"
-          icon="💰"
-        />
-        <StatCard
-          title={t('dash.activeBots')}
-          value="—"
-          change="Forex + Crypto"
-          changeType="neutral"
-          icon="🤖"
-        />
-      </div>
-
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Link href="/dashboard/signals-otc" className="signal-card p-6 flex items-center gap-4 group">
@@ -147,7 +115,39 @@ export default function DashboardPage() {
         </Link>
       </div>
 
-      {/* Recent Signals */}
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard
+          title={t('dash.activeSignals')}
+          value={loading ? '...' : stats.activeSignals.toString()}
+          change={`${stats.categories} ${t('dash.today')}`}
+          changeType="positive"
+          icon="📡"
+        />
+        <StatCard
+          title={t('dash.liveSignals')}
+          value={loading ? '...' : recentSignals.length > 0 ? `${recentSignals.length}` : '0'}
+          change="Top 5"
+          changeType="positive"
+          icon="🎯"
+        />
+        <StatCard
+          title={t('dash.totalPips')}
+          value={loading ? '...' : stats.categories > 0 ? `${stats.categories} cat.` : '—'}
+          change={t('dash.thisWeek')}
+          changeType="positive"
+          icon="💰"
+        />
+        <StatCard
+          title={t('dash.activeBots')}
+          value="—"
+          change="Forex + Crypto"
+          changeType="neutral"
+          icon="🤖"
+        />
+      </div>
+
+      {/* Recent Signals */
       <div className="signal-card">
         <div className="flex items-center justify-between p-4 border-b border-border">
           <h2 className="font-semibold">{t('dash.recentSignals')}</h2>
