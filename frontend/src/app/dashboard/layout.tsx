@@ -327,7 +327,7 @@ export default function DashboardLayout({
           <div className="flex items-center gap-2 sm:gap-4">
             <Link href="/dashboard" className="flex items-center space-x-2 shrink-0">
               <Image src="/logo.svg" alt="Market Signals24" width={32} height={32} className="w-8 h-8" priority />
-              <span className="text-sm sm:text-lg font-bold">Market Signals24</span>
+              <span className="hidden xs:inline text-sm sm:text-lg font-bold">Market Signals24</span>
             </Link>
 
             <div className="h-6 w-px bg-border hidden md:block" />
@@ -371,11 +371,11 @@ export default function DashboardLayout({
             <div className="relative" ref={langRef}>
               <button
                 onClick={() => setLangOpen(!langOpen)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border hover:bg-secondary/50 transition-colors text-sm"
+                className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg border border-border hover:bg-secondary/50 transition-colors text-sm"
               >
                 <span className="text-xs">{i18nLanguages.find(l => l.code === lang)?.flag}</span>
-                <span className="font-semibold text-sm">{lang}</span>
-                <svg className={cn('w-3 h-3 text-muted-foreground transition-transform', langOpen && 'rotate-180')} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                <span className="hidden sm:inline font-semibold text-sm">{lang}</span>
+                <svg className={cn('w-3 h-3 text-muted-foreground transition-transform hidden sm:block', langOpen && 'rotate-180')} fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
               </button>
 
               {langOpen && (
@@ -399,11 +399,11 @@ export default function DashboardLayout({
 
             {/* User Menu — Login/Register if not authenticated */}
             {!isAuthenticated ? (
-              <div className="flex items-center gap-2">
-                <Link href="/login" className="px-3 py-1.5 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors whitespace-nowrap">
+              <div className="flex items-center gap-1.5">
+                <Link href="/login" className="hidden sm:inline-flex px-3 py-1.5 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors whitespace-nowrap">
                   {t('auth.loginBtn')}
                 </Link>
-                <Link href="/register" className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap">
+                <Link href="/register" className="px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg bg-primary text-primary-foreground text-xs sm:text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap">
                   {t('auth.register')}
                 </Link>
               </div>
