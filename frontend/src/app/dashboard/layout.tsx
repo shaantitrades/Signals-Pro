@@ -128,6 +128,15 @@ export default function DashboardLayout({
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('payment') !== 'success') return;
+    // Only show once per session (prevents re-showing on navigation/remount)
+    if (sessionStorage.getItem('paymentPopupShown')) {
+      // Clean URL silently without showing popup again
+      const url = new URL(window.location.href);
+      url.searchParams.delete('payment');
+      url.searchParams.delete('plan');
+      window.history.replaceState({}, '', url.pathname);
+      return;
+    }
 
     setPaymentActivating(true);
     let attempts = 0;
@@ -140,6 +149,7 @@ export default function DashboardLayout({
         clearInterval(pollInterval);
         setPaymentActivating(false);
         setShowPaymentSuccess(true);
+        sessionStorage.setItem('paymentPopupShown', '1');
         // Clean URL params after activation
         const url = new URL(window.location.href);
         url.searchParams.delete('payment');
@@ -152,6 +162,7 @@ export default function DashboardLayout({
         setPaymentActivating(false);
         // Still show success — webhook might just be slow, page refresh will fix
         setShowPaymentSuccess(true);
+        sessionStorage.setItem('paymentPopupShown', '1');
         const url = new URL(window.location.href);
         url.searchParams.delete('payment');
         url.searchParams.delete('plan');
