@@ -241,6 +241,11 @@ const translations: Record<LangCode, Record<string, string>> = {
     'auth.confirmPassword': 'Confirm password',
     'auth.passwordMismatch': 'Passwords do not match',
     'auth.tokenExpired': 'Invalid or expired reset link',
+    'popup.title': 'Join to access signals',
+    'popup.desc': 'Sign in or create a free account to follow real-time trading signals',
+    'popup.login': 'Sign in',
+    'popup.register': 'Create free account',
+    'popup.dismiss': 'Continue browsing',
 
     // Bot
     'bot.title': 'Trading Bot Center',
@@ -901,6 +906,11 @@ const translations: Record<LangCode, Record<string, string>> = {
     'auth.confirmPassword': 'Confirmer le mot de passe',
     'auth.passwordMismatch': 'Les mots de passe ne correspondent pas',
     'auth.tokenExpired': 'Lien de réinitialisation invalide ou expiré',
+    'popup.title': 'Accédez aux signaux',
+    'popup.desc': 'Connectez-vous ou inscrivez-vous pour suivre les signaux en temps réel',
+    'popup.login': 'Se connecter',
+    'popup.register': 'Créer un compte gratuit',
+    'popup.dismiss': 'Continuer la navigation',
 
     // Bot
     'bot.title': 'Trading Bot Center',
@@ -1491,6 +1501,7 @@ const translations: Record<LangCode, Record<string, string>> = {
     'auth.connection': 'Iniciar sesión', 'auth.noAccount': '¿No tienes cuenta?', 'auth.register': 'Registro',
     'auth.remember': 'Recordarme', 'auth.forgotPassword': '¿Contraseña olvidada?', 'auth.loginBtn': 'Iniciar sesión', 'auth.loggingIn': 'Conectando...', 'auth.back': '← Volver',
     'auth.backToLogin': '← Volver al login', 'auth.forgotDesc': 'Ingresa tu email para recibir un enlace de restablecimiento', 'auth.forgotBtn': 'Enviar enlace', 'auth.forgotSuccess': '¡Email enviado!', 'auth.forgotSuccessDesc': 'Si existe una cuenta con este email, recibirás un enlace de restablecimiento.', 'auth.resetDesc': 'Elige una nueva contraseña', 'auth.resetBtn': 'Restablecer contraseña', 'auth.resetSuccess': '¡Contraseña restablecida con éxito!', 'auth.newPassword': 'Nueva contraseña', 'auth.confirmPassword': 'Confirmar contraseña', 'auth.passwordMismatch': 'Las contraseñas no coinciden', 'auth.tokenExpired': 'Enlace inválido o expirado',
+    'popup.title': 'Accede a las señales', 'popup.desc': 'Inicia sesión o regístrate para seguir las señales en tiempo real', 'popup.login': 'Iniciar sesión', 'popup.register': 'Crear cuenta gratis', 'popup.dismiss': 'Continuar navegando',
     'bot.title': 'Trading Bot Center', 'bot.running': 'Bot activo - {count} activos vigilados', 'bot.stopped': 'Configura tu bot y lanza señales automáticas',
     'bot.inProgress': 'EN CURSO', 'bot.start': '▶ START', 'bot.stop': '⏹ STOP',
     'bot.category': 'Categoría', 'bot.assets': 'Activos', 'bot.selected': 'seleccionados', 'bot.timeframes': 'Timeframes',
@@ -1682,6 +1693,7 @@ const translations: Record<LangCode, Record<string, string>> = {
     'auth.connection': 'Accedi', 'auth.noAccount': 'Non hai un account?', 'auth.register': 'Registrazione',
     'auth.remember': 'Ricordami', 'auth.forgotPassword': 'Password dimenticata?', 'auth.loginBtn': 'Accedi', 'auth.loggingIn': 'Accesso...', 'auth.back': '← Indietro',
     'auth.backToLogin': '← Torna al login', 'auth.forgotDesc': 'Inserisci la tua email per ricevere un link di reset', 'auth.forgotBtn': 'Invia link', 'auth.forgotSuccess': 'Email inviata!', 'auth.forgotSuccessDesc': 'Se esiste un account con questa email, riceverai un link di reset.', 'auth.resetDesc': 'Scegli una nuova password', 'auth.resetBtn': 'Reimposta password', 'auth.resetSuccess': 'Password reimpostata con successo!', 'auth.newPassword': 'Nuova password', 'auth.confirmPassword': 'Conferma password', 'auth.passwordMismatch': 'Le password non corrispondono', 'auth.tokenExpired': 'Link non valido o scaduto',
+    'popup.title': 'Accedi ai segnali', 'popup.desc': 'Accedi o registrati per seguire i segnali in tempo reale', 'popup.login': 'Accedi', 'popup.register': 'Crea account gratuito', 'popup.dismiss': 'Continua a navigare',
     'bot.title': 'Trading Bot Center', 'bot.running': 'Bot attivo - {count} attivi monitorati', 'bot.stopped': 'Configura il tuo bot e lancia segnali automatici',
     'bot.inProgress': 'IN CORSO', 'bot.start': '▶ START', 'bot.stop': '⏹ STOP',
     'bot.category': 'Categoria', 'bot.assets': 'Attivi', 'bot.selected': 'selezionati', 'bot.timeframes': 'Timeframes',
@@ -1872,6 +1884,7 @@ const translations: Record<LangCode, Record<string, string>> = {
     'auth.connection': 'Entrar', 'auth.noAccount': 'Não tem conta?', 'auth.register': 'Cadastrar',
     'auth.remember': 'Lembrar-me', 'auth.forgotPassword': 'Esqueceu a senha?', 'auth.loginBtn': 'Entrar', 'auth.loggingIn': 'Entrando...', 'auth.back': '← Voltar',
     'auth.backToLogin': '← Voltar ao login', 'auth.forgotDesc': 'Digite seu email para receber um link de redefinição', 'auth.forgotBtn': 'Enviar link', 'auth.forgotSuccess': 'Email enviado!', 'auth.forgotSuccessDesc': 'Se uma conta existir com este email, você receberá um link de redefinição.', 'auth.resetDesc': 'Escolha uma nova senha', 'auth.resetBtn': 'Redefinir senha', 'auth.resetSuccess': 'Senha redefinida com sucesso!', 'auth.newPassword': 'Nova senha', 'auth.confirmPassword': 'Confirmar senha', 'auth.passwordMismatch': 'As senhas não coincidem', 'auth.tokenExpired': 'Link inválido ou expirado',
+    'popup.title': 'Acesse os sinais', 'popup.desc': 'Faça login ou cadastre-se para acompanhar os sinais em tempo real', 'popup.login': 'Entrar', 'popup.register': 'Criar conta grátis', 'popup.dismiss': 'Continuar navegando',
     'bot.title': 'Trading Bot Center', 'bot.running': 'Bot ativo - {count} ativos monitorados', 'bot.stopped': 'Configure seu bot e lance sinais automáticos',
     'bot.inProgress': 'EM ANDAMENTO', 'bot.start': '▶ START', 'bot.stop': '⏹ STOP',
     'bot.category': 'Categoria', 'bot.assets': 'Ativos', 'bot.selected': 'selecionados', 'bot.timeframes': 'Timeframes',
@@ -2063,6 +2076,7 @@ const translations: Record<LangCode, Record<string, string>> = {
     'auth.connection': 'تسجيل الدخول', 'auth.noAccount': 'ليس لديك حساب؟', 'auth.register': 'التسجيل',
     'auth.remember': 'تذكرني', 'auth.forgotPassword': 'نسيت كلمة المرور؟', 'auth.loginBtn': 'تسجيل الدخول', 'auth.loggingIn': 'جاري الدخول...', 'auth.back': '→ رجوع',
     'auth.backToLogin': '→ العودة لتسجيل الدخول', 'auth.forgotDesc': 'أدخل بريدك الإلكتروني لتلقي رابط إعادة التعيين', 'auth.forgotBtn': 'إرسال الرابط', 'auth.forgotSuccess': 'تم إرسال البريد!', 'auth.forgotSuccessDesc': 'إذا كان هناك حساب بهذا البريد، ستتلقى رابط إعادة تعيين كلمة المرور.', 'auth.resetDesc': 'اختر كلمة مرور جديدة', 'auth.resetBtn': 'إعادة تعيين كلمة المرور', 'auth.resetSuccess': 'تمت إعادة تعيين كلمة المرور بنجاح!', 'auth.newPassword': 'كلمة المرور الجديدة', 'auth.confirmPassword': 'تأكيد كلمة المرور', 'auth.passwordMismatch': 'كلمتا المرور غير متطابقتين', 'auth.tokenExpired': 'رابط غير صالح أو منتهي الصلاحية',
+    'popup.title': 'الوصول إلى الإشارات', 'popup.desc': 'سجل الدخول أو أنشئ حسابًا لمتابعة الإشارات في الوقت الفعلي', 'popup.login': 'تسجيل الدخول', 'popup.register': 'إنشاء حساب مجاني', 'popup.dismiss': 'متابعة التصفح',
     'bot.title': 'مركز بوت التداول', 'bot.running': 'البوت نشط - {count} أصول تحت المراقبة', 'bot.stopped': 'قم بتكوين البوت وإطلاق الإشارات التلقائية',
     'bot.inProgress': 'قيد التشغيل', 'bot.start': '▶ ابدأ', 'bot.stop': '⏹ إيقاف',
     'bot.category': 'الفئة', 'bot.assets': 'الأصول', 'bot.selected': 'محدد', 'bot.timeframes': 'الأطر الزمنية',
@@ -2335,6 +2349,11 @@ const translations: Record<LangCode, Record<string, string>> = {
     'auth.confirmPassword': 'Passwort bestätigen',
     'auth.passwordMismatch': 'Passwörter stimmen nicht überein',
     'auth.tokenExpired': 'Ungültiger oder abgelaufener Reset-Link',
+    'popup.title': 'Auf Signale zugreifen',
+    'popup.desc': 'Melden Sie sich an oder erstellen Sie ein kostenloses Konto, um Echtzeitsignale zu verfolgen',
+    'popup.login': 'Anmelden',
+    'popup.register': 'Kostenloses Konto erstellen',
+    'popup.dismiss': 'Weiter surfen',
 
     // Bot
     'bot.title': 'Trading-Bot-Center',
@@ -2751,6 +2770,11 @@ const translations: Record<LangCode, Record<string, string>> = {
     'auth.confirmPassword': 'Xác nhận mật khẩu',
     'auth.passwordMismatch': 'Mật khẩu không khớp',
     'auth.tokenExpired': 'Liên kết không hợp lệ hoặc đã hết hạn',
+    'popup.title': 'Truy cập tín hiệu',
+    'popup.desc': 'Đăng nhập hoặc đăng ký để theo dõi tín hiệu giao dịch theo thời gian thực',
+    'popup.login': 'Đăng nhập',
+    'popup.register': 'Tạo tài khoản miễn phí',
+    'popup.dismiss': 'Tiếp tục duyệt web',
 
     // Bot
     'bot.title': 'Trung tâm Bot Giao dịch',

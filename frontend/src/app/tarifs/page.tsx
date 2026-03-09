@@ -96,7 +96,7 @@ export default function TarifsPage() {
 
     const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
     if (!token) {
-      router.push(`/login?redirect=/tarifs`);
+      router.push(`/register`);
       return;
     }
 
@@ -127,7 +127,7 @@ export default function TarifsPage() {
 
     const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
     if (!token) {
-      router.push(`/login?redirect=/tarifs`);
+      router.push(`/register`);
       return;
     }
 

@@ -122,7 +122,7 @@ export default function LoginPage() {
         <div className="mb-4">
           <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
-            Retour
+            {t('auth.back')}
           </Link>
         </div>
 
@@ -143,7 +143,7 @@ export default function LoginPage() {
                 <div className="relative my-5">
                   <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border" /></div>
                   <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-card px-3 text-muted-foreground">ou</span>
+                    <span className="bg-card px-3 text-muted-foreground">{t('auth.or')}</span>
                   </div>
                 </div>
               )}

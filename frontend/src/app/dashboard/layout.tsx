@@ -41,6 +41,18 @@ export default function DashboardLayout({
     { href: '/dashboard/settings', label: t('nav.settings') },
   ];
 
+  // 40-second popup for unauthenticated visitors
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (sessionStorage.getItem('authPopupDismissed')) return;
+    const timer = setTimeout(() => {
+      if (!useAuthStore.getState().isAuthenticated) {
+        setShowAuthPopup(true);
+      }
+    }, 40000);
+    return () => clearTimeout(timer);
+  }, []);
+
   // Fetch user data (including subscription) on mount
   useEffect(() => {
     initAuth();
@@ -180,6 +192,7 @@ export default function DashboardLayout({
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
   const [paymentActivating, setPaymentActivating] = useState(false);
+  const [showAuthPopup, setShowAuthPopup] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   // Profile form state for user menu
@@ -634,6 +647,49 @@ export default function DashboardLayout({
             >
               {t('payment.startTrading')}
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Auth Popup — shown after 40s for non-logged users */}
+      {showAuthPopup && (
+        <div className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+          <div className="relative bg-card border border-border rounded-t-2xl sm:rounded-2xl shadow-2xl p-6 sm:p-8 w-full sm:max-w-md mx-0 sm:mx-4 animate-in slide-in-from-bottom sm:zoom-in-95 duration-300">
+            <button
+              onClick={() => { setShowAuthPopup(false); sessionStorage.setItem('authPopupDismissed', '1'); }}
+              className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <line x1="1" y1="1" x2="13" y2="13"/><line x1="13" y1="1" x2="1" y2="13"/>
+              </svg>
+            </button>
+            <div className="text-center mb-6">
+              <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
+                <svg className="w-7 h-7 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M9.348 14.651a3.75 3.75 0 010-5.303m5.304 0a3.75 3.75 0 010 5.303m-7.425 2.122a6.75 6.75 0 010-9.546m9.546 0a6.75 6.75 0 010 9.546M12 12h.008v.007H12V12z" /></svg>
+              </div>
+              <h2 className="text-xl font-bold mb-2">{t('popup.title')}</h2>
+              <p className="text-sm text-muted-foreground">{t('popup.desc')}</p>
+            </div>
+            <div className="flex flex-col gap-3">
+              <a
+                href="/login"
+                className="w-full py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors text-center text-sm"
+              >
+                {t('popup.login')}
+              </a>
+              <a
+                href="/register"
+                className="w-full py-3 border border-primary text-primary font-semibold rounded-lg hover:bg-primary/10 transition-colors text-center text-sm"
+              >
+                {t('popup.register')}
+              </a>
+              <button
+                onClick={() => { setShowAuthPopup(false); sessionStorage.setItem('authPopupDismissed', '1'); }}
+                className="w-full py-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {t('popup.dismiss')}
+              </button>
+            </div>
           </div>
         </div>
       )}
