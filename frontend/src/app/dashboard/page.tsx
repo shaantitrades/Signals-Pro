@@ -147,7 +147,7 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* Recent Signals */
+      {/* Recent Signals */}
       <div className="signal-card">
         <div className="flex items-center justify-between p-4 border-b border-border">
           <h2 className="font-semibold">{t('dash.recentSignals')}</h2>
