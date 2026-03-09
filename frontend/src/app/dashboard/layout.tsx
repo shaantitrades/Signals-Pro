@@ -386,7 +386,17 @@ export default function DashboardLayout({
               )}
             </div>
 
-            {/* User Menu Dropdown */}
+            {/* User Menu — Login/Register if not authenticated */}
+            {!isAuthenticated ? (
+              <div className="flex items-center gap-2">
+                <Link href="/login" className="px-3 py-1.5 rounded-lg border border-border text-sm text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors whitespace-nowrap">
+                  {t('auth.loginBtn')}
+                </Link>
+                <Link href="/register" className="px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap">
+                  {t('auth.register')}
+                </Link>
+              </div>
+            ) : (
             <div className="relative" ref={userMenuRef}>
               <button
                 onClick={() => { setUserMenuOpen(!userMenuOpen); setProfileSubOpen(false); setProfileEditOpen(false); setMenuProfileMsg(null); }}
@@ -520,6 +530,7 @@ export default function DashboardLayout({
                 </div>
               )}
             </div>
+            )}
           </div>
         </div>
       </header>
