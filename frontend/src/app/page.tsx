@@ -122,15 +122,12 @@ export default function Home() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-10 sm:mb-16 px-4">
-            <button
-              onClick={() => {
-                const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
-                window.location.href = token ? '/dashboard/signals' : '/login';
-              }}
-              className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-semibold text-lg hover:bg-primary/90 transition-colors w-full sm:w-auto"
+            <Link
+              href="/dashboard/signals"
+              className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-semibold text-lg hover:bg-primary/90 transition-colors w-full sm:w-auto text-center"
             >
               {t('hero.demo')}
-            </button>
+            </Link>
           </div>
 
           {/* Stats Bar */}
