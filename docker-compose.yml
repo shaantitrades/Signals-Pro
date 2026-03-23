@@ -69,7 +69,7 @@ services:
       SIGNAL_MIN_CONFIDENCE: 85
       ANALYSIS_INTERVAL_SECONDS: 30
     ports:
-      - "8000:8000"
+      - "8888:8000"
     depends_on:
       - backend
 
