@@ -45,6 +45,9 @@ services:
       JWT_SECRET: ${JWT_SECRET:-change_me_in_production}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change_me_refresh}
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-sk_test_xxx}
+      SIGNAL_ENGINE_URL: http://signal-engine:8000
+      ENGINE_API_KEY: ${ENGINE_API_KEY:-dev_key}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
       NODE_ENV: production
       PORT: 3001
     ports:
