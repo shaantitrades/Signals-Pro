@@ -288,11 +288,11 @@ export default function TarifsPage() {
                       ))}
                     </ul>
 
-                    {/* Stripe checkout button — BLUE */}
+                    {/* Stripe checkout button — HIDDEN */}
                     <button
                       onClick={() => handleCheckout(plan.slug)}
                       disabled={checkoutSlug !== null || cryptoSlug !== null}
-                      className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white rounded-lg px-4 py-2.5 transition-colors cursor-pointer font-semibold"
+                      className="hidden"
                     >
                       {checkoutSlug === plan.slug ? (
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
@@ -308,18 +308,18 @@ export default function TarifsPage() {
                       )}
                     </button>
 
-                    {/* Divider */}
-                    <div className="flex items-center gap-2 my-2">
+                    {/* Divider — HIDDEN since Stripe button is hidden */}
+                    <div className="hidden">
                       <div className="flex-1 h-px bg-border"></div>
                       <span className="text-xs text-muted-foreground">{t('pricing.orPayCrypto')}</span>
                       <div className="flex-1 h-px bg-border"></div>
                     </div>
 
-                    {/* Crypto payment button — ORANGE */}
+                    {/* Crypto payment button — BLUE */}
                     <button
                       onClick={() => handleCryptoCheckout(plan.slug)}
                       disabled={checkoutSlug !== null || cryptoSlug !== null}
-                      className="flex items-center justify-center gap-2 w-full bg-orange-500 hover:bg-orange-600 disabled:opacity-60 text-white rounded-lg px-4 py-2.5 transition-colors cursor-pointer font-semibold"
+                      className="flex items-center justify-center gap-2 w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white rounded-lg px-4 py-2.5 transition-colors cursor-pointer font-semibold"
                     >
                       {cryptoSlug === plan.slug ? (
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
