@@ -140,7 +140,7 @@ export default function DashboardLayout({
 
     setPaymentActivating(true);
     let attempts = 0;
-    const maxAttempts = 30; // poll for up to ~60 seconds (crypto can be slower)
+    const maxAttempts = 24; // poll for up to ~2 minutes (crypto can be slower)
     const pollInterval = setInterval(async () => {
       attempts++;
       await initAuth();
@@ -169,7 +169,7 @@ export default function DashboardLayout({
         window.history.replaceState({}, '', url.pathname);
         setTimeout(() => setShowPaymentSuccess(false), 8000);
       }
-    }, 2000);
+    }, 5000);
 
     return () => clearInterval(pollInterval);
   }, [initAuth]);
