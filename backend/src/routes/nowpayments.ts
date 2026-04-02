@@ -353,3 +353,99 @@ nowpaymentsRouter.get('/status/:invoiceId', authenticate, async (req: AuthReques
     next(error);
   }
 });
+
+// ============================================================================
+// POST /api/nowpayments/sync - Sync pending payment → activate if confirmed
+// Called by frontend when user returns from payment page
+// ============================================================================
+
+nowpaymentsRouter.post('/sync', authenticate, async (req: AuthRequest, res: Response, next) => {
+  try {
+    const user = req.user!;
+
+    // Find user's subscription
+    const subscription = await prisma.subscription.findUnique({
+      where: { userId: user.id },
+      include: { plan: true },
+    });
+
+    if (!subscription) {
+      return res.json({ success: true, data: { status: 'NO_SUBSCRIPTION' } });
+    }
+
+    // Already active? Return immediately
+    if (subscription.status === 'ACTIVE' && subscription.currentPeriodEnd > new Date()) {
+      return res.json({ success: true, data: { status: 'ACTIVE', subscription } });
+    }
+
+    // Find the latest pending nowpayments payment
+    const payment = await prisma.payment.findFirst({
+      where: {
+        subscriptionId: subscription.id,
+        provider: 'nowpayments',
+        status: 'PENDING',
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (!payment || !payment.nowPaymentId) {
+      return res.json({ success: true, data: { status: subscription.status } });
+    }
+
+    if (!NP_API_KEY) {
+      return res.json({ success: true, data: { status: subscription.status } });
+    }
+
+    // Try fetching invoice status from NowPayments API
+    let npPaymentStatus: string | null = null;
+
+    // First try invoice endpoint
+    try {
+      const invoiceData = await npFetch(`/invoice/${payment.nowPaymentId}`);
+      if (invoiceData?.payment_status) {
+        npPaymentStatus = invoiceData.payment_status;
+      }
+    } catch { /* ignore */ }
+
+    // Fallback: try payment endpoint
+    if (!npPaymentStatus) {
+      try {
+        const paymentData = await npFetch(`/payment/${payment.nowPaymentId}`);
+        if (paymentData?.payment_status) {
+          npPaymentStatus = paymentData.payment_status;
+        }
+      } catch { /* ignore */ }
+    }
+
+    console.log(`[NOWPayments Sync] user=${user.id} invoiceId=${payment.nowPaymentId} status=${npPaymentStatus}`);
+
+    if (npPaymentStatus === 'finished') {
+      const plan = subscription.plan;
+      const now = new Date();
+      const endDate = plan
+        ? new Date(now.getTime() + plan.durationDays * 24 * 60 * 60 * 1000)
+        : subscription.currentPeriodEnd;
+
+      const updatedSub = await prisma.subscription.update({
+        where: { id: subscription.id },
+        data: { status: 'ACTIVE', currentPeriodStart: now, currentPeriodEnd: endDate },
+        include: { plan: true },
+      });
+
+      await prisma.payment.update({
+        where: { id: payment.id },
+        data: { status: 'COMPLETED' },
+      });
+
+      console.log(`[NOWPayments Sync] ✅ Subscription ACTIVATED for user ${user.id}`);
+      return res.json({ success: true, data: { status: 'ACTIVE', subscription: updatedSub } });
+    }
+
+    return res.json({
+      success: true,
+      data: { status: subscription.status, npStatus: npPaymentStatus },
+    });
+  } catch (error) {
+    next(error);
+  }
+});

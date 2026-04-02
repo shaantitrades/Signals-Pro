@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { useAuthStore, useWSStore } from '@/lib/store';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useI18n, languages as i18nLanguages } from '@/lib/i18n';
-import { authApi } from '@/lib/api';
+import { authApi, api } from '@/lib/api';
 
 export default function DashboardLayout({
   children,
@@ -143,6 +143,13 @@ export default function DashboardLayout({
     const maxAttempts = 24; // poll for up to ~2 minutes (crypto can be slower)
     const pollInterval = setInterval(async () => {
       attempts++;
+      // First: try to sync directly with NowPayments API (activates if confirmed)
+      try {
+        const syncRes = await api.post('/nowpayments/sync', {});
+        if (syncRes.data?.data?.status === 'ACTIVE') {
+          await initAuth(); // refresh user state from DB
+        }
+      } catch { /* ignore, fallback to initAuth */ }
       await initAuth();
       const { hasActiveSubscription } = useAuthStore.getState();
       if (hasActiveSubscription()) {
