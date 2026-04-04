@@ -140,17 +140,34 @@ export default function DashboardLayout({
 
     setPaymentActivating(true);
     let attempts = 0;
-    const maxAttempts = 24; // poll for up to ~2 minutes (crypto can be slower)
+    const maxAttempts = 36; // poll for up to ~3 minutes (crypto can be slow)
     const pollInterval = setInterval(async () => {
       attempts++;
-      // First: try to sync directly with NowPayments API (activates if confirmed)
-      try {
-        const syncRes = await api.post('/nowpayments/sync', {});
-        if (syncRes.data?.data?.status === 'ACTIVE') {
-          await initAuth(); // refresh user state from DB
-        }
-      } catch { /* ignore, fallback to initAuth */ }
+      // Refresh auth state first (handles token refresh on 401)
       await initAuth();
+      
+      // Check if already active after auth refresh
+      const stateAfterAuth = useAuthStore.getState();
+      if (stateAfterAuth.hasActiveSubscription()) {
+        clearInterval(pollInterval);
+        setPaymentActivating(false);
+        setShowPaymentSuccess(true);
+        sessionStorage.setItem('paymentPopupShown', '1');
+        const url = new URL(window.location.href);
+        url.searchParams.delete('payment');
+        url.searchParams.delete('plan');
+        window.history.replaceState({}, '', url.pathname);
+        setTimeout(() => setShowPaymentSuccess(false), 8000);
+        return;
+      }
+
+      // Try NowPayments sync (proactively check with NowPayments API)
+      try {
+        await api.post('/nowpayments/sync', {});
+        // Re-fetch user state after sync
+        await initAuth();
+      } catch { /* ignore */ }
+
       const { hasActiveSubscription } = useAuthStore.getState();
       if (hasActiveSubscription()) {
         clearInterval(pollInterval);

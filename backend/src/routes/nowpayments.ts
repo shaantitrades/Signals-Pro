@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import crypto from 'crypto';
 import { prisma } from '../lib/prisma';
 import { authenticate, AuthRequest } from '../middleware/auth';
+import { emitSubscriptionUpdated } from '../websocket/index';
 
 export const nowpaymentsRouter = Router();
 
@@ -282,6 +283,9 @@ nowpaymentsRouter.post('/webhook', async (req: Request, res: Response) => {
           },
         });
 
+        // Notify frontend via WebSocket (same as Stripe)
+        emitSubscriptionUpdated(sub.userId);
+
         console.log(`[NOWPayments IPN] ✅ Subscription ACTIVATED for user ${sub.userId}, payment ${payment_id}`);
       }
     }
@@ -399,21 +403,32 @@ nowpaymentsRouter.post('/sync', authenticate, async (req: AuthRequest, res: Resp
     // Try fetching invoice status from NowPayments API
     let npPaymentStatus: string | null = null;
 
-    // First try invoice endpoint
+    // Use invoice-payment endpoint to get actual payment status for this invoice
     try {
-      const invoiceData = await npFetch(`/invoice/${payment.nowPaymentId}`);
-      if (invoiceData?.payment_status) {
-        npPaymentStatus = invoiceData.payment_status;
+      const paymentsData = await npFetch(`/invoice-payment/${payment.nowPaymentId}`);
+      console.log(`[NOWPayments Sync] invoice-payment response:`, JSON.stringify(paymentsData));
+      if (paymentsData?.result && Array.isArray(paymentsData.result) && paymentsData.result.length > 0) {
+        // Get the latest payment's status
+        const latestPayment = paymentsData.result[paymentsData.result.length - 1];
+        npPaymentStatus = latestPayment.payment_status;
       }
     } catch { /* ignore */ }
 
-    // Fallback: try payment endpoint
+    // Fallback: try invoice endpoint (status field)
+    if (!npPaymentStatus) {
+      try {
+        const invoiceData = await npFetch(`/invoice/${payment.nowPaymentId}`);
+        console.log(`[NOWPayments Sync] invoice response:`, JSON.stringify(invoiceData));
+        npPaymentStatus = invoiceData?.payment_status || invoiceData?.status || null;
+      } catch { /* ignore */ }
+    }
+
+    // Fallback: try payment endpoint with the stored ID
     if (!npPaymentStatus) {
       try {
         const paymentData = await npFetch(`/payment/${payment.nowPaymentId}`);
-        if (paymentData?.payment_status) {
-          npPaymentStatus = paymentData.payment_status;
-        }
+        console.log(`[NOWPayments Sync] payment response:`, JSON.stringify(paymentData));
+        npPaymentStatus = paymentData?.payment_status || null;
       } catch { /* ignore */ }
     }
 
@@ -436,6 +451,9 @@ nowpaymentsRouter.post('/sync', authenticate, async (req: AuthRequest, res: Resp
         where: { id: payment.id },
         data: { status: 'COMPLETED' },
       });
+
+      // Notify frontend via WebSocket
+      emitSubscriptionUpdated(user.id);
 
       console.log(`[NOWPayments Sync] ✅ Subscription ACTIVATED for user ${user.id}`);
       return res.json({ success: true, data: { status: 'ACTIVE', subscription: updatedSub } });
