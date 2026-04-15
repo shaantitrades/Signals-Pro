@@ -1,9 +1,10 @@
 // Market Signals24 — Service Worker (PWA offline + caching)
-const CACHE_NAME = 'signals24-v1';
+// Cache version — bump this on every deploy OR auto-stamp at build time
+const CACHE_VERSION = 'signals24-' + self.registration.scope;
+const BUILD_TS = '{{BUILD_TS}}'; // replaced at build; fallback keeps version unique per registration
+const CACHE_NAME = 'signals24-' + (typeof BUILD_TS !== 'undefined' ? BUILD_TS : Date.now());
+
 const STATIC_ASSETS = [
-  '/',
-  '/dashboard',
-  '/login',
   '/manifest.json',
   '/favicon.ico',
   '/favicon.svg',
@@ -12,54 +13,87 @@ const STATIC_ASSETS = [
   '/icon-512.png',
 ];
 
-// Install — cache core shell
+// Install — pre-cache only non-HTML static assets, activate immediately
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
+    caches.open(CACHE_NAME).then((cache) =>
+      Promise.allSettled(STATIC_ASSETS.map((url) =>
+        fetch(url, { cache: 'no-cache' }).then((r) => r.ok ? cache.put(url, r) : null).catch(() => null)
+      ))
+    )
   );
+  // Take over immediately — don't wait for old SW clients to close
   self.skipWaiting();
 });
 
-// Activate — clean old caches
+// Activate — delete ALL old caches, claim clients → new SW serves immediately
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
-    )
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-// Fetch — network-first for API, cache-first for static assets
+// Message — allow page to trigger skipWaiting for immediate update
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
+// Fetch strategy:
+//   • HTML navigation  → network-first (always get latest page)
+//   • Hashed JS/CSS    → cache-first   (Next.js hashes guarantee freshness)
+//   • API              → network-only
+//   • Other static     → stale-while-revalidate
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Skip non-GET and cross-origin
   if (request.method !== 'GET') return;
   if (url.origin !== self.location.origin) return;
-
-  // API calls → network only (real-time data)
   if (url.pathname.startsWith('/api/')) return;
 
-  // Static assets → cache first, fallback network
-  event.respondWith(
-    caches.match(request).then((cached) => {
-      if (cached) return cached;
-      return fetch(request).then((response) => {
-        // Cache successful responses
-        if (response.ok && (url.pathname.match(/\.(js|css|png|svg|ico|woff2?)$/) || STATIC_ASSETS.includes(url.pathname))) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
-        }
-        return response;
-      }).catch(() => {
-        // Offline fallback for navigation
-        if (request.mode === 'navigate') {
-          return caches.match('/');
-        }
-        return new Response('Offline', { status: 503 });
-      });
-    })
-  );
+  // HTML navigation → network-first so updates are always seen
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request, { cache: 'no-cache' })
+        .catch(() => caches.match(request).then((r) => r || caches.match('/')))
+    );
+    return;
+  }
+
+  // Hashed Next.js bundles (_next/static/) → cache-first (immutable)
+  if (url.pathname.startsWith('/_next/static/')) {
+    event.respondWith(
+      caches.match(request).then((cached) => {
+        if (cached) return cached;
+        return fetch(request).then((response) => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
+          return response;
+        });
+      })
+    );
+    return;
+  }
+
+  // Other static assets → stale-while-revalidate
+  if (url.pathname.match(/\.(png|svg|ico|woff2?|jpg|webp|gif)$/)) {
+    event.respondWith(
+      caches.open(CACHE_NAME).then((cache) =>
+        cache.match(request).then((cached) => {
+          const networkFetch = fetch(request).then((response) => {
+            if (response.ok) cache.put(request, response.clone());
+            return response;
+          }).catch(() => cached);
+          return cached || networkFetch;
+        })
+      )
+    );
+    return;
+  }
 });

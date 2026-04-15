@@ -48,11 +48,30 @@ const themeInitScript = `
 // Register service worker for PWA
 const swRegisterScript = `
 (function(){
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function() {
-      navigator.serviceWorker.register('/sw.js').catch(function(){});
+  if (!('serviceWorker' in navigator)) return;
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js').then(function(reg) {
+      // Check for updates every 60 seconds
+      setInterval(function() { reg.update(); }, 60000);
+
+      // New SW waiting → tell it to skip waiting, then reload
+      reg.addEventListener('updatefound', function() {
+        var newWorker = reg.installing;
+        if (!newWorker) return;
+        newWorker.addEventListener('statechange', function() {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            newWorker.postMessage({ type: 'SKIP_WAITING' });
+          }
+        });
+      });
+    }).catch(function(){});
+
+    // When controller changes (new SW took over) → reload to get fresh assets
+    var refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', function() {
+      if (!refreshing) { refreshing = true; window.location.reload(); }
     });
-  }
+  });
 })();
 `;
 
