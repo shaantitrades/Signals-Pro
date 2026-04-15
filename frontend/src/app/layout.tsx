@@ -51,8 +51,11 @@ const swRegisterScript = `
   if (!('serviceWorker' in navigator)) return;
   window.addEventListener('load', function() {
     navigator.serviceWorker.register('/sw.js').then(function(reg) {
-      // Check for updates every 60 seconds
-      setInterval(function() { reg.update(); }, 60000);
+      // Check for updates every 30 seconds and on visibility resume
+      setInterval(function() { reg.update(); }, 30000);
+      document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'visible') { reg.update(); }
+      });
 
       // New SW waiting → tell it to skip waiting, then reload
       reg.addEventListener('updatefound', function() {

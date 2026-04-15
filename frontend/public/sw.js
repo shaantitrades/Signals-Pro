@@ -1,8 +1,6 @@
 // Market Signals24 — Service Worker (PWA offline + caching)
-// Cache version — bump this on every deploy OR auto-stamp at build time
-const CACHE_VERSION = 'signals24-' + self.registration.scope;
-const BUILD_TS = '{{BUILD_TS}}'; // replaced at build; fallback keeps version unique per registration
-const CACHE_NAME = 'signals24-' + (typeof BUILD_TS !== 'undefined' ? BUILD_TS : Date.now());
+// INCREMENT THIS NUMBER ON EVERY DEPLOY to bust the cache
+const CACHE_NAME = 'signals24-v20260416-2';
 
 const STATIC_ASSETS = [
   '/manifest.json',
