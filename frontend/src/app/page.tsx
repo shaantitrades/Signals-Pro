@@ -5,16 +5,39 @@ import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useI18n, languages as i18nLanguages } from '@/lib/i18n';
 
+interface CustomPartner {
+  id: string;
+  name: string;
+  url: string;
+  subtitle: string;
+  desc: string;
+  score?: string;
+  bonus?: string;
+  promoCode?: string;
+  tags: string[];
+  color: string;
+  initial: string;
+  active: boolean;
+}
+
 export default function Home() {
   const [theme, setTheme] = useState('light');
   const [langOpen, setLangOpen] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
   const { lang, setLang, t } = useI18n();
+  const [customPartners, setCustomPartners] = useState<CustomPartner[]>([]);
 
   useEffect(() => {
     const saved = localStorage.getItem('theme') || 'light';
     setTheme(saved);
     document.documentElement.classList.toggle('dark', saved === 'dark');
+  }, []);
+
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('custom_partners') || '[]') as CustomPartner[];
+      setCustomPartners(saved.filter((p) => p.active));
+    } catch { setCustomPartners([]); }
   }, []);
 
   useEffect(() => {
@@ -33,6 +56,17 @@ export default function Home() {
     localStorage.setItem('theme', next);
     document.documentElement.classList.toggle('dark', next === 'dark');
   };
+
+  const [showPOPopup, setShowPOPopup] = useState(false);
+
+  useEffect(() => {
+    if (sessionStorage.getItem('po_popup_seen')) return;
+    const timer = setTimeout(() => {
+      setShowPOPopup(true);
+      sessionStorage.setItem('po_popup_seen', '1');
+    }, 30000);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
@@ -121,13 +155,45 @@ export default function Home() {
             {t('hero.desc')}
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-10 sm:mb-16 px-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-5 sm:mb-7 px-4">
             <Link
               href="/dashboard"
               className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-semibold text-lg hover:bg-primary/90 transition-colors w-full sm:w-auto text-center"
             >
               {t('hero.demo')}
             </Link>
+          </div>
+
+          {/* Broker Strip */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-10 sm:mb-16 px-4">
+            <a
+              href="https://u3.shortink.io/pwa?utm_campaign=41345&utm_source=affiliate&utm_medium=sr&a=nauJIysReFF6Mk&al=1545722&ac=promo-code-60&cid=899888&code=PMQ023"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-3 bg-card/80 backdrop-blur-sm border border-emerald-500/30 rounded-xl px-4 py-3 hover:border-emerald-500/60 hover:shadow-lg hover:shadow-emerald-500/10 transition-all w-full sm:w-auto"
+            >
+              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-xs shrink-0">PO</div>
+              <div className="text-left">
+                <p className="font-semibold text-sm text-foreground group-hover:text-emerald-500 transition-colors">Pocket Option</p>
+                <p className="text-xs text-muted-foreground">Bonus jusqu'à <span className="text-emerald-500 font-bold">+80%</span> · Code <span className="text-emerald-500 font-bold">PMQ023</span></p>
+              </div>
+              <span className="ml-2 text-[10px] font-bold text-white bg-emerald-500 px-2 py-1 rounded-full shrink-0 whitespace-nowrap">★ 4.9/5</span>
+            </a>
+            <a
+              href="https://tradecomparator.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-3 bg-card/80 backdrop-blur-sm border border-orange-500/30 rounded-xl px-4 py-3 hover:border-orange-500/60 hover:shadow-lg hover:shadow-orange-500/10 transition-all w-full sm:w-auto"
+            >
+              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-white font-bold text-xs shrink-0">TC</div>
+              <div className="text-left">
+                <p className="font-semibold text-sm text-foreground group-hover:text-orange-500 transition-colors">Trade Comparator</p>
+                <p className="text-xs text-muted-foreground">Comparez les meilleurs brokers</p>
+              </div>
+              <svg className="w-4 h-4 text-muted-foreground/30 group-hover:text-orange-500 transition-colors ml-2 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
           </div>
 
           {/* Stats Bar */}
@@ -207,9 +273,9 @@ export default function Home() {
             <span className="inline-block text-xs font-semibold tracking-widest uppercase text-muted-foreground mb-2">{t('partners.label')}</span>
             <h2 className="text-xl sm:text-2xl font-bold text-foreground">{t('partners.title')}</h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 max-w-4xl mx-auto">
 
-            {/* Partner 2 — imparami.com */}
+            {/* Partner — imparami.com */}
             <a
               href="https://imparami.com"
               target="_blank"
@@ -235,6 +301,101 @@ export default function Home() {
                 ))}
               </div>
             </a>
+
+            {/* Partner — Pocket Option */}
+            <a
+              href="https://u3.shortink.io/pwa?utm_campaign=41345&utm_source=affiliate&utm_medium=sr&a=nauJIysReFF6Mk&al=1545722&ac=promo-code-60&cid=899888&code=PMQ023"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex flex-col gap-3 bg-card border border-border rounded-2xl p-6 hover:border-primary/40 hover:shadow-lg transition-all shadow-sm"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-sm shrink-0">
+                  PO
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold text-card-foreground text-sm group-hover:text-primary transition-colors">Pocket Option</p>
+                    <span className="text-[10px] text-yellow-500 font-bold">★ 4.9/5</span>
+                  </div>
+                  <p className="text-muted-foreground text-xs">{t('partners.pocketoption.subtitle')}</p>
+                </div>
+                <svg className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors ml-auto shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </div>
+              <p className="text-muted-foreground text-xs leading-relaxed">{t('partners.pocketoption.desc')}</p>
+              <div className="flex flex-wrap gap-1.5 mt-1">
+                {[t('partners.tag.bonus6080'), t('partners.tag.promopmq')].map((tag) => (
+                  <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">{tag}</span>
+                ))}
+              </div>
+            </a>
+
+            {/* Partner — SabioTrade */}
+            <a
+              href="https://sabiotrade.com/?aff=820461&aff_model=revenue&afftrack="
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex flex-col gap-3 bg-card border border-border rounded-2xl p-6 hover:border-primary/40 hover:shadow-lg transition-all shadow-sm"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-bold text-sm shrink-0">
+                  ST
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold text-card-foreground text-sm group-hover:text-primary transition-colors">SabioTrade</p>
+                    <span className="text-[10px] text-yellow-500 font-bold">★ 4.8/5</span>
+                  </div>
+                  <p className="text-muted-foreground text-xs">{t('partners.sabio.subtitle')}</p>
+                </div>
+                <svg className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors ml-auto shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </div>
+              <p className="text-muted-foreground text-xs leading-relaxed">{t('partners.sabio.desc')}</p>
+              <div className="flex flex-wrap gap-1.5 mt-1">
+                {[t('partners.tag.propfirm'), t('partners.tag.funded')].map((tag) => (
+                  <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-500 border border-blue-500/20">{tag}</span>
+                ))}
+              </div>
+            </a>
+
+            {/* Dynamic admin-added partners */}
+            {customPartners.map((partner) => (
+              <a
+                key={partner.id}
+                href={partner.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex flex-col gap-3 bg-card border border-border rounded-2xl p-6 hover:border-primary/40 hover:shadow-lg transition-all shadow-sm"
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm shrink-0 ${partner.color || 'bg-gradient-to-br from-primary to-primary/70'}`}>
+                    {partner.initial || partner.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <p className="font-semibold text-card-foreground text-sm group-hover:text-primary transition-colors">{partner.name}</p>
+                      {partner.score && <span className="text-[10px] text-yellow-500 font-bold">★ {partner.score}</span>}
+                    </div>
+                    <p className="text-muted-foreground text-xs">{partner.subtitle}</p>
+                  </div>
+                  <svg className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors ml-auto shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                </div>
+                <p className="text-muted-foreground text-xs leading-relaxed">{partner.desc}</p>
+                {partner.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-1">
+                    {partner.tags.map((tag) => (
+                      <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">{tag}</span>
+                    ))}
+                  </div>
+                )}
+              </a>
+            ))}
 
           </div>
         </div>
@@ -290,6 +451,77 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Pocket Option Popup */}
+      {showPOPopup && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
+          onClick={() => setShowPOPopup(false)}
+        >
+          <div
+            className="relative bg-gradient-to-br from-[#071a0e] via-[#0a2a14] to-[#071a0e] border border-emerald-500/40 rounded-2xl p-6 sm:p-8 max-w-sm w-full shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close */}
+            <button
+              onClick={() => setShowPOPopup(false)}
+              className="absolute top-3 right-3 text-white/30 hover:text-white transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Urgency badge */}
+            <div className="flex items-center gap-2 mb-4">
+              <span className="w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
+              <span className="text-xs font-bold text-red-400 uppercase tracking-widest">{t('popup.po.urgency')}</span>
+            </div>
+
+            {/* Header */}
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-black text-lg shrink-0">
+                PO
+              </div>
+              <div>
+                <h3 className="text-xl font-black text-white">Pocket Option</h3>
+                <div className="flex items-center gap-1">
+                  <span className="text-yellow-400 text-sm">★★★★★</span>
+                  <span className="text-white/50 text-xs">4.9/5 · 50 000+ traders</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Headline */}
+            <p className="text-2xl font-black text-white mb-2 leading-tight">
+              {t('popup.po.headline')}
+            </p>
+            <p className="text-white/70 text-sm mb-5 leading-relaxed">
+              {t('popup.po.sub')}
+            </p>
+
+            {/* Social proof */}
+            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3 mb-5">
+              <p className="text-emerald-400 text-sm font-bold mb-1">{t('popup.po.social')}</p>
+              <p className="text-white/60 text-xs">{t('popup.po.code').replace('PMQ023', '')} <span className="text-emerald-400 font-black text-sm">PMQ023</span> {t('popup.po.code').split('PMQ023')[1]}</p>
+            </div>
+
+            {/* CTA */}
+            <a
+              href="https://u3.shortink.io/pwa?utm_campaign=41345&utm_source=affiliate&utm_medium=sr&a=nauJIysReFF6Mk&al=1545722&ac=promo-code-60&cid=899888&code=PMQ023"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full text-center bg-emerald-500 hover:bg-emerald-400 text-white font-black text-lg py-4 rounded-xl transition-all shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:scale-[1.02] active:scale-[0.98]"
+              onClick={() => setShowPOPopup(false)}
+            >
+              {t('popup.po.cta')}
+            </a>
+            <p className="text-white/25 text-[10px] text-center mt-3">
+              {t('popup.po.disclaimer')}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

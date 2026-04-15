@@ -36,8 +36,6 @@ export default function DashboardLayout({
     { href: '/dashboard/signals-otc', label: t('nav.signalsOtc') },
     { href: '/dashboard/bot', label: t('nav.tradingBot') },
     { href: '/dashboard/signals', label: t('nav.signalsLive') },
-    { href: '/dashboard/trades', label: t('nav.myTrades') },
-    { href: '/dashboard/performance', label: t('nav.performance') },
     { href: '/dashboard/settings', label: t('nav.settings') },
   ];
 
@@ -579,13 +577,20 @@ export default function DashboardLayout({
               href={item.href}
               className={cn(
                 'flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium whitespace-nowrap transition-colors',
-                pathname === item.href
+                item.href === '/dashboard/signals-otc'
+                  ? pathname === item.href
+                    ? 'bg-yellow-400 text-black shadow-md shadow-yellow-400/30'
+                    : 'bg-yellow-400/15 text-yellow-500 border border-yellow-400/40 hover:bg-yellow-400 hover:text-black font-semibold'
+                  : pathname === item.href
                   ? 'bg-primary/10 text-primary'
                   : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
               )}
             >
               {navIcons[item.href]}
               {item.label}
+              {item.href === '/dashboard/signals-otc' && pathname !== item.href && (
+                <span className="ml-0.5 inline-block w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
+              )}
             </Link>
           ))}
         </div>
@@ -597,6 +602,9 @@ export default function DashboardLayout({
           {children}
         </div>
       </main>
+
+      {/* Partners */}
+      <DashboardPartners t={t} />
 
       {/* Footer */}
       <footer className="bg-gradient-to-r from-[#1a1a2e] via-[#2d1b69] to-[#1a1a2e] text-white">
@@ -771,5 +779,160 @@ export default function DashboardLayout({
         </div>
       )}
     </div>
+  );
+}
+
+// ── Partners section shown above the dashboard footer ──────────────────────
+interface CustomPartner {
+  id: string;
+  name: string;
+  url: string;
+  subtitle: string;
+  desc: string;
+  score?: string;
+  tags: string[];
+  color: string;
+  initial: string;
+  active: boolean;
+}
+
+function DashboardPartners({ t }: { t: (k: string) => string }) {
+  const [customPartners, setCustomPartners] = useState<CustomPartner[]>([]);
+
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('custom_partners') || '[]') as CustomPartner[];
+      setCustomPartners(saved.filter((p) => p.active));
+    } catch { setCustomPartners([]); }
+  }, []);
+
+  const staticPartners = [
+    {
+      id: 'imparami',
+      href: 'https://imparami.com',
+      initial: 'I',
+      color: 'bg-gradient-to-br from-violet-600 to-pink-500',
+      name: 'imparami.com',
+      subtitle: t('partners.imparami.subtitle'),
+      desc: t('partners.imparami.desc'),
+      score: '',
+      tags: [t('partners.tag.tutors'), t('partners.tag.price'), t('partners.tag.subjects'), t('partners.tag.online')],
+      tagColor: 'bg-violet-500/10 text-violet-500 border-violet-500/20',
+    },
+    {
+      id: 'pocketoption',
+      href: 'https://u3.shortink.io/pwa?utm_campaign=41345&utm_source=affiliate&utm_medium=sr&a=nauJIysReFF6Mk&al=1545722&ac=promo-code-60&cid=899888&code=PMQ023',
+      initial: 'PO',
+      color: 'bg-gradient-to-br from-emerald-500 to-teal-600',
+      name: 'Pocket Option',
+      subtitle: t('partners.pocketoption.subtitle'),
+      desc: t('partners.pocketoption.desc'),
+      score: '4.9/5',
+      tags: [t('partners.tag.bonus6080'), t('partners.tag.promopmq')],
+      tagColor: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+    },
+    {
+      id: 'sabio',
+      href: 'https://sabiotrade.com/?aff=820461&aff_model=revenue&afftrack=',
+      initial: 'ST',
+      color: 'bg-gradient-to-br from-blue-600 to-indigo-700',
+      name: 'SabioTrade',
+      subtitle: t('partners.sabio.subtitle'),
+      desc: t('partners.sabio.desc'),
+      score: '4.8/5',
+      tags: [t('partners.tag.propfirm'), t('partners.tag.funded')],
+      tagColor: 'bg-blue-500/10 text-blue-500 border-blue-500/20',
+    },
+    {
+      id: 'tradecomp',
+      href: 'https://tradecomparator.com/',
+      initial: 'TC',
+      color: 'bg-gradient-to-br from-orange-500 to-amber-600',
+      name: 'Trade Comparator',
+      subtitle: t('partners.tradecomp.subtitle'),
+      desc: t('partners.tradecomp.desc'),
+      score: '',
+      tags: [t('partners.tag.comparator'), 'Forex', t('partners.tag.crypto'), t('partners.tag.propfirm'), t('partners.tag.education')],
+      tagColor: 'bg-orange-500/10 text-orange-500 border-orange-500/20',
+    },
+  ];
+
+  const extArrow = (
+    <svg className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors ml-auto shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+    </svg>
+  );
+
+  return (
+    <section className="bg-secondary border-t border-border">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-12">
+        <div className="text-center mb-8">
+          <span className="inline-block text-xs font-semibold tracking-widest uppercase text-muted-foreground mb-2">{t('partners.label')}</span>
+          <h2 className="text-lg sm:text-xl font-bold text-foreground">{t('partners.title')}</h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {staticPartners.map((p) => (
+            <a
+              key={p.id}
+              href={p.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex flex-col gap-3 bg-card border border-border rounded-2xl p-5 hover:border-primary/40 hover:shadow-lg transition-all shadow-sm"
+            >
+              <div className="flex items-center gap-3">
+                <div className={`w-9 h-9 rounded-xl ${p.color} flex items-center justify-center text-white font-bold text-xs shrink-0`}>
+                  {p.initial}
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <p className="font-semibold text-card-foreground text-sm group-hover:text-primary transition-colors truncate">{p.name}</p>
+                    {p.score && <span className="text-[10px] text-yellow-500 font-bold shrink-0">★ {p.score}</span>}
+                  </div>
+                  <p className="text-muted-foreground text-[11px] truncate">{p.subtitle}</p>
+                </div>
+                {extArrow}
+              </div>
+              <p className="text-muted-foreground text-[11px] leading-relaxed line-clamp-3">{p.desc}</p>
+              <div className="flex flex-wrap gap-1 mt-auto">
+                {p.tags.map((tag) => (
+                  <span key={tag} className={`text-[10px] px-2 py-0.5 rounded-full border ${p.tagColor}`}>{tag}</span>
+                ))}
+              </div>
+            </a>
+          ))}
+          {customPartners.map((p) => (
+            <a
+              key={p.id}
+              href={p.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex flex-col gap-3 bg-card border border-border rounded-2xl p-5 hover:border-primary/40 hover:shadow-lg transition-all shadow-sm"
+            >
+              <div className="flex items-center gap-3">
+                <div className={`w-9 h-9 rounded-xl ${p.color || 'bg-gradient-to-br from-primary to-primary/70'} flex items-center justify-center text-white font-bold text-xs shrink-0`}>
+                  {p.initial || p.name.charAt(0).toUpperCase()}
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <p className="font-semibold text-card-foreground text-sm group-hover:text-primary transition-colors truncate">{p.name}</p>
+                    {p.score && <span className="text-[10px] text-yellow-500 font-bold shrink-0">★ {p.score}</span>}
+                  </div>
+                  <p className="text-muted-foreground text-[11px] truncate">{p.subtitle}</p>
+                </div>
+                {extArrow}
+              </div>
+              <p className="text-muted-foreground text-[11px] leading-relaxed line-clamp-3">{p.desc}</p>
+              {p.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-auto">
+                  {p.tags.map((tag) => (
+                    <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">{tag}</span>
+                  ))}
+                </div>
+              )}
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }

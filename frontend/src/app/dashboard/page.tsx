@@ -219,32 +219,7 @@ export default function DashboardPage() {
         )}
       </div>
 
-      {/* Performance Summary - links to real performance page */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Link href="/dashboard/signals" className="stat-card hover:border-primary/30 transition-colors">
-          <h3 className="text-sm text-muted-foreground mb-2">{t('dash.perfForex')}</h3>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-primary">💱</span>
-            <span className="text-sm text-muted-foreground">View live signals →</span>
-          </div>
-        </Link>
-
-        <Link href="/dashboard/signals" className="stat-card hover:border-primary/30 transition-colors">
-          <h3 className="text-sm text-muted-foreground mb-2">{t('dash.perfCrypto')}</h3>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-primary">₿</span>
-            <span className="text-sm text-muted-foreground">View live signals →</span>
-          </div>
-        </Link>
-
-        <Link href="/dashboard/signals" className="stat-card hover:border-primary/30 transition-colors">
-          <h3 className="text-sm text-muted-foreground mb-2">{t('dash.perfIndices')}</h3>
-          <div className="flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-primary">📈</span>
-            <span className="text-sm text-muted-foreground">View live signals →</span>
-          </div>
-        </Link>
-      </div>
+      {/* Performance Summary - hidden */}
     </div>
   );
 }
