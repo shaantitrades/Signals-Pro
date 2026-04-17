@@ -60,12 +60,15 @@ export default function Home() {
   const [showPOPopup, setShowPOPopup] = useState(false);
 
   useEffect(() => {
-    if (sessionStorage.getItem('po_popup_seen')) return;
-    const timer = setTimeout(() => {
-      setShowPOPopup(true);
-      sessionStorage.setItem('po_popup_seen', '1');
-    }, 30000);
-    return () => clearTimeout(timer);
+    try {
+      if (typeof window === 'undefined') return;
+      if (window.sessionStorage.getItem('po_popup_seen')) return;
+      const timer = setTimeout(() => {
+        setShowPOPopup(true);
+        try { window.sessionStorage.setItem('po_popup_seen', '1'); } catch {}
+      }, 30000);
+      return () => clearTimeout(timer);
+    } catch { /* sessionStorage blocked */ }
   }, []);
 
   return (
