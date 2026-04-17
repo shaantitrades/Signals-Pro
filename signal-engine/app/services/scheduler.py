@@ -20,31 +20,31 @@ scheduler = AsyncIOScheduler()
 # ── Per-asset cooldown tracking ──
 # Maps "ASSET" -> datetime of last published signal
 _signal_cooldowns: Dict[str, datetime] = {}
-COOLDOWN_SECONDS = 120  # 2 minutes between signals for the same asset
+COOLDOWN_SECONDS = 600  # 10 minutes between signals for the same asset (was 2 min)
 
-# Which timeframes to scan on each interval
+# Which timeframes to scan on each interval — fewer timeframes, focus on quality
 SCAN_CONFIG = [
     (AssetCategory.FOREX_OTC, [
         "EURUSD_OTC", "GBPUSD_OTC", "USDJPY_OTC", "USDCHF_OTC", "AUDUSD_OTC",
         "EURGBP_OTC", "EURJPY_OTC", "GBPJPY_OTC",
-    ], [Timeframe.M1, Timeframe.M2, Timeframe.M5, Timeframe.M15, Timeframe.H1]),
+    ], [Timeframe.M5, Timeframe.M15, Timeframe.H1]),
     (AssetCategory.FOREX, [
         "EURUSD", "GBPUSD", "USDJPY", "USDCHF", "AUDUSD", "USDCAD", "NZDUSD",
         "EURGBP", "EURJPY", "GBPJPY", "EURAUD", "EURCAD", "GBPAUD", "GBPCAD",
         "AUDCAD", "AUDJPY", "CADJPY", "CHFJPY", "NZDJPY",
-    ], [Timeframe.M1, Timeframe.M2, Timeframe.M5, Timeframe.M15, Timeframe.H1, Timeframe.H4]),
+    ], [Timeframe.M5, Timeframe.M15, Timeframe.H1, Timeframe.H4]),
     (AssetCategory.CRYPTO, [
         "BTCUSD", "ETHUSD", "SOLUSD", "BNBUSD", "XRPUSD", "ADAUSD",
         "DOTUSD", "DOGEUSD", "AVAXUSD", "LINKUSD", "LTCUSD",
-    ], [Timeframe.M1, Timeframe.M2, Timeframe.M5, Timeframe.M15, Timeframe.H1, Timeframe.H4]),
+    ], [Timeframe.M5, Timeframe.M15, Timeframe.H1, Timeframe.H4]),
     (AssetCategory.COMMODITIES, [
         "XAUUSD", "XAGUSD", "USOIL", "UKOIL", "NATGAS", "COPPER",
         "XPTUSD", "XPDUSD", "WHEAT", "CORN", "COFFEE",
-    ], [Timeframe.M1, Timeframe.M2, Timeframe.M5, Timeframe.M15, Timeframe.H1, Timeframe.H4]),
+    ], [Timeframe.M15, Timeframe.H1, Timeframe.H4]),
     (AssetCategory.INDICES, [
         "US500", "US30", "USTEC", "DE40", "UK100", "JP225",
         "FR40", "EU50", "AU200", "HK50", "VIX", "US2000",
-    ], [Timeframe.M1, Timeframe.M2, Timeframe.M5, Timeframe.M15, Timeframe.H1, Timeframe.D1]),
+    ], [Timeframe.M15, Timeframe.H1, Timeframe.D1]),
 ]
 
 

@@ -1,8 +1,17 @@
 """
-Core Technical Analysis Engine - Multi-EMA Vote System (Always-On)
-Strategie pour Pocket Option : CHAQUE check retourne BUY ou SELL.
-4 votes EMA (Prix/EMA5, EMA5/EMA7, EMA7/EMA10, EMA5/EMA10) -> score -4 a +4.
-Confiance : 92%(4/4) | 85%(3/4) | 78%(2/4) | 72%(1/4) | 70%(tie)
+Core Technical Analysis Engine — Multi-Indicator Consensus System
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Generates a signal ONLY when multiple independent indicators agree.
+Returns None when indicators conflict or market is choppy/flat.
+
+Indicators used (each casts an independent vote):
+ 1. EMA Trend  (EMA20 vs EMA50 crossover + price position)
+ 2. RSI        (overbought/oversold + divergence zones)
+ 3. MACD       (signal line cross + histogram direction)
+ 4. Bollinger  (band position + squeeze detection)
+ 5. Stochastic (K/D cross in extreme zones)
+
+Minimum 3/5 agreement required. Real confidence = vote ratio.
 """
 import pandas as pd
 import ta
@@ -15,26 +24,62 @@ from app.models import (
 
 
 class TechnicalAnalyzer:
-    """Multi-EMA always-on signal engine - optimise Pocket Option."""
+    """Multi-indicator consensus engine — quality over quantity."""
 
-    MIN_CANDLES = 15
+    MIN_CANDLES = 60  # Need enough data for EMA50 + Bollinger(20)
 
     def analyze(self, df: pd.DataFrame, asset: str, category: AssetCategory, timeframe: Timeframe) -> AnalysisResult | None:
-        """Retourne TOUJOURS un signal BUY ou SELL. Confiance 70-92%."""
+        """
+        Returns a signal ONLY when 3+ independent indicators agree.
+        Returns None when there is no clear consensus — this is intentional.
+        """
         if len(df) < self.MIN_CANDLES:
-            logger.warning(f"Insufficient data for {asset} ({len(df)} candles, need {self.MIN_CANDLES})")
+            logger.debug(f"Insufficient data for {asset} ({len(df)}/{self.MIN_CANDLES} candles)")
             return None
 
-        indicators, action, confidence = self._compute_indicators(df, category)
+        votes, indicators = self._collect_votes(df)
+
+        if not votes:
+            return None
+
+        buy_votes = sum(1 for v in votes if v == "BUY")
+        sell_votes = sum(1 for v in votes if v == "SELL")
+        total = len(votes)
+
+        # Require at least 3 indicators to have produced a vote
+        if total < 3:
+            logger.debug(f"{asset}: only {total} indicators voted, need 3+")
+            return None
+
+        majority = max(buy_votes, sell_votes)
+        minority = min(buy_votes, sell_votes)
+
+        # Require clear majority: at least 3 votes in same direction
+        if majority < 3:
+            logger.debug(f"{asset}: no clear consensus (BUY={buy_votes} SELL={sell_votes})")
+            return None
+
+        # Confidence based on actual vote ratio (never inflated)
+        # 3/5=68, 4/5=76, 5/5=85, 3/4=72, 4/4=80, 3/3=75
+        raw_confidence = (majority / total) * 85
+        # Bonus for unanimity
+        if minority == 0 and total >= 4:
+            raw_confidence = min(raw_confidence + 5, 90)
+        confidence = round(raw_confidence, 1)
+
+        action = SignalAction.BUY if buy_votes > sell_votes else SignalAction.SELL
 
         current = float(df["close"].iloc[-1])
         atr = float(ta.volatility.AverageTrueRange(
             df["high"], df["low"], df["close"], window=14
         ).average_true_range().iloc[-1])
 
+        if atr <= 0:
+            return None
+
         entry_price, tp1, tp2, tp3, sl = self._calculate_levels(action, current, atr, category)
         risk_level = self._assess_risk(atr, current, confidence)
-        reasoning = self._generate_reasoning(indicators, action, confidence)
+        reasoning = self._generate_reasoning(indicators, action, confidence, buy_votes, sell_votes)
 
         return AnalysisResult(
             asset=asset,
@@ -52,67 +97,184 @@ class TechnicalAnalyzer:
             reasoning=reasoning,
         )
 
-    def _compute_indicators(
-        self, df: pd.DataFrame, category: AssetCategory
-    ) -> tuple[list[IndicatorResult], SignalAction, float]:
-        """
-        4 votes EMA -> toujours BUY ou SELL.
-          V1: prix > EMA5   V2: EMA5 > EMA7   V3: EMA7 > EMA10   V4: EMA5 > EMA10
-        Score +4 a -4 -> direction + confiance.
-        """
-        if len(df) > 20:
-            df = df.tail(20).reset_index(drop=True)
+    # ── Vote Collection ──────────────────────────────────────
+
+    def _collect_votes(self, df: pd.DataFrame) -> tuple[list[str], list[IndicatorResult]]:
+        """Each indicator casts an independent BUY/SELL vote (or abstains)."""
+        votes: list[str] = []
+        indicators: list[IndicatorResult] = []
 
         close = df["close"]
-        price_now = float(close.iloc[-1])
+        high = df["high"]
+        low = df["low"]
 
-        ema5  = float(ta.trend.EMAIndicator(close, window=5).ema_indicator().iloc[-1])
-        ema7  = float(ta.trend.EMAIndicator(close, window=7).ema_indicator().iloc[-1])
-        ema10 = float(ta.trend.EMAIndicator(close, window=10).ema_indicator().iloc[-1])
+        # ── 1. EMA Trend (EMA20 vs EMA50) ──
+        try:
+            ema20 = ta.trend.EMAIndicator(close, window=20).ema_indicator()
+            ema50 = ta.trend.EMAIndicator(close, window=50).ema_indicator()
+            ema20_val = float(ema20.iloc[-1])
+            ema50_val = float(ema50.iloc[-1])
+            price_now = float(close.iloc[-1])
 
-        v1 = 1 if price_now > ema5  else -1
-        v2 = 1 if ema5      > ema7  else -1
-        v3 = 1 if ema7      > ema10 else -1
-        v4 = 1 if ema5      > ema10 else -1
-        score = v1 + v2 + v3 + v4
+            # Price must be on the right side of both EMAs, and EMAs must be aligned
+            if price_now > ema20_val > ema50_val:
+                vote = "BUY"
+                strength = min(((price_now - ema50_val) / ema50_val) * 1000, 100)
+            elif price_now < ema20_val < ema50_val:
+                vote = "SELL"
+                strength = min(((ema50_val - price_now) / ema50_val) * 1000, 100)
+            else:
+                vote = None  # EMAs not aligned — abstain
+                strength = 0
 
-        if score > 0:
-            action = SignalAction.BUY
-        elif score < 0:
-            action = SignalAction.SELL
-        else:
-            action = SignalAction.BUY if ema5 > ema10 else SignalAction.SELL
+            if vote:
+                votes.append(vote)
+                indicators.append(IndicatorResult(
+                    name="EMA20/50", value=round(ema20_val - ema50_val, 6),
+                    signal=SignalAction(vote), strength=round(strength, 1)
+                ))
+        except Exception as e:
+            logger.debug(f"EMA error: {e}")
 
-        abs_score = abs(score)
-        confidence = {4: 92.0, 3: 85.0, 2: 78.0, 1: 72.0, 0: 70.0}[abs_score]
+        # ── 2. RSI (14) ──
+        try:
+            rsi = ta.momentum.RSIIndicator(close, window=14).rsi()
+            rsi_val = float(rsi.iloc[-1])
+            rsi_prev = float(rsi.iloc[-2])
 
-        score_str = f"+{score}" if score >= 0 else str(score)
-        indicator = IndicatorResult(
-            name=f"EMA-Score({score_str}/4)",
-            value=round(ema5 - ema10, 6),
-            signal=action,
-            strength=abs_score * 25,
-        )
+            # Only vote in meaningful zones, not the dead middle
+            if rsi_val < 35 and rsi_val > rsi_prev:  # Oversold + turning up
+                vote = "BUY"
+                strength = max(0, (35 - rsi_val) * 3)
+            elif rsi_val > 65 and rsi_val < rsi_prev:  # Overbought + turning down
+                vote = "SELL"
+                strength = max(0, (rsi_val - 65) * 3)
+            elif rsi_val < 45 and rsi_val > rsi_prev:  # Moderate buy zone + momentum up
+                vote = "BUY"
+                strength = 30
+            elif rsi_val > 55 and rsi_val < rsi_prev:  # Moderate sell zone + momentum down
+                vote = "SELL"
+                strength = 30
+            else:
+                vote = None  # Neutral zone — abstain
 
-        logger.debug(f"Votes V1={v1} V2={v2} V3={v3} V4={v4} score={score} -> {action.value} {confidence}%")
-        return [indicator], action, confidence
+            if vote:
+                votes.append(vote)
+                indicators.append(IndicatorResult(
+                    name="RSI(14)", value=round(rsi_val, 2),
+                    signal=SignalAction(vote), strength=min(round(strength, 1), 100)
+                ))
+        except Exception as e:
+            logger.debug(f"RSI error: {e}")
+
+        # ── 3. MACD (12,26,9) ──
+        try:
+            macd_ind = ta.trend.MACD(close, window_slow=26, window_fast=12, window_sign=9)
+            macd_line = float(macd_ind.macd().iloc[-1])
+            signal_line = float(macd_ind.macd_signal().iloc[-1])
+            histogram = float(macd_ind.macd_diff().iloc[-1])
+            hist_prev = float(macd_ind.macd_diff().iloc[-2])
+
+            # MACD above signal + histogram growing
+            if macd_line > signal_line and histogram > 0 and histogram > hist_prev:
+                vote = "BUY"
+                strength = min(abs(histogram) / (abs(macd_line) + 1e-10) * 100, 100)
+            elif macd_line < signal_line and histogram < 0 and histogram < hist_prev:
+                vote = "SELL"
+                strength = min(abs(histogram) / (abs(macd_line) + 1e-10) * 100, 100)
+            else:
+                vote = None  # No clear MACD momentum — abstain
+
+            if vote:
+                votes.append(vote)
+                indicators.append(IndicatorResult(
+                    name="MACD(12,26,9)", value=round(histogram, 6),
+                    signal=SignalAction(vote), strength=round(strength, 1)
+                ))
+        except Exception as e:
+            logger.debug(f"MACD error: {e}")
+
+        # ── 4. Bollinger Bands (20, 2) ──
+        try:
+            bb = ta.volatility.BollingerBands(close, window=20, window_dev=2)
+            upper = float(bb.bollinger_hband().iloc[-1])
+            lower = float(bb.bollinger_lband().iloc[-1])
+            mid = float(bb.bollinger_mavg().iloc[-1])
+            price_now = float(close.iloc[-1])
+            bandwidth = upper - lower
+
+            if bandwidth > 0:
+                position = (price_now - lower) / bandwidth  # 0=lower band, 1=upper band
+
+                # Bounce off lower band = buy, bounce off upper = sell
+                prev_price = float(close.iloc[-2])
+                if position < 0.25 and price_now > prev_price:  # Near lower + bouncing up
+                    vote = "BUY"
+                    strength = (0.25 - position) * 200
+                elif position > 0.75 and price_now < prev_price:  # Near upper + falling
+                    vote = "SELL"
+                    strength = (position - 0.75) * 200
+                elif price_now > mid and prev_price < mid:  # Crossed above middle
+                    vote = "BUY"
+                    strength = 40
+                elif price_now < mid and prev_price > mid:  # Crossed below middle
+                    vote = "SELL"
+                    strength = 40
+                else:
+                    vote = None
+
+                if vote:
+                    votes.append(vote)
+                    indicators.append(IndicatorResult(
+                        name="BB(20,2)", value=round(position, 3),
+                        signal=SignalAction(vote), strength=min(round(strength, 1), 100)
+                    ))
+        except Exception as e:
+            logger.debug(f"BB error: {e}")
+
+        # ── 5. Stochastic (14,3,3) ──
+        try:
+            stoch = ta.momentum.StochasticOscillator(high, low, close, window=14, smooth_window=3)
+            k_val = float(stoch.stoch().iloc[-1])
+            d_val = float(stoch.stoch_signal().iloc[-1])
+            k_prev = float(stoch.stoch().iloc[-2])
+
+            # Only vote at extremes with K/D cross confirmation
+            if k_val < 25 and k_val > d_val and k_val > k_prev:  # Oversold + K crossing above D
+                vote = "BUY"
+                strength = min((25 - k_val) * 4, 100)
+            elif k_val > 75 and k_val < d_val and k_val < k_prev:  # Overbought + K crossing below D
+                vote = "SELL"
+                strength = min((k_val - 75) * 4, 100)
+            else:
+                vote = None
+
+            if vote:
+                votes.append(vote)
+                indicators.append(IndicatorResult(
+                    name="Stoch(14,3)", value=round(k_val, 2),
+                    signal=SignalAction(vote), strength=round(strength, 1)
+                ))
+        except Exception as e:
+            logger.debug(f"Stochastic error: {e}")
+
+        return votes, indicators
+
+    # ── Price Levels ─────────────────────────────────────────
 
     def _calculate_levels(
         self, action: SignalAction, price: float, atr: float, category: AssetCategory
     ) -> tuple[float, float, float, float, float]:
         """Calculate entry, TP1-3 and SL based on ATR."""
-        # Precision: more decimals for forex, fewer for crypto/indices
         precision = {
-            AssetCategory.FOREX_OTC: 5,
-            AssetCategory.FOREX: 5,
-            AssetCategory.CRYPTO: 2,
-            AssetCategory.INDICES: 1,
+            AssetCategory.FOREX_OTC: 5, AssetCategory.FOREX: 5,
+            AssetCategory.CRYPTO: 2, AssetCategory.INDICES: 1,
             AssetCategory.COMMODITIES: 2,
         }.get(category, 5)
 
         multipliers = {
             AssetCategory.FOREX_OTC: (1.2, 2.0, 3.0, 1.0),
-            AssetCategory.FOREX: (1.5, 2.5, 3.5, 1.0),
+            AssetCategory.FOREX: (1.5, 2.5, 3.5, 1.2),
             AssetCategory.CRYPTO: (2.0, 3.5, 5.0, 1.5),
             AssetCategory.INDICES: (1.5, 2.5, 4.0, 1.2),
             AssetCategory.COMMODITIES: (1.5, 2.5, 3.5, 1.0),
@@ -137,25 +299,26 @@ class TechnicalAnalyzer:
             )
 
     def _assess_risk(self, atr: float, price: float, confidence: float) -> RiskLevel:
-        """Assess risk level based on ATR percentage and confidence."""
         atr_pct = (atr / price) * 100
-        if atr_pct < 0.5 and confidence > 85:
+        if atr_pct < 0.5 and confidence >= 80:
             return RiskLevel.LOW
-        elif atr_pct > 2.0 or confidence < 75:
+        elif atr_pct > 2.0 or confidence < 70:
             return RiskLevel.HIGH
         return RiskLevel.MEDIUM
 
-    def _generate_reasoning(self, indicators: list[IndicatorResult], action: SignalAction, confidence: float) -> str:
-        ind = indicators[0] if indicators else None
-        direction = "haussiere" if action == SignalAction.BUY else "baissiere"
-        score_label = ind.name if ind else "N/A"
-        strength = {92.0: "Parfait (4/4)", 85.0: "Fort (3/4)", 78.0: "Modere (2/4)", 72.0: "Leger (1/4)", 70.0: "Tie"}
-        lines = [
-            f"Signal {action.value} ({confidence}%)",
-            f"Tendance {direction} - {strength.get(confidence, score_label)}",
-            f"Votes EMA: Prix/EMA5 | EMA5/EMA7 | EMA7/EMA10 | EMA5/EMA10 -> {score_label}",
-        ]
-        return " | ".join(lines)
+    def _generate_reasoning(
+        self, indicators: list[IndicatorResult], action: SignalAction,
+        confidence: float, buy_votes: int, sell_votes: int
+    ) -> str:
+        direction = "Bullish" if action == SignalAction.BUY else "Bearish"
+        total = buy_votes + sell_votes
+        majority = max(buy_votes, sell_votes)
+        names = [ind.name for ind in indicators if ind.signal == action]
+        return (
+            f"{action.value} signal ({confidence}%) — {majority}/{total} indicators agree | "
+            f"{direction} consensus: {', '.join(names)} | "
+            f"Votes: BUY={buy_votes} SELL={sell_votes}"
+        )
 
 
 # Singleton
