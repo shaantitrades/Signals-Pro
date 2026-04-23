@@ -99,7 +99,6 @@ export default function BotPage() {
   const { t } = useI18n();
   const { hasActiveSubscription } = useAuthStore();
   const hasSubscription = hasActiveSubscription();
-  const [showSubPopup, setShowSubPopup] = useState(false);
   // ── Trading Bot State ──
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [selectedAssets, setSelectedAssets] = useState<string[]>([]);
@@ -271,7 +270,7 @@ export default function BotPage() {
     // Only OTC and Forex require a subscription
     const premiumOnlyCategories = ['FOREX_OTC', 'FOREX', 'COMMODITIES'];
     if (!isBotRunning && !hasSubscription && premiumOnlyCategories.includes(selectedCategory || '')) {
-      setShowSubPopup(true);
+      window.location.href = '/tarifs';
       return;
     }
     if (isBotRunning) {
@@ -303,69 +302,6 @@ export default function BotPage() {
   return (
     <div className="space-y-8">
 
-      {/* Subscription Required Popup */}
-      {showSubPopup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 animate-in fade-in duration-200">
-          <div className="relative bg-card border border-border rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 text-center animate-in zoom-in-95 duration-200">
-            <button
-              onClick={() => setShowSubPopup(false)}
-              className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <line x1="1" y1="1" x2="13" y2="13"/><line x1="13" y1="1" x2="1" y2="13"/>
-              </svg>
-            </button>
-
-            {/* Header */}
-            <div className="flex justify-center mb-3">
-              <div className="w-16 h-16 rounded-full bg-yellow-500/10 flex items-center justify-center">
-                <span className="text-3xl">👑</span>
-              </div>
-            </div>
-            <h3 className="text-xl font-bold mb-1">Fonctionnalité Premium</h3>
-            <p className="text-sm text-muted-foreground mb-4">
-              Forex, OTC et Matières Premières sont réservés aux membres Premium.
-            </p>
-
-            {/* Price highlight */}
-            <div className="bg-primary/10 border border-primary/20 rounded-xl px-4 py-3 mb-5">
-              <p className="text-xs text-muted-foreground mb-0.5">Accès complet</p>
-              <p className="text-3xl font-extrabold text-primary">à partir de <span className="text-primary">6$</span></p>
-            </div>
-
-            {/* Features list */}
-            <ul className="text-sm text-left space-y-2 mb-6">
-              {[
-                '✅ Signaux Forex, OTC, Commodities',
-                '✅ Trading Bot sur tous les marchés',
-                '✅ Signaux Live illimités',
-                '✅ Alertes en temps réel',
-                '✅ Accès prioritaire aux nouveaux signaux',
-              ].map((f) => (
-                <li key={f} className="flex items-center gap-2">
-                  <span className="flex-1">{f}</span>
-                </li>
-              ))}
-            </ul>
-
-            <div className="flex gap-3 justify-center">
-              <button
-                onClick={() => setShowSubPopup(false)}
-                className="px-5 py-2.5 rounded-lg border border-border text-sm font-medium hover:bg-secondary transition-colors"
-              >
-                Plus tard
-              </button>
-              <a
-                href="/tarifs"
-                className="px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-bold hover:bg-primary/90 transition-colors"
-              >
-                Passer Premium →
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
-
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Configuration Panel (Left 2 cols) */}
         <div className="lg:col-span-2 space-y-6">
@@ -385,7 +321,7 @@ export default function BotPage() {
                     key={cat.value}
                     onClick={() => {
                       if (isLocked) {
-                        setShowSubPopup(true);
+                        window.location.href = '/tarifs';
                         return;
                       }
                       setSelectedCategory(cat.value);

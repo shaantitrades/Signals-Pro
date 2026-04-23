@@ -300,6 +300,41 @@ async function main() {
   }
   console.log('Pro user created with active subscription');
 
+  // Admin Premium User
+  const adminPassword = await bcryptMod.hash('Hababa11@', 12);
+  const adminUser = await prisma.user.upsert({
+    where: { email: 'admin@trades.com' },
+    update: { passwordHash: adminPassword, role: 'ADMIN' },
+    create: {
+      email: 'admin@trades.com',
+      passwordHash: adminPassword,
+      firstName: 'Admin',
+      lastName: 'Trades',
+      role: 'ADMIN',
+      emailVerified: true,
+    },
+  });
+  const adminMonthlyPlan = await prisma.subscriptionPlan.findFirst({ where: { slug: 'monthly' } });
+  if (adminMonthlyPlan) {
+    await prisma.subscription.upsert({
+      where: { userId: adminUser.id },
+      update: {
+        planId: adminMonthlyPlan.id,
+        status: 'ACTIVE',
+        currentPeriodStart: new Date(),
+        currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      },
+      create: {
+        userId: adminUser.id,
+        planId: adminMonthlyPlan.id,
+        status: 'ACTIVE',
+        currentPeriodStart: new Date(),
+        currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      },
+    });
+  }
+  console.log('Admin user (admin@trades.com) created with monthly subscription');
+
   console.log('\nDatabase seeded successfully!');
 }
 

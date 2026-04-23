@@ -873,7 +873,7 @@ const translations: Record<LangCode, Record<string, string>> = {
     'dash.totalPips': 'Total Pips',
     'dash.activeBots': 'Bots Actifs',
     'dash.otcCenter': 'Signaux Turbo',
-    'dash.otcDesc': 'Signaux ultra-rapides pour scalping, day trading et options binaires',
+    'dash.otcDesc': 'Signaux ultra-rapides pour scalping, day trading et ForeX OTC',
     'dash.botCenter': 'Trading Bot Center',
     'dash.botDesc': 'Configurez et lancez vos bots de trading automatique',
     'dash.liveSignals': 'Live Signals Dashboard',

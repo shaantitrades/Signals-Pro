@@ -242,7 +242,6 @@ export default function SignalsOTCPage() {
   const [showToast, setShowToast] = useState(false);
   const [showBottomNotif, setShowBottomNotif] = useState(false);
   const [toastSignal, setToastSignal] = useState<OTCSignal | null>(null);
-  const [showSubPopup, setShowSubPopup] = useState(false);
 
   // Custom asset dropdown
   const [assetOpen, setAssetOpen] = useState(false);
@@ -322,7 +321,7 @@ export default function SignalsOTCPage() {
 
   const handleStartSignals = useCallback(async () => {
     if (!isAuthenticated) { window.location.href = '/login'; return; }
-    if (!hasSubscription) { setShowSubPopup(true); return; }
+    if (!hasSubscription) { window.location.href = '/tarifs'; return; }
 
     // Unlock AudioContext on user gesture
     try {
@@ -417,45 +416,6 @@ export default function SignalsOTCPage() {
 
   return (
     <div className="space-y-6">
-      {/* Subscription Required Popup */}
-      {showSubPopup && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 animate-in fade-in duration-200">
-          <div className="relative bg-card border border-border rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4 text-center animate-in zoom-in-95 duration-200">
-            <button
-              onClick={() => setShowSubPopup(false)}
-              className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <line x1="1" y1="1" x2="13" y2="13"/><line x1="13" y1="1" x2="1" y2="13"/>
-              </svg>
-            </button>
-            <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-3xl">🔒</span>
-              </div>
-            </div>
-            <h3 className="text-xl font-bold mb-2">{t('bot.subRequired')}</h3>
-            <p className="text-sm text-muted-foreground mb-6">
-              {t('bot.subRequiredDesc')}
-            </p>
-            <div className="flex gap-3 justify-center">
-              <button
-                onClick={() => setShowSubPopup(false)}
-                className="px-5 py-2.5 rounded-lg border border-border text-sm font-medium hover:bg-secondary transition-colors"
-              >
-                {t('bot.close')}
-              </button>
-              <a
-                href="/tarifs"
-                className="px-5 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-bold hover:bg-primary/90 transition-colors"
-              >
-                {t('bot.subRequiredCta')}
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* ── Toast Notification (top-right, red) ── */}
       {showToast && toastSignal && (
         <ToastNotification signal={toastSignal} onClose={() => setShowToast(false)} t={t} />

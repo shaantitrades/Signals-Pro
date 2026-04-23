@@ -6,6 +6,7 @@ import { I18nProvider } from '@/lib/i18n';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { InstallBanner } from '@/components/InstallBanner';
 import { CookieConsent } from '@/components/CookieConsent';
+import { PocketOptionPopup } from '@/components/PocketOptionPopup';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient({
@@ -25,6 +26,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
           {children}
           <InstallBanner />
           <CookieConsent />
+          <PocketOptionPopup />
         </I18nProvider>
       </QueryClientProvider>
     </ErrorBoundary>

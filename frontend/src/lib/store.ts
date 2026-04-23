@@ -101,7 +101,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
   hasActiveSubscription: () => {
     const user = get().user;
-    if (!user?.subscription) return false;
+    if (!user) return false;
+    // ADMIN and SUPER_ADMIN always have access
+    if (user.role === 'ADMIN' || user.role === 'SUPER_ADMIN') return true;
+    if (!user.subscription) return false;
     const sub = user.subscription;
     const isActive = sub.status === 'ACTIVE' || sub.status === 'TRIAL';
     const notExpired = new Date(sub.currentPeriodEnd) > new Date();

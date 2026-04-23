@@ -536,3 +536,48 @@ authRouter.post('/reset-password', async (req: Request, res: Response, next: Nex
     next(error);
   }
 });
+
+// POST /api/auth/promote-admin — promote a user to ADMIN + monthly subscription (secret-key protected)
+authRouter.post('/promote-admin', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const { email, secret } = z.object({
+      email: z.string().email(),
+      secret: z.string().min(1),
+    }).parse(req.body);
+
+    const adminSecret = process.env.ADMIN_PROMOTE_SECRET;
+    if (!adminSecret || secret !== adminSecret) {
+      throw new AppError('Forbidden', 403);
+    }
+
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      throw new AppError('User not found', 404);
+    }
+
+    // Promote to ADMIN
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { role: 'ADMIN' },
+    });
+
+    // Attach or refresh monthly subscription
+    const plan = await prisma.subscriptionPlan.findFirst({ where: { slug: 'monthly' } });
+    if (plan) {
+      const now = new Date();
+      const end = new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000); // 1 year
+      await prisma.subscription.upsert({
+        where: { userId: user.id },
+        update: { planId: plan.id, status: 'ACTIVE', currentPeriodStart: now, currentPeriodEnd: end, canceledAt: null },
+        create: { userId: user.id, planId: plan.id, status: 'ACTIVE', currentPeriodStart: now, currentPeriodEnd: end },
+      });
+    }
+
+    res.json({ success: true, message: `User ${email} promoted to ADMIN with active subscription.` });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return next(new AppError(error.errors[0].message, 400));
+    }
+    next(error);
+  }
+});
