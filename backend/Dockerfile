@@ -11,7 +11,7 @@ RUN npm ci --omit=dev
 # Build
 FROM base AS build
 COPY package.json yarn.lock* package-lock.json* ./
-RUN npm ci
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 # prisma generate only needs a valid-format DATABASE_URL — use a dummy for build
 RUN DATABASE_URL="postgresql://build:build@localhost:5432/build" npx prisma generate
