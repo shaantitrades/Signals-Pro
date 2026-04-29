@@ -10,6 +10,7 @@ RUN npm ci --omit=dev
 
 # Build
 FROM base AS build
+RUN apk add --no-cache python3 make g++
 COPY package.json yarn.lock* package-lock.json* ./
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
