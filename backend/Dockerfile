@@ -6,7 +6,7 @@ WORKDIR /app
 # Dependencies
 FROM base AS deps
 COPY package.json yarn.lock* package-lock.json* ./
-RUN npm ci --omit=dev
+RUN npm ci
 
 # Build
 FROM base AS build
