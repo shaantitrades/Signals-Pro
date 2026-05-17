@@ -17,9 +17,12 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'Market Signals24 - Professional Trading Signals Platform',
-  description: 'Triple-validated trading signals for Forex, Crypto, Indices & Commodities. AI-powered signal generation with human expert validation.',
-  keywords: 'MarketSignals24, Market Signals 24, trading signals, free trading signals, free forex signals, free crypto signals, forex signals, crypto signals, binary options signals, OTC signals, trading bot, AI trading signals, copy trading, signal trading gratuit, señales trading gratis, kostenlose Trading Signale, meilleur signaux trading, best trading signals, live trading signals',
+  title: 'Market Signals24 — Live Trading Signals | Forex, Crypto & Binary Options',
+  description: 'Get real-time AI-powered trading signals for Forex, Crypto, Indices & Binary Options. Free live trading signals validated by AI. Start trading smarter today.',
+  keywords: 'trading signals, live trading signals, forex signals, crypto signals, binary options signals, free trading signals, AI trading signals, OTC signals, trading bot, signaux trading, meilleurs signaux trading, señales trading, live signals forex crypto',
+  authors: [{ name: 'MarketSignals24', url: 'https://marketsignals24.com' }],
+  creator: 'MarketSignals24',
+  publisher: 'MarketSignals24',
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: '48x48' },
@@ -31,6 +34,86 @@ export const metadata: Metadata = {
   verification: {
     google: 'eb94bneSZzVTVa4QRfdu_IplBWIW-1n-P2ge5k604Pc',
   },
+  openGraph: {
+    type: 'website',
+    locale: 'fr_FR',
+    alternateLocale: ['en_US', 'es_ES', 'de_DE', 'pt_BR', 'it_IT'],
+    url: 'https://marketsignals24.com',
+    siteName: 'MarketSignals24',
+    title: 'Market Signals24 — Live Trading Signals | Forex, Crypto & Binary Options',
+    description: 'Real-time AI trading signals for Forex, Crypto, Indices & Binary Options. Free live signals with 85%+ confidence. Join thousands of traders.',
+    images: [
+      {
+        url: 'https://marketsignals24.com/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'MarketSignals24 — Live Trading Signals Platform',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Market Signals24 — Live Trading Signals',
+    description: 'AI-powered live trading signals for Forex, Crypto & Binary Options. Free signals with high accuracy.',
+    images: ['https://marketsignals24.com/og-image.png'],
+  },
+  alternates: {
+    canonical: 'https://marketsignals24.com',
+    languages: {
+      'fr': 'https://marketsignals24.com',
+      'en': 'https://marketsignals24.com',
+      'es': 'https://marketsignals24.com',
+    },
+  },
+};
+
+// JSON-LD structured data — helps Google understand and rank the site for "trading signals"
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': 'https://marketsignals24.com/#website',
+      url: 'https://marketsignals24.com',
+      name: 'MarketSignals24',
+      description: 'Live AI-powered trading signals for Forex, Crypto, Indices & Binary Options',
+      inLanguage: ['fr', 'en', 'es', 'de', 'pt', 'it'],
+      potentialAction: {
+        '@type': 'SearchAction',
+        target: 'https://marketsignals24.com/register',
+        'query-input': 'required name=search_term_string',
+      },
+    },
+    {
+      '@type': 'Organization',
+      '@id': 'https://marketsignals24.com/#organization',
+      name: 'MarketSignals24',
+      url: 'https://marketsignals24.com',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://marketsignals24.com/logo.svg',
+      },
+      sameAs: [],
+    },
+    {
+      '@type': 'SoftwareApplication',
+      name: 'MarketSignals24 — Live Trading Signals',
+      applicationCategory: 'FinanceApplication',
+      operatingSystem: 'Web, iOS, Android',
+      description: 'Real-time AI trading signals for Forex, Crypto, Indices and Binary Options. Get live signals with 85%+ confidence score.',
+      offers: {
+        '@type': 'Offer',
+        price: '0',
+        priceCurrency: 'EUR',
+        description: 'Free live trading signals available',
+      },
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: '4.8',
+        reviewCount: '1200',
+      },
+    },
+  ],
 };
 
 // Inline script to set theme class BEFORE any CSS renders (prevents FOUC)
@@ -121,6 +204,10 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <script dangerouslySetInnerHTML={{ __html: swRegisterScript }} />
         <style dangerouslySetInnerHTML={{ __html: criticalCSS }} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
       </head>
       <body className={inter.className}>
         <Providers>

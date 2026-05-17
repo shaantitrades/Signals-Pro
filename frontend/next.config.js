@@ -8,6 +8,12 @@ const nextConfig = {
     NEXT_PUBLIC_SIGNAL_ENGINE_URL: process.env.NEXT_PUBLIC_SIGNAL_ENGINE_URL || 'http://localhost:8000',
     NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '',
   },
+  async redirects() {
+    return [
+      { source: '/dashboard/bot', destination: '/dashboard/tradingbot', permanent: true },
+      { source: '/dashboard/signals', destination: '/dashboard/livesignals', permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

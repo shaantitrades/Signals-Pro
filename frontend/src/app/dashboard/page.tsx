@@ -88,7 +88,7 @@ export default function DashboardPage() {
           <span className="ml-auto text-muted-foreground group-hover:text-primary transition-colors">→</span>
         </Link>
 
-        <Link href="/dashboard/bot" className="signal-card p-6 flex items-center gap-4 group">
+        <Link href="/dashboard/tradingbot" className="signal-card p-6 flex items-center gap-4 group">
           <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center group-hover:bg-primary/20 transition-colors">
             <span className="text-3xl">🤖</span>
           </div>
@@ -101,7 +101,7 @@ export default function DashboardPage() {
           <span className="ml-auto text-muted-foreground group-hover:text-primary transition-colors">→</span>
         </Link>
 
-        <Link href="/dashboard/signals" className="signal-card p-6 flex items-center gap-4 group">
+        <Link href="/dashboard/livesignals" className="signal-card p-6 flex items-center gap-4 group">
           <div className="w-14 h-14 bg-primary/10 rounded-xl flex items-center justify-center group-hover:bg-primary/20 transition-colors">
             <span className="text-3xl">📡</span>
           </div>
@@ -151,7 +151,7 @@ export default function DashboardPage() {
       <div className="signal-card">
         <div className="flex items-center justify-between p-4 border-b border-border">
           <h2 className="font-semibold">{t('dash.recentSignals')}</h2>
-          <Link href="/dashboard/signals" className="text-sm text-primary hover:underline">
+          <Link href="/dashboard/livesignals" className="text-sm text-primary hover:underline">
             {t('dash.seeAll')}
           </Link>
         </div>

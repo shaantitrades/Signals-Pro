@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { cn, getCategoryIcon, getTimeframeLabel, getRiskLevelColor, formatPrice } from '@/lib/utils';
+import { cn, getCategoryIcon, getTimeframeLabel, getRiskLevelColor, formatPrice, isMarketOpen } from '@/lib/utils';
 import { useI18n } from '@/lib/i18n';
 import { api } from '@/lib/api';
 import { useAuthStore } from '@/lib/store';
@@ -85,6 +85,7 @@ async function fetchRealSignal(
           confidence: Math.round(match.confidence),
           timeframe: match.timeframe,
           time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+          timestamp: Date.now(),
           category,
         };
       }
@@ -137,7 +138,8 @@ export default function BotPage() {
                 tp1: s.tp1 || 0,
                 sl: s.sl || 0,
                 confidence: Math.round(s.confidence || 0),
-                time: s.created_at ? new Date(s.created_at).toLocaleTimeString() : 'Live',
+                time: s.created_at ? new Date(s.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : 'Live',
+                rawTime: s.created_at || new Date(0).toISOString(),
                 status: s.status || 'ACTIVE',
               });
             });
@@ -147,7 +149,7 @@ export default function BotPage() {
         // Backend not available
       }
 
-      signals.sort((a, b) => b.confidence - a.confidence);
+      signals.sort((a, b) => new Date(b.rawTime || 0).getTime() - new Date(a.rawTime || 0).getTime());
       setActiveSignals(signals.slice(0, 4));
       setLoadingActive(false);
     }
@@ -316,28 +318,35 @@ export default function BotPage() {
               {categories.map((cat) => {
                 const isPremiumCat = ['FOREX_OTC', 'FOREX', 'COMMODITIES'].includes(cat.value);
                 const isLocked = isPremiumCat && !hasSubscription;
+                const marketOpen = isMarketOpen(cat.value);
+                const isDisabled = isLocked || !marketOpen;
                 return (
                   <button
                     key={cat.value}
                     onClick={() => {
-                      if (isLocked) {
-                        window.location.href = '/tarifs';
-                        return;
-                      }
+                      if (isLocked) { window.location.href = '/tarifs'; return; }
+                      if (!marketOpen) return;
                       setSelectedCategory(cat.value);
                       setSelectedAssets([]);
                     }}
+                    disabled={!marketOpen && !isLocked}
                     className={cn(
                       'relative p-4 rounded-xl border text-center transition-all duration-200',
-                      selectedCategory === cat.value
-                        ? 'border-primary bg-primary/10 ring-1 ring-primary'
-                        : isLocked
-                          ? 'border-border opacity-75 hover:border-yellow-500/50 hover:bg-yellow-500/5'
-                          : 'border-border hover:border-primary/30 hover:bg-secondary/50'
+                      !marketOpen
+                        ? 'border-border opacity-40 cursor-not-allowed'
+                        : selectedCategory === cat.value
+                          ? 'border-primary bg-primary/10 ring-1 ring-primary'
+                          : isLocked
+                            ? 'border-border opacity-75 hover:border-yellow-500/50 hover:bg-yellow-500/5'
+                            : 'border-border hover:border-primary/30 hover:bg-secondary/50'
                     )}
+                    title={!marketOpen ? 'Marché fermé — disponible en semaine' : undefined}
                   >
-                    {isLocked && (
+                    {isLocked && marketOpen && (
                       <span className="absolute top-1.5 right-1.5 text-xs">🔒</span>
+                    )}
+                    {!marketOpen && (
+                      <span className="absolute top-1.5 right-1.5 text-[9px] bg-red-500/80 text-white px-1 py-0.5 rounded font-bold">Fermé</span>
                     )}
                     <span className="text-2xl block mb-1">{cat.icon}</span>
                     <span className="font-medium text-sm block">{t(cat.labelKey)}</span>
@@ -581,7 +590,7 @@ export default function BotPage() {
               </div>
             ) : (
               <div className="divide-y divide-border">
-                {botSignals.map((signal, idx) => (
+                {[...botSignals].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0)).map((signal, idx) => (
                   <div key={signal.id ?? idx} className={cn('p-4', idx === 0 && 'bg-profit/5')}>
                     {idx === 0 && (
                       <div className="flex items-center gap-1 mb-2">

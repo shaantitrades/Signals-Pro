@@ -157,7 +157,7 @@ export default function TarifsPage() {
       {/* Top bar */}
       <div className="flex items-center justify-between px-4 sm:px-8 py-4 border-b border-border">
         <Link
-          href="/dashboard/signals"
+          href="/dashboard/livesignals"
           className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

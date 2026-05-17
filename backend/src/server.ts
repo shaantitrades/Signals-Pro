@@ -15,6 +15,7 @@ import { subscriptionRouter } from './routes/subscriptions';
 import { nowpaymentsRouter } from './routes/nowpayments';
 import { performanceRouter } from './routes/performance';
 import { assetRouter } from './routes/assets';
+import { adminRouter } from './routes/admin';
 import { errorHandler } from './middleware/errorHandler';
 import { initializeWebSocket } from './websocket';
 import { initializeRedis } from './services/redis';
@@ -117,6 +118,7 @@ app.use('/api/subscriptions', subscriptionRouter);
 app.use('/api/nowpayments', nowpaymentsRouter);
 app.use('/api/performance', performanceRouter);
 app.use('/api/assets', assetRouter);
+app.use('/api/admin', adminRouter);
 
 // Error handler (must be last)
 app.use(errorHandler);

@@ -266,11 +266,21 @@ class TechnicalAnalyzer:
         self, action: SignalAction, price: float, atr: float, category: AssetCategory
     ) -> tuple[float, float, float, float, float]:
         """Calculate entry, TP1-3 and SL based on ATR."""
-        precision = {
+        base_precision = {
             AssetCategory.FOREX_OTC: 5, AssetCategory.FOREX: 5,
-            AssetCategory.CRYPTO: 2, AssetCategory.INDICES: 1,
-            AssetCategory.COMMODITIES: 2,
+            AssetCategory.CRYPTO: 5, AssetCategory.INDICES: 2,
+            AssetCategory.COMMODITIES: 3,
         }.get(category, 5)
+        # Dynamic precision: high-value assets (BTC, ETH) need fewer decimals
+        if category == AssetCategory.CRYPTO:
+            if price >= 10000:
+                precision = 2
+            elif price >= 100:
+                precision = 3
+            else:
+                precision = 5
+        else:
+            precision = base_precision
 
         multipliers = {
             AssetCategory.FOREX_OTC: (1.2, 2.0, 3.0, 1.0),

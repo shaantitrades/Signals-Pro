@@ -9,6 +9,18 @@ export function formatPrice(price: number, decimals: number = 5): string {
   return price.toFixed(decimals);
 }
 
+export function formatSmartPrice(price: number, category?: string): string {
+  if (!price || isNaN(price)) return '—';
+  if (category === 'CRYPTO' || !category) {
+    if (price >= 10000) return price.toFixed(2);
+    if (price >= 100)   return price.toFixed(3);
+    return price.toFixed(5);
+  }
+  if (category === 'INDICES') return price.toFixed(2);
+  if (category === 'COMMODITIES') return price.toFixed(3);
+  return price.toFixed(5);
+}
+
 export function formatPips(pips: number): string {
   const sign = pips >= 0 ? '+' : '';
   return `${sign}${pips.toFixed(1)} pips`;
@@ -49,6 +61,35 @@ export function getCategoryIcon(category: string): string {
     case 'COMMODITIES': return '🪙';
     default: return '📊';
   }
+}
+
+export function isMarketOpen(category: string): boolean {
+  const now = new Date();
+  const paris = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Paris' }));
+  const day = paris.getDay(); // 0=Sun, 6=Sat
+  const h = paris.getHours();
+  const m = paris.getMinutes();
+  const t = h + m / 60;
+  const isWeekend = day === 0 || day === 6;
+  const isFriday = day === 5;
+
+  if (category === 'CRYPTO' || category === 'FOREX_OTC') return true;
+  if (category === 'FOREX') {
+    if (isWeekend && !(day === 0 && h >= 23)) return false;
+    if (isFriday && h >= 23) return false;
+    return true;
+  }
+  if (category === 'INDICES') {
+    if (isWeekend) return false;
+    if (t < 8 || t >= 22.5) return false;
+    return true;
+  }
+  if (category === 'COMMODITIES') {
+    if (isWeekend) return false;
+    if (t < 1 || t >= 22) return false;
+    return true;
+  }
+  return true;
 }
 
 export function getTimeframeLabel(tf: string): string {

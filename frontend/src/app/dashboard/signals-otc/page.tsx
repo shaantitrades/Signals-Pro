@@ -67,6 +67,8 @@ interface OTCSignal {
   timeframe: string;
   analysis?: string;
   createdAt?: string;
+  aiValidated?: boolean;
+  aiReasoning?: string;
   // Extended fields from signal engine
   indicators?: { name: string; value: number; signal: string; strength: number }[];
 }
@@ -710,9 +712,14 @@ function ActiveSignalCard({ signal, duration, t }: { signal: OTCSignal; duration
         </div>
         <div className="sm:text-right">
           <span className="text-xs sm:text-sm font-medium text-muted-foreground">{t('sigOtc.expiresIn')}: <span className="text-foreground font-bold">{timeLabel}</span></span>
-          <div className="flex items-center gap-1 sm:justify-end mt-0.5">
+          <div className="flex items-center gap-2 sm:justify-end mt-0.5 flex-wrap">
             <span className="w-1.5 h-1.5 bg-profit rounded-full animate-pulse" />
             <span className="text-xs text-profit font-medium">{t('sigOtc.liveData')}</span>
+            {signal.aiValidated && (
+              <span className="flex items-center gap-1 text-xs bg-blue-500/15 text-blue-400 border border-blue-500/30 px-2 py-0.5 rounded-full font-semibold">
+                🤖 IA Validé
+              </span>
+            )}
           </div>
         </div>
       </div>

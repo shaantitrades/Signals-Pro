@@ -1,14 +1,57 @@
 """Signal generation routes — optimized for rapid signal detection."""
 import asyncio
+from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 from fastapi import APIRouter, HTTPException
 from loguru import logger
 
 from app.analysis.data_provider import data_provider
 from app.analysis.technical import analyzer
+from app.analysis.deepseek_validator import validate_signal, get_deepseek_status
 from app.config import settings
 from app.models import AssetCategory, Timeframe
 
 router = APIRouter()
+
+
+@router.get("/deepseek-status")
+async def deepseek_status():
+    """Return DeepSeek AI availability status for the admin panel."""
+    return get_deepseek_status()
+
+
+def is_market_open(category: AssetCategory) -> bool:
+    """Return True if the given market category is currently open (Paris time)."""
+    paris = ZoneInfo("Europe/Paris")
+    now = datetime.now(paris)
+    day = now.weekday()  # 0=Mon … 6=Sun
+    h, m = now.hour, now.minute
+    t = h + m / 60
+    is_weekend = day >= 5  # Sat=5, Sun=6
+    is_friday = day == 4
+
+    if category in (AssetCategory.CRYPTO, AssetCategory.FOREX_OTC):
+        return True
+    if category == AssetCategory.FOREX:
+        if is_weekend and not (day == 6 and h >= 23):
+            return False
+        if is_friday and h >= 23:
+            return False
+        return True
+    if category == AssetCategory.INDICES:
+        if is_weekend:
+            return False
+        if t < 8 or t >= 22.5:
+            return False
+        return True
+    if category == AssetCategory.COMMODITIES:
+        if is_weekend:
+            return False
+        if t < 1 or t >= 22:
+            return False
+        return True
+    return True
+
 
 # Assets available for analysis
 ASSETS = {
@@ -47,6 +90,8 @@ ASSETS = {
 @router.get("/generate/{category}/{asset}/{timeframe}")
 async def generate_signal(category: AssetCategory, asset: str, timeframe: Timeframe):
     """Generate a signal for a specific asset and timeframe."""
+    if not is_market_open(category):
+        return {"signal": None, "message": f"Market {category.value} is closed (weekend or off-hours)"}
     if asset not in ASSETS.get(category, []):
         raise HTTPException(status_code=400, detail=f"Asset {asset} not available in {category}")
 
@@ -58,7 +103,12 @@ async def generate_signal(category: AssetCategory, asset: str, timeframe: Timefr
     if result is None:
         return {"signal": None, "message": "No valid signal found"}
 
-    return {"signal": result.model_dump()}
+    ai_confirmed, ai_reason = await validate_signal(result)
+    if not ai_confirmed:
+        logger.info(f"AI rejected signal for {asset}: {ai_reason}")
+        return {"signal": None, "message": f"Signal rejected by AI: {ai_reason}", "ai_validated": False}
+
+    return {"signal": result.model_dump(), "ai_validated": True, "ai_reasoning": ai_reason}
 
 
 @router.get("/fast/{category}/{asset}/{timeframe}")
@@ -68,6 +118,8 @@ async def fast_signal(category: AssetCategory, asset: str, timeframe: Timeframe)
     Returns None if no high-confidence signal is found — does NOT fall back to other timeframes.
     Primary use: Forex OTC "Start Signals" feature.
     """
+    if not is_market_open(category):
+        return {"signal": None, "message": f"Market {category.value} is closed (weekend or off-hours)", "fast_mode": True}
     if asset not in ASSETS.get(category, []):
         raise HTTPException(status_code=400, detail=f"Asset {asset} not available in {category}")
 
@@ -82,10 +134,17 @@ async def fast_signal(category: AssetCategory, asset: str, timeframe: Timeframe)
 
         result = analyzer.analyze(df, asset, category, timeframe)
         if result and result.confidence >= min_conf:
+            ai_confirmed, ai_reason = await validate_signal(result)
+            if not ai_confirmed:
+                logger.info(f"AI rejected fast signal for {asset}/{timeframe}: {ai_reason}")
+                return {"signal": None, "message": f"Signal rejected by AI: {ai_reason}", "fast_mode": True, "ai_validated": False}
+
             return {
                 "signal": result.model_dump(),
                 "source_timeframe": timeframe.value,
                 "fast_mode": True,
+                "ai_validated": True,
+                "ai_reasoning": ai_reason,
             }
     except Exception as e:
         logger.error(f"Fast signal error {asset}/{timeframe}: {e}")
@@ -97,6 +156,8 @@ async def fast_signal(category: AssetCategory, asset: str, timeframe: Timeframe)
 @router.get("/scan/{category}/{timeframe}")
 async def scan_category(category: AssetCategory, timeframe: Timeframe, min_confidence: float = 80):
     """Scan all assets in a category for signals."""
+    if not is_market_open(category):
+        return {"category": category, "timeframe": timeframe, "signals_found": 0, "signals": [], "message": "Market closed"}
     assets = ASSETS.get(category, [])
     signals = []
 

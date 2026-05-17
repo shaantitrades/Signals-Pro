@@ -13,14 +13,18 @@ class Settings(BaseSettings):
     # Forex/Indices/Commodities via yfinance (Yahoo Finance) — zero config
 
     # ── Signal Configuration ──
-    signal_min_confidence: int = 75  # Require strong multi-indicator consensus
+    signal_min_confidence: int = 78  # Require strong multi-indicator consensus
     max_concurrent_signals: int = 10
     analysis_interval_seconds: int = 60  # Scan every 60s (was 30) — quality over speed
     backtest_lookback_days: int = 90
 
+    # ── DeepSeek AI Validation ──
+    deepseek_api_key: str = ""
+    deepseek_enabled: bool = True   # Set False to disable AI validation
+
     # ── OTC Settings ──
     otc_signal_timeout: int = 30
-    otc_min_confidence: int = 75  # Same as regular — no lowering for OTC
+    otc_min_confidence: int = 85  # Higher threshold for OTC/turbo to reduce false signals
 
     log_level: str = "INFO"
 

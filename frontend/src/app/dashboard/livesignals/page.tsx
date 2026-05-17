@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { cn, formatPrice, getTimeframeLabel, getRiskLevelColor } from '@/lib/utils';
+import { cn, formatPrice, formatSmartPrice, getTimeframeLabel, getRiskLevelColor, isMarketOpen } from '@/lib/utils';
 import { useI18n } from '@/lib/i18n';
 
 const API_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001').replace(/\/api\d*\/?$/, '').replace(/\/+$/, '');
@@ -166,14 +166,14 @@ function matchesFilters(s: Signal, catFilter: string, strFilter: string, riskFil
 }
 
 // ============================================================================
-// SignalPopup — popup 15 secondes pour tout nouveau signal correspondant aux filtres
+// SignalPopup — popup 40 secondes pour tout nouveau signal correspondant aux filtres
 // ============================================================================
 function SignalPopup({ signal, onClose, t }: {
   signal: Signal;
   onClose: () => void;
   t: (key: string) => string;
 }) {
-  const [remaining, setRemaining] = useState(15);
+  const [remaining, setRemaining] = useState(40);
   const isBuy = signal.action === 'BUY';
 
   // Joue le son à l'ouverture
@@ -187,7 +187,7 @@ function SignalPopup({ signal, onClose, t }: {
     return () => clearTimeout(timer);
   }, [remaining, onClose]);
 
-  const pct = (remaining / 15) * 100;
+  const pct = (remaining / 40) * 100;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 p-4">
@@ -208,7 +208,7 @@ function SignalPopup({ signal, onClose, t }: {
                 <span className="w-1.5 h-1.5 rounded-full bg-profit animate-pulse" />
                 <span className="text-[11px] text-muted-foreground font-medium uppercase tracking-wide">Nouveau Signal Live</span>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-2xl font-bold">{signal.asset}</span>
                 <span className={cn(
                   'px-2.5 py-0.5 rounded font-bold text-sm',
@@ -216,6 +216,11 @@ function SignalPopup({ signal, onClose, t }: {
                 )}>
                   {signal.action}
                 </span>
+                {signal.timeframe && (
+                  <span className="px-2 py-0.5 rounded text-xs font-mono bg-muted text-muted-foreground border border-border">
+                    {signal.timeframe}
+                  </span>
+                )}
               </div>
             </div>
             <div className="flex flex-col items-end gap-1.5">
@@ -225,7 +230,7 @@ function SignalPopup({ signal, onClose, t }: {
               >
                 ✕
               </button>
-              <span className="text-xs font-bold tabular-nums" style={{ color: remaining <= 5 ? 'var(--color-loss)' : undefined }}>
+              <span className="text-xs font-bold tabular-nums" style={{ color: remaining <= 8 ? 'var(--color-loss)' : undefined }}>
                 {remaining}s
               </span>
             </div>
@@ -251,17 +256,22 @@ function SignalPopup({ signal, onClose, t }: {
           <div className="grid grid-cols-3 gap-2 mb-4">
             <div className="bg-secondary/50 rounded-lg p-2 text-center">
               <span className="text-[10px] text-muted-foreground block">{t('sig.entry')}</span>
-              <span className="text-xs font-bold font-mono">{formatPrice(signal.entryPrice)}</span>
+              <span className="text-xs font-bold font-mono">{formatSmartPrice(signal.entryPrice, signal.category)}</span>
             </div>
             <div className="bg-profit/10 rounded-lg p-2 text-center">
               <span className="text-[10px] text-muted-foreground block">TP1</span>
-              <span className="text-xs font-bold font-mono text-profit">{formatPrice(signal.tp1)}</span>
+              <span className="text-xs font-bold font-mono text-profit">{formatSmartPrice(signal.tp1, signal.category)}</span>
             </div>
             <div className="bg-loss/10 rounded-lg p-2 text-center">
               <span className="text-[10px] text-muted-foreground block">SL</span>
-              <span className="text-xs font-bold font-mono text-loss">{formatPrice(signal.sl)}</span>
+              <span className="text-xs font-bold font-mono text-loss">{formatSmartPrice(signal.sl, signal.category)}</span>
             </div>
           </div>
+
+          {/* Price note */}
+          <p className="text-[10px] text-muted-foreground/70 mb-3">
+            ⚠ Prix d'entrée au moment de la génération du signal — le marché peut avoir bougé depuis.
+          </p>
 
           {/* Meta */}
           <div className="flex items-center justify-between">
@@ -466,6 +476,7 @@ export default function SignalsPage() {
 
   // Filter and sort signals
   const filteredSignals = signals
+    .filter(s => isMarketOpen(s.category))
     .filter(s => !categoryFilter || s.category === categoryFilter)
     .filter(s => {
       if (!strengthFilter) return true;
@@ -601,20 +612,27 @@ export default function SignalsPage() {
           <div className="flex-1">
             <label className="text-xs text-muted-foreground mb-1 block">{t('sig.category')}</label>
             <div className="flex flex-wrap gap-1">
-              {categoryFilters.map((cat) => (
+              {categoryFilters.map((cat) => {
+                const open = cat.value === '' || isMarketOpen(cat.value);
+                return (
                 <button
                   key={cat.value}
                   onClick={() => setCategoryFilter(cat.value)}
+                  disabled={!open}
                   className={cn(
                     'px-3 py-1 rounded-lg text-xs font-medium transition-colors',
-                    categoryFilter === cat.value
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-secondary text-muted-foreground hover:text-foreground'
+                    !open
+                      ? 'opacity-40 cursor-not-allowed bg-secondary text-muted-foreground'
+                      : categoryFilter === cat.value
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-secondary text-muted-foreground hover:text-foreground'
                   )}
                 >
                   {cat.icon} {t(cat.labelKey)}
+                  {!open && <span className="ml-1 text-[9px]">🔒</span>}
                 </button>
-              ))}
+              );
+              })}
             </div>
           </div>
           
@@ -771,12 +789,12 @@ export default function SignalsPage() {
               <div className="grid grid-cols-2 gap-2 text-sm mb-3">
                 <div>
                   <span className="text-xs text-muted-foreground">{t('sig.entry')}</span>
-                  <p className="font-medium font-mono">{formatPrice(signal.entryPrice)}</p>
+                  <p className="font-medium font-mono">{formatSmartPrice(signal.entryPrice, signal.category)}</p>
                 </div>
                 <div>
                   <span className="text-xs text-muted-foreground">{t('sig.current')}</span>
                   <p className={cn('font-medium font-mono', signal.pnlPips >= 0 ? 'text-profit' : 'text-loss')}>
-                    {formatPrice(signal.currentPrice)}
+                    {formatSmartPrice(signal.currentPrice, signal.category)}
                   </p>
                 </div>
               </div>

@@ -8,9 +8,12 @@ const DELAY_MS = 8000;          // show after 8s
 const COOLDOWN_HOURS = 24;      // don't re-show within 24h
 
 export function PocketOptionPopup() {
+  return null; // Popup temporarily disabled
+
   const { t } = useI18n();
   const [visible, setVisible] = useState(false);
 
+  // eslint-disable-next-line no-unreachable
   useEffect(() => {
     // Check cooldown
     try {

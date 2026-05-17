@@ -182,6 +182,8 @@ signalRouter.get('/generate/:category/:asset/:timeframe', authenticate, requireS
       data: {
         ...saved,
         indicators: signal.indicators || [],
+        aiValidated: result.ai_validated ?? false,
+        aiReasoning: result.ai_reasoning ?? '',
       },
       source_timeframe: result.source_timeframe,
       fast_mode: true,
