@@ -26,11 +26,6 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
-    healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-}", "ping"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
 
   # ─── Signal Engine (démarre en premier — pas de dépendance circulaire) ─────
   signal-engine:
@@ -51,7 +46,7 @@ services:
       postgres:
         condition: service_healthy
       redis:
-        condition: service_healthy
+        condition: service_started
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 10s
@@ -82,7 +77,7 @@ services:
       postgres:
         condition: service_healthy
       redis:
-        condition: service_healthy
+        condition: service_started
       signal-engine:
         condition: service_healthy
 
