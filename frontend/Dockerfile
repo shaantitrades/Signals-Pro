@@ -21,7 +21,7 @@ ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 ENV NEXT_PUBLIC_WS_URL=${NEXT_PUBLIC_WS_URL}
 ENV NEXT_PUBLIC_SIGNAL_ENGINE_URL=${NEXT_PUBLIC_SIGNAL_ENGINE_URL}
 ENV NEXT_PUBLIC_GOOGLE_CLIENT_ID=${NEXT_PUBLIC_GOOGLE_CLIENT_ID}
-RUN npm run build 2>/tmp/build-err.log || { echo "=== BUILD FAILED ===" && cat /tmp/build-err.log && exit 1; }
+RUN npm run build
 
 # Production
 FROM base AS runner
