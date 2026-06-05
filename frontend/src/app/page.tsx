@@ -156,19 +156,6 @@ export default function Home() {
           {/* Broker Strip */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-10 sm:mb-16 px-4">
             <a
-              href="https://u3.shortink.io/pwa?utm_campaign=41345&utm_source=affiliate&utm_medium=sr&a=nauJIysReFF6Mk&al=1545722&ac=promo-code-60&cid=899888&code=PMQ023"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center gap-3 bg-card/80 backdrop-blur-sm border border-emerald-500/30 rounded-xl px-4 py-3 hover:border-emerald-500/60 hover:shadow-lg hover:shadow-emerald-500/10 transition-all w-full sm:w-auto"
-            >
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-xs shrink-0">PO</div>
-              <div className="text-left">
-                <p className="font-semibold text-sm text-foreground group-hover:text-emerald-500 transition-colors">Pocket Option</p>
-                <p className="text-xs text-muted-foreground">Bonus jusqu'à <span className="text-emerald-500 font-bold">+80%</span> · Code <span className="text-emerald-500 font-bold">PMQ023</span></p>
-              </div>
-              <span className="ml-2 text-[10px] font-bold text-white bg-emerald-500 px-2 py-1 rounded-full shrink-0 whitespace-nowrap">★ 4.9/5</span>
-            </a>
-            <a
               href="https://tradecomparator.com/"
               target="_blank"
               rel="noopener noreferrer"
