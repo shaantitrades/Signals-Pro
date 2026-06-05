@@ -65,6 +65,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      signal-engine:
+        condition: service_healthy
 
   # ─── Signal Engine ───────────────────────────────────────
   signal-engine:
@@ -84,6 +86,12 @@ services:
       - "8888:8000"
     depends_on:
       - backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 25s
 
   # ─── Frontend ─────────────────────────────────────────────
   frontend:

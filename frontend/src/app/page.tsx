@@ -57,21 +57,6 @@ export default function Home() {
     document.documentElement.classList.toggle('dark', next === 'dark');
   };
 
-  const [showPOPopup, setShowPOPopup] = useState(false);
-
-  // Pocket Option popup temporarily disabled
-  // useEffect(() => {
-  //   try {
-  //     if (typeof window === 'undefined') return;
-  //     if (window.sessionStorage.getItem('po_popup_seen')) return;
-  //     const timer = setTimeout(() => {
-  //       setShowPOPopup(true);
-  //       try { window.sessionStorage.setItem('po_popup_seen', '1'); } catch {}
-  //     }, 30000);
-  //     return () => clearTimeout(timer);
-  //   } catch { /* sessionStorage blocked */ }
-  // }, []);
-
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       {/* Hero Section */}
@@ -306,66 +291,6 @@ export default function Home() {
               </div>
             </a>
 
-            {/* Partner — Pocket Option */}
-            <a
-              href="https://u3.shortink.io/pwa?utm_campaign=41345&utm_source=affiliate&utm_medium=sr&a=nauJIysReFF6Mk&al=1545722&ac=promo-code-60&cid=899888&code=PMQ023"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex flex-col gap-3 bg-card border border-border rounded-2xl p-6 hover:border-primary/40 hover:shadow-lg transition-all shadow-sm"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-sm shrink-0">
-                  PO
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <p className="font-semibold text-card-foreground text-sm group-hover:text-primary transition-colors">Pocket Option</p>
-                    <span className="text-[10px] text-yellow-500 font-bold">★ 4.9/5</span>
-                  </div>
-                  <p className="text-muted-foreground text-xs">{t('partners.pocketoption.subtitle')}</p>
-                </div>
-                <svg className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors ml-auto shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </div>
-              <p className="text-muted-foreground text-xs leading-relaxed">{t('partners.pocketoption.desc')}</p>
-              <div className="flex flex-wrap gap-1.5 mt-1">
-                {[t('partners.tag.bonus6080'), t('partners.tag.promopmq')].map((tag) => (
-                  <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">{tag}</span>
-                ))}
-              </div>
-            </a>
-
-            {/* Partner — SabioTrade */}
-            <a
-              href="https://sabiotrade.com/?aff=820461&aff_model=revenue&afftrack="
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex flex-col gap-3 bg-card border border-border rounded-2xl p-6 hover:border-primary/40 hover:shadow-lg transition-all shadow-sm"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-bold text-sm shrink-0">
-                  ST
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <p className="font-semibold text-card-foreground text-sm group-hover:text-primary transition-colors">SabioTrade</p>
-                    <span className="text-[10px] text-yellow-500 font-bold">★ 4.8/5</span>
-                  </div>
-                  <p className="text-muted-foreground text-xs">{t('partners.sabio.subtitle')}</p>
-                </div>
-                <svg className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors ml-auto shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </div>
-              <p className="text-muted-foreground text-xs leading-relaxed">{t('partners.sabio.desc')}</p>
-              <div className="flex flex-wrap gap-1.5 mt-1">
-                {[t('partners.tag.propfirm'), t('partners.tag.funded')].map((tag) => (
-                  <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-500 border border-blue-500/20">{tag}</span>
-                ))}
-              </div>
-            </a>
-
             {/* Dynamic admin-added partners */}
             {customPartners.map((partner) => (
               <a
@@ -456,76 +381,6 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* Pocket Option Popup */}
-      {showPOPopup && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
-          onClick={() => setShowPOPopup(false)}
-        >
-          <div
-            className="relative bg-gradient-to-br from-[#071a0e] via-[#0a2a14] to-[#071a0e] border border-emerald-500/40 rounded-2xl p-6 sm:p-8 max-w-sm w-full shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Close */}
-            <button
-              onClick={() => setShowPOPopup(false)}
-              className="absolute top-3 right-3 text-white/30 hover:text-white transition-colors"
-            >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-
-            {/* Urgency badge */}
-            <div className="flex items-center gap-2 mb-4">
-              <span className="w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
-              <span className="text-xs font-bold text-red-400 uppercase tracking-widest">{t('popup.po.urgency')}</span>
-            </div>
-
-            {/* Header */}
-            <div className="flex items-center gap-3 mb-5">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-black text-lg shrink-0">
-                PO
-              </div>
-              <div>
-                <h3 className="text-xl font-black text-white">Pocket Option</h3>
-                <div className="flex items-center gap-1">
-                  <span className="text-yellow-400 text-sm">★★★★★</span>
-                  <span className="text-white/50 text-xs">4.9/5 · 50 000+ traders</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Headline */}
-            <p className="text-2xl font-black text-white mb-2 leading-tight">
-              {t('popup.po.headline')}
-            </p>
-            <p className="text-white/70 text-sm mb-5 leading-relaxed">
-              {t('popup.po.sub')}
-            </p>
-
-            {/* Social proof */}
-            <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3 mb-5">
-              <p className="text-emerald-400 text-sm font-bold mb-1">{t('popup.po.social')}</p>
-              <p className="text-white/60 text-xs">{t('popup.po.code').replace('PMQ023', '')} <span className="text-emerald-400 font-black text-sm">PMQ023</span> {t('popup.po.code').split('PMQ023')[1]}</p>
-            </div>
-
-            {/* CTA */}
-            <a
-              href="https://u3.shortink.io/pwa?utm_campaign=41345&utm_source=affiliate&utm_medium=sr&a=nauJIysReFF6Mk&al=1545722&ac=promo-code-60&cid=899888&code=PMQ023"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block w-full text-center bg-emerald-500 hover:bg-emerald-400 text-white font-black text-lg py-4 rounded-xl transition-all shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/50 hover:scale-[1.02] active:scale-[0.98]"
-              onClick={() => setShowPOPopup(false)}
-            >
-              {t('popup.po.cta')}
-            </a>
-            <p className="text-white/25 text-[10px] text-center mt-3">
-              {t('popup.po.disclaimer')}
-            </p>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

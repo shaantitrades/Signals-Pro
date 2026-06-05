@@ -5,9 +5,44 @@ import { AppError } from '../middleware/errorHandler';
 import { authenticate, authorize, requireSubscription, AuthRequest } from '../middleware/auth';
 import { getIO } from '../websocket';
 import { getRedis } from '../services/redis';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 const SIGNAL_ENGINE_URL = process.env.SIGNAL_ENGINE_URL || 'http://localhost:8000';
+const MAX_RETRIES = 3;
+const RETRY_DELAY_MS = 2000;
+
+// ── DNS / retry helper ──────────────────────────────────────────────────────
+
+/** Return true if the error is a DNS / connectivity problem that may be transient */
+function isNetworkError(err: unknown): boolean {
+  if (err instanceof AxiosError) {
+    const code = err.code;
+    // DNS lookup failures, connection refused, timeouts
+    if (code === 'EAI_AGAIN' || code === 'ENOTFOUND' || code === 'ECONNREFUSED' || code === 'ECONNRESET' || code === 'ETIMEDOUT') {
+      return true;
+    }
+  }
+  return false;
+}
+
+/** Generic fetch with DNS-aware retry */
+async function fetchWithRetry<T>(fn: () => Promise<T>, label: string): Promise<T> {
+  let lastErr: unknown;
+  for (let i = 0; i < MAX_RETRIES; i++) {
+    try {
+      return await fn();
+    } catch (err: unknown) {
+      lastErr = err;
+      if (isNetworkError(err) && i < MAX_RETRIES - 1) {
+        console.warn(`[${label}] Retry ${i + 1}/${MAX_RETRIES - 1} — ${(err as AxiosError).code}: ${(err as AxiosError).message}`);
+        await new Promise(r => setTimeout(r, RETRY_DELAY_MS));
+        continue;
+      }
+      throw err;
+    }
+  }
+  throw lastErr;
+}
 
 export const signalRouter = Router();
 
@@ -119,10 +154,13 @@ signalRouter.get('/generate/:category/:asset/:timeframe', authenticate, requireS
   try {
     const { category, asset, timeframe } = generateSignalSchema.parse(req.params);
 
-    // Call signal engine's fast signal endpoint
-    const engineResponse = await axios.get(
-      `${SIGNAL_ENGINE_URL}/signals/fast/${category}/${asset}/${timeframe}`,
-      { timeout: 30000 }
+    // Call signal engine's fast signal endpoint — with DNS-aware retry
+    const engineResponse = await fetchWithRetry(
+      () => axios.get(
+        `${SIGNAL_ENGINE_URL}/signals/fast/${category}/${asset}/${timeframe}`,
+        { timeout: 30000 }
+      ),
+      `signal-generate:${asset}`
     );
 
     const result = engineResponse.data;
