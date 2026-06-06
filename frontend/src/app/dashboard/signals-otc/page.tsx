@@ -568,7 +568,7 @@ export default function SignalsOTCPage() {
             </div>
             <p className="text-[11px] text-muted-foreground mt-1.5 flex items-center gap-1">
               <svg className="w-3 h-3 shrink-0 text-primary/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z" /></svg>
-              <span>M5+ timeframes give more reliable signals — 1–2 min timeframes rarely generate enough indicator consensus.</span>
+              <span>{t('sigOtc.timeframeHint')}</span>
             </p>
           </div>
 
