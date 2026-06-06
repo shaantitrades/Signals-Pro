@@ -41,8 +41,6 @@ const otcAssets = [
 ];
 
 const otcTimeframes = [
-  { value: 'M1', label: '1Min' },
-  { value: 'M2', label: '2Min' },
   { value: 'M5', label: '5Min' },
   { value: 'M15', label: '15Min' },
   { value: 'M30', label: '30Min' },
