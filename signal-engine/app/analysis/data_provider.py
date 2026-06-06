@@ -30,14 +30,14 @@ class DataProvider:
     TIMEFRAME_MAP = {
         "M1": "1m", "M2": "2m", "M3": "5m", "M4": "5m",
         "M5": "5m", "M15": "15m", "M30": "30m",
-        "H1": "1h", "H4": "1h", "D1": "1d", "W1": "1wk",
+        "H1": "1h", "H4": "4h", "D1": "1d", "W1": "1wk",
     }
 
     # yfinance interval strings
     YF_INTERVAL = {
         "M1": "1m", "M2": "2m", "M3": "5m", "M4": "5m",
         "M5": "5m", "M15": "15m", "M30": "30m",
-        "H1": "1h", "H4": "1h", "D1": "1d", "W1": "1wk",
+        "H1": "1h", "H4": "4h", "D1": "1d", "W1": "1wk",
     }
 
     # yfinance period (how far back) — 1m max 7d, 2m-30m max 60d, 1h max 730d
