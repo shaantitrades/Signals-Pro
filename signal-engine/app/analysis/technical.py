@@ -146,19 +146,19 @@ class TechnicalAnalyzer:
             rsi_val = float(rsi.iloc[-1])
             rsi_prev = float(rsi.iloc[-2])
 
-            # Only vote in meaningful zones, not the dead middle
-            if rsi_val < 35 and rsi_val > rsi_prev:  # Oversold + turning up
+            # Vote based on broader zones to increase participation
+            if rsi_val < 40 and rsi_val > rsi_prev:  # Oversold / weak + turning up
                 vote = "BUY"
-                strength = max(0, (35 - rsi_val) * 3)
-            elif rsi_val > 65 and rsi_val < rsi_prev:  # Overbought + turning down
+                strength = max(0, (40 - rsi_val) * 2.5)
+            elif rsi_val > 60 and rsi_val < rsi_prev:  # Overbought / strong + turning down
                 vote = "SELL"
-                strength = max(0, (rsi_val - 65) * 3)
-            elif rsi_val < 45 and rsi_val > rsi_prev:  # Moderate buy zone + momentum up
+                strength = max(0, (rsi_val - 60) * 2.5)
+            elif rsi_val < 50 and rsi_val > rsi_prev:  # Below midline + momentum up = mild buy
                 vote = "BUY"
-                strength = 30
-            elif rsi_val > 55 and rsi_val < rsi_prev:  # Moderate sell zone + momentum down
+                strength = 25
+            elif rsi_val > 50 and rsi_val < rsi_prev:  # Above midline + momentum down = mild sell
                 vote = "SELL"
-                strength = 30
+                strength = 25
             else:
                 vote = None  # Neutral zone — abstain
 
@@ -179,11 +179,11 @@ class TechnicalAnalyzer:
             histogram = float(macd_ind.macd_diff().iloc[-1])
             hist_prev = float(macd_ind.macd_diff().iloc[-2])
 
-            # MACD above signal + histogram growing
-            if macd_line > signal_line and histogram > 0 and histogram > hist_prev:
+            # Broadened MACD criteria: vote based on line position + histogram direction
+            if macd_line > signal_line and histogram > hist_prev:  # Bullish cross/momentum
                 vote = "BUY"
                 strength = min(abs(histogram) / (abs(macd_line) + 1e-10) * 100, 100)
-            elif macd_line < signal_line and histogram < 0 and histogram < hist_prev:
+            elif macd_line < signal_line and histogram < hist_prev:  # Bearish cross/momentum
                 vote = "SELL"
                 strength = min(abs(histogram) / (abs(macd_line) + 1e-10) * 100, 100)
             else:
