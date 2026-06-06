@@ -168,7 +168,7 @@ const translations: Record<LangCode, Record<string, string>> = {
     'pricing.per48h': '/ 48 hours',
     'pricing.promoTitle': 'Launch offer — Up to 50% off!',
     'pricing.promoLimited': 'Limited time',
-    'pricing.promoExpiry': 'Offer valid until April 27, 2026',
+    'pricing.promoExpiry': 'Offer valid until ',
     'pricing.bottomNote': 'All plans include access to real-time signals, technical analysis, and market insights.',
 
     // Welcome popup
@@ -854,7 +854,7 @@ const translations: Record<LangCode, Record<string, string>> = {
     'pricing.per48h': '/ 48 heures',
     'pricing.promoTitle': 'Offre de lancement — Jusqu\'à 50% de réduction !',
     'pricing.promoLimited': 'Durée limitée',
-    'pricing.promoExpiry': 'Offre valable jusqu\'au 27 avril 2026',
+    'pricing.promoExpiry': 'Offre valable jusqu\'au ',
     'pricing.bottomNote': 'Tous les plans incluent l\'accès aux signaux en temps réel, à l\'analyse technique et aux perspectives de marché.',
 
     // Welcome popup
@@ -1541,7 +1541,7 @@ const translations: Record<LangCode, Record<string, string>> = {
     'pricing.per48h': '/ 48 horas',
     'pricing.promoTitle': 'Oferta de lanzamiento — ¡Hasta 50% de descuento!',
     'pricing.promoLimited': 'Tiempo limitado',
-    'pricing.promoExpiry': 'Oferta válida hasta el 27 de abril de 2026',
+    'pricing.promoExpiry': 'Oferta válida hasta el ',
     'pricing.bottomNote': 'Todos los planes incluyen acceso a señales en tiempo real, análisis técnico y perspectivas del mercado.',
     'welcome.title': '¡Bienvenido Usuario Premium!', 'welcome.desc': 'Ahora tienes acceso completo a todas las señales de trading y funciones premium.', 'welcome.bottom': 'Tu suscripción premium está activa. ¡Disfruta de acceso ilimitado a nuestras señales de trading impulsadas por IA!',
     'dash.activeSignals': 'Señales Activas', 'dash.today': 'hoy', 'dash.thisMonth': 'este mes', 'dash.thisWeek': 'esta semana',
@@ -1754,7 +1754,7 @@ const translations: Record<LangCode, Record<string, string>> = {
     'pricing.per48h': '/ 48 ore',
     'pricing.promoTitle': 'Offerta di lancio — Fino al 50% di sconto!',
     'pricing.promoLimited': 'Tempo limitato',
-    'pricing.promoExpiry': 'Offerta valida fino al 27 aprile 2026',
+    'pricing.promoExpiry': 'Offerta valida fino al ',
     'pricing.bottomNote': 'Tutti i piani includono l\'accesso a segnali in tempo reale, analisi tecnica e approfondimenti di mercato.',
     'welcome.title': 'Benvenuto Utente Premium!', 'welcome.desc': 'Ora hai accesso completo a tutti i segnali di trading e alle funzionalità premium.', 'welcome.bottom': 'Il tuo abbonamento premium è attivo. Goditi l\'accesso illimitato ai nostri segnali di trading basati sull\'IA!',
     'dash.activeSignals': 'Segnali Attivi', 'dash.today': 'oggi', 'dash.thisMonth': 'questo mese', 'dash.thisWeek': 'questa settimana',
@@ -1966,7 +1966,7 @@ const translations: Record<LangCode, Record<string, string>> = {
     'pricing.per48h': '/ 48 horas',
     'pricing.promoTitle': 'Oferta de lançamento — Até 50% de desconto!',
     'pricing.promoLimited': 'Tempo limitado',
-    'pricing.promoExpiry': 'Oferta válida até 27 de abril de 2026',
+    'pricing.promoExpiry': 'Oferta válida até ',
     'pricing.bottomNote': 'Todos os planos incluem acesso a sinais em tempo real, análise técnica e insights de mercado.',
     'welcome.title': 'Bem-vindo Utilizador Premium!', 'welcome.desc': 'Agora tem acesso completo a todos os sinais de trading e funcionalidades premium.', 'welcome.bottom': 'A sua subscrição premium está ativa. Desfrute de acesso ilimitado aos nossos sinais de trading alimentados por IA!',
     'dash.activeSignals': 'Sinais Ativos', 'dash.today': 'hoje', 'dash.thisMonth': 'este mês', 'dash.thisWeek': 'esta semana',
@@ -2179,7 +2179,7 @@ const translations: Record<LangCode, Record<string, string>> = {
     'pricing.per48h': '/ 48 ساعة',
     'pricing.promoTitle': 'عرض الإطلاق — خصم يصل إلى 50%!',
     'pricing.promoLimited': 'وقت محدود',
-    'pricing.promoExpiry': 'العرض ساري حتى 27 أبريل 2026',
+    'pricing.promoExpiry': 'العرض ساري حتى ',
     'pricing.bottomNote': 'جميع الخطط تشمل الوصول إلى الإشارات في الوقت الفعلي والتحليل الفني ورؤى السوق.',
     'welcome.title': 'مرحباً بالمستخدم المميز!', 'welcome.desc': 'لديك الآن وصول كامل إلى جميع إشارات التداول والميزات المميزة.', 'welcome.bottom': 'اشتراكك المميز نشط. استمتع بوصول غير محدود إلى إشارات التداول المدعومة بالذكاء الاصطناعي!',
     'dash.activeSignals': 'إشارات نشطة', 'dash.today': 'اليوم', 'dash.thisMonth': 'هذا الشهر', 'dash.thisWeek': 'هذا الأسبوع',
@@ -2405,7 +2405,7 @@ const translations: Record<LangCode, Record<string, string>> = {
     'pricing.per48h': '/ 48 Stunden',
     'pricing.promoTitle': 'Einführungsangebot — Bis zu 50% Rabatt!',
     'pricing.promoLimited': 'Zeitlich begrenzt',
-    'pricing.promoExpiry': 'Angebot gültig bis 27. April 2026',
+    'pricing.promoExpiry': 'Angebot gültig bis ',
     'pricing.bottomNote': 'Alle Pläne beinhalten Zugang zu Echtzeit-Signalen, technischer Analyse und Markteinblicken.',
 
     // Welcome popup
@@ -2847,7 +2847,7 @@ const translations: Record<LangCode, Record<string, string>> = {
     'pricing.per48h': '/ 48 giờ',
     'pricing.promoTitle': 'Ưu đãi ra mắt — Giảm đến 50%!',
     'pricing.promoLimited': 'Thời gian có hạn',
-    'pricing.promoExpiry': 'Ưu đãi có hiệu lực đến 27 tháng 4, 2026',
+    'pricing.promoExpiry': 'Ưu đãi có hiệu lực đến ',
     'pricing.bottomNote': 'Tất cả gói bao gồm truy cập tín hiệu thời gian thực, phân tích kỹ thuật và thông tin thị trường.',
 
     // Welcome popup

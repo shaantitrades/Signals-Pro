@@ -1,0 +1,10 @@
+name: DeepSeek Config
+version: 1.0.0
+schema: v1
+
+models:
+  - name: DeepSeek V4 Pro
+    provider: openai
+    model: deepseek-chat
+    apiKey: sk-13d926ee4c6745cfaaf320b15e153f9e
+    apiBase: https://api.deepseek.com/v1

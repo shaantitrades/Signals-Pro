@@ -46,26 +46,30 @@ class TechnicalAnalyzer:
         sell_votes = sum(1 for v in votes if v == "SELL")
         total = len(votes)
 
-        # Require at least 3 indicators to have produced a vote
-        if total < 3:
-            logger.debug(f"{asset}: only {total} indicators voted, need 3+")
+        # Require at least 2 indicators to have produced a vote
+        if total < 2:
+            logger.debug(f"{asset}: only {total} indicators voted, need 2+")
             return None
 
         majority = max(buy_votes, sell_votes)
         minority = min(buy_votes, sell_votes)
 
-        # Require clear majority: at least 3 votes in same direction
-        if majority < 3:
+        # Require clear majority: at least 2 votes in same direction
+        if majority < 2:
             logger.debug(f"{asset}: no clear consensus (BUY={buy_votes} SELL={sell_votes})")
             return None
 
-        # Confidence based on actual vote ratio (never inflated)
-        # 3/5=68, 4/5=76, 5/5=85, 3/4=72, 4/4=80, 3/3=75
-        raw_confidence = (majority / total) * 85
+        # Confidence based on actual vote ratio
+        # 2/2=85, 2/3=80, 2/4=75, 3/3=85, 3/4=82, 3/5=80, 4/4=90, 4/5=88, 5/5=95
+        total_indicators = 5  # always 5 indicators available
+        raw_confidence = 55 + (majority / total_indicators) * 40
         # Bonus for unanimity
-        if minority == 0 and total >= 4:
-            raw_confidence = min(raw_confidence + 5, 90)
-        confidence = round(raw_confidence, 1)
+        if minority == 0 and total >= 3:
+            raw_confidence += 5
+        # Bonus for more indicators agreeing
+        if total >= 4 and majority >= 3:
+            raw_confidence += 3
+        confidence = min(round(raw_confidence, 1), 95)
 
         action = SignalAction.BUY if buy_votes > sell_votes else SignalAction.SELL
 

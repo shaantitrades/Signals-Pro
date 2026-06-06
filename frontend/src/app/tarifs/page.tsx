@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useI18n } from '@/lib/i18n';
+import { getFormattedPromoEndDate, langToLocale } from '@/lib/promo';
 import { api } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 
@@ -52,7 +53,8 @@ const fallbackPlans: Plan[] = [
 ];
 
 export default function TarifsPage() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const promoEndDate = getFormattedPromoEndDate(langToLocale(lang));
   const router = useRouter();
   const [plans, setPlans] = useState<Plan[]>(fallbackPlans);
   const [loading, setLoading] = useState(false);
@@ -198,7 +200,7 @@ export default function TarifsPage() {
                   {t('pricing.promoLimited')}
                 </span>
                 <span className="text-sm text-muted-foreground">
-                  {t('pricing.promoExpiry')}
+                  {t('pricing.promoExpiry')}{promoEndDate}
                 </span>
               </div>
             </div>

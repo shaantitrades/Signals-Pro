@@ -81,11 +81,12 @@ ENGINE REASONING:
 {result.reasoning}
 
 Rules:
-1. CONFIRM if confidence >= 85% AND at least 3 indicators agree AND risk/reward > 1.0
-2. CONFIRM if confidence >= 90% regardless of indicator count
-3. REJECT if risk/reward < 0.8
-4. REJECT if fewer than 2 indicators agree on the direction
-5. REJECT if the signal looks contradictory
+1. CONFIRM if confidence >= 75% AND risk/reward > 1.0
+2. CONFIRM if confidence >= 60% AND at least 2 indicators agree AND risk/reward > 0.8
+3. CONFIRM if confidence >= 80% regardless of indicator count
+4. REJECT only if the signal is clearly contradictory (e.g. BUY when all indicators point SELL)
+5. REJECT only if risk/reward < 0.5
+6. Default to CONFIRM when in doubt — the technical engine already filtered weak signals
 
 Respond ONLY with valid JSON, nothing else:
 {{"decision": "CONFIRM", "reason": "brief explanation"}}
