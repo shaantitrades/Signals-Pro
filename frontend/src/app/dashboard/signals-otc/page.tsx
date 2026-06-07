@@ -227,7 +227,7 @@ export default function SignalsOTCPage() {
   const hasSubscription = hasActiveSubscription();
   const { t } = useI18n();
   const [otcAsset, setOtcAsset] = useState('EURUSD_OTC');
-  const [otcTimeframe, setOtcTimeframe] = useState('M1');
+  const [otcTimeframe, setOtcTimeframe] = useState('M5');
   const [otcLoading, setOtcLoading] = useState(false);
   const [searchAttempt, setSearchAttempt] = useState(0);
   const [analyzePhase, setAnalyzePhase] = useState(0);
@@ -399,7 +399,8 @@ export default function SignalsOTCPage() {
         setToastSignal(signalToDisplay);
         setShowToast(true);
         setTimeout(() => setShowBottomNotif(true), 400);
-        const durationMs = (otcTimeframe === 'M1' ? 60 : otcTimeframe === 'M2' ? 120 : otcTimeframe === 'M3' ? 180 : otcTimeframe === 'M4' ? 240 : otcTimeframe === 'M5' ? 300 : otcTimeframe === 'M15' ? 900 : 1800) * 1000;
+        const tfDurationSec: Record<string, number> = { M1: 60, M2: 120, M3: 180, M4: 240, M5: 300, M15: 900, M30: 1800, H1: 3600, H2: 7200, H4: 14400, H8: 28800, D1: 86400 };
+        const durationMs = (tfDurationSec[otcTimeframe] || 300) * 1000;
         expirationTimer.current = setTimeout(() => { setSignalActive(false); setOtcSignals([]); }, durationMs);
       } else {
         if (lastError) setOtcError(lastError);
@@ -415,7 +416,8 @@ export default function SignalsOTCPage() {
   }, [otcAsset, otcTimeframe, isAuthenticated, hasSubscription]);
 
   // Signal duration in seconds based on timeframe
-  const signalDuration = otcTimeframe === 'M1' ? 60 : otcTimeframe === 'M2' ? 120 : otcTimeframe === 'M3' ? 180 : otcTimeframe === 'M4' ? 240 : otcTimeframe === 'M5' ? 300 : otcTimeframe === 'M15' ? 900 : 1800;
+  const tfDurationSec: Record<string, number> = { M1: 60, M2: 120, M3: 180, M4: 240, M5: 300, M15: 900, M30: 1800, H1: 3600, H2: 7200, H4: 14400, H8: 28800, D1: 86400 };
+  const signalDuration = tfDurationSec[otcTimeframe] || 300;
 
   return (
     <div className="space-y-6">
