@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
-  const email = 'admin@trades.com';
+  const email = 'shaantitrades@gmail.com';
   const password = 'Hababa11@';
   const planSlug = 'monthly';
 
@@ -18,7 +18,7 @@ async function main() {
     create: {
       email,
       passwordHash,
-      firstName: 'Admin',
+      firstName: 'Shaanti',
       lastName: 'Trades',
       role: 'ADMIN',
     },
