@@ -246,6 +246,14 @@ export default function SignalsOTCPage() {
   const [showBottomNotif, setShowBottomNotif] = useState(false);
   const [toastSignal, setToastSignal] = useState<OTCSignal | null>(null);
 
+  // Auto-scan state
+  const [showAutoScanPrompt, setShowAutoScanPrompt] = useState(false);
+  const [autoScanFailedAsset, setAutoScanFailedAsset] = useState('');
+  const [autoScanning, setAutoScanning] = useState(false);
+  const [autoScanProgress, setAutoScanProgress] = useState(0);
+  const [currentScanAsset, setCurrentScanAsset] = useState('');
+  const autoScanAbortRef = useRef(false);
+
   // Custom asset dropdown
   const [assetOpen, setAssetOpen] = useState(false);
   const [dropUp, setDropUp] = useState(false);
@@ -414,6 +422,57 @@ export default function SignalsOTCPage() {
     setAnalyzePhase(0);
     setAnalyzeProgress(0);
   }, [otcAsset, otcTimeframe, isAuthenticated, hasSubscription]);
+
+  // Direct signal check for a specific asset+timeframe (no full UI flow, used by auto-scan and retry)
+  const handleStartSignalsDirect = useCallback(async (asset: string, tf: string) => {
+    if (!isAuthenticated || !hasSubscription) return;
+
+    try {
+      const { data } = await signalsApi.generate('FOREX_OTC', asset, tf);
+      if (data.success && data.data) {
+        const signalToDisplay = { ...data.data, createdAt: new Date().toISOString() };
+        setOtcSignals(prev => [signalToDisplay, ...prev].slice(0, 10));
+        playSignalSound(audioCtxRef.current);
+        setToastSignal(signalToDisplay);
+        setShowToast(true);
+        setTimeout(() => setShowBottomNotif(true), 400);
+        const tfDurationSec: Record<string, number> = { M1: 60, M2: 120, M3: 180, M4: 240, M5: 300, M15: 900, M30: 1800, H1: 3600, H2: 7200, H4: 14400, H8: 28800, D1: 86400 };
+        const durationMs = (tfDurationSec[tf] || 300) * 1000;
+        if (expirationTimer.current) clearTimeout(expirationTimer.current);
+        expirationTimer.current = setTimeout(() => { setSignalActive(false); setOtcSignals([]); }, durationMs);
+        setSignalActive(true);
+        setOtcNoSignal(false);
+        return true;
+      }
+    } catch {}
+    return false;
+  }, [isAuthenticated, hasSubscription]);
+
+  // Auto-scan: iterate through remaining assets until a signal is found
+  const handleAutoScan = useCallback(async () => {
+    setAutoScanning(true);
+    autoScanAbortRef.current = false;
+    const currentIdx = otcAssets.findIndex(a => a.value === otcAsset);
+    const remaining = [...otcAssets.slice(currentIdx + 1), ...otcAssets.slice(0, currentIdx)];
+
+    for (let i = 0; i < remaining.length; i++) {
+      if (autoScanAbortRef.current) break;
+      const asset = remaining[i];
+      setAutoScanProgress(i + 1);
+      setCurrentScanAsset(asset.value);
+      const found = await handleStartSignalsDirect(asset.value, otcTimeframe);
+      if (found) {
+        setAutoScanning(false);
+        setOtcNoSignal(false);
+        return;
+      }
+    }
+
+    // No signal found on any asset
+    setAutoScanning(false);
+    setOtcNoSignal(true);
+    setAutoScanFailedAsset(otcAsset);
+  }, [otcAsset, otcTimeframe, handleStartSignalsDirect]);
 
   // Signal duration in seconds based on timeframe
   const tfDurationSec: Record<string, number> = { M1: 60, M2: 120, M3: 180, M4: 240, M5: 300, M15: 900, M30: 1800, H1: 3600, H2: 7200, H4: 14400, H8: 28800, D1: 86400 };
@@ -635,13 +694,98 @@ export default function SignalsOTCPage() {
             )}
           </button>
 
-          {/* No-signal info (amber, not red — this is expected behavior) */}
+          {/* No-signal prompt with auto-scan options */}
           {otcNoSignal && !otcError && (
-            <div className="mt-3 flex items-start gap-2 bg-yellow-500/10 border border-yellow-500/30 rounded-lg px-3 py-2.5">
-              <svg className="w-4 h-4 text-yellow-500 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z" /></svg>
-              <p className="text-xs text-yellow-600 dark:text-yellow-400">
-                {t('sigOtc.noSignalInfo')}
-              </p>
+            <div className="mt-3 bg-gradient-to-br from-card to-secondary/30 border border-border rounded-xl p-4 animate-slide-in space-y-3">
+              {/* Header */}
+              <div className="flex items-start gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-amber-500/15 flex items-center justify-center shrink-0 mt-0.5">
+                  <svg className="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-foreground mb-1">
+                    No signal on {formatAssetLabel(otcAsset)}
+                  </p>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    The selected asset is not showing a clear trading opportunity right now. Would you like to scan other assets automatically?
+                  </p>
+                </div>
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={handleAutoScan}
+                  disabled={autoScanning}
+                  className={cn(
+                    'w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200',
+                    autoScanning
+                      ? 'bg-primary/40 text-primary-foreground cursor-wait'
+                      : 'bg-primary text-primary-foreground hover:bg-primary/90 active:scale-[0.98] shadow-md'
+                  )}
+                >
+                  {autoScanning ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      <span>Scanning assets... {autoScanProgress} / {otcAssets.length}</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                      <span>Scan remaining {otcAssets.length - otcAssets.findIndex(a => a.value === otcAsset) - 1} assets automatically</span>
+                    </>
+                  )}
+                </button>
+
+                {!autoScanning && (
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <select
+                        value={otcTimeframe}
+                        onChange={(e) => setOtcTimeframe(e.target.value)}
+                        className="w-full px-3 py-2 rounded-lg border border-border bg-background text-foreground text-xs appearance-none cursor-pointer pr-8 hover:border-primary/50 transition-colors"
+                      >
+                        {otcTimeframes.map((tf) => (
+                          <option key={tf.value} value={tf.value}>{tf.label}</option>
+                        ))}
+                      </select>
+                      <svg className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground pointer-events-none" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setOtcNoSignal(false);
+                        handleStartSignalsDirect(otcAsset, otcTimeframe);
+                      }}
+                      className="px-4 py-2 rounded-lg border border-border text-xs font-medium text-foreground hover:bg-secondary/50 hover:border-primary/30 transition-all duration-200 shrink-0"
+                    >
+                      Retry with new TF
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Auto-scan progress bar */}
+              {autoScanning && (
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[10px] text-muted-foreground">
+                    <span>Current: {formatAssetLabel(currentScanAsset)}</span>
+                    <span>{Math.round((autoScanProgress / otcAssets.length) * 100)}%</span>
+                  </div>
+                  <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gradient-to-r from-primary to-profit rounded-full transition-all duration-300"
+                      style={{ width: `${(autoScanProgress / otcAssets.length) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
