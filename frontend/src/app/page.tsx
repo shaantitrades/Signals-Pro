@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useI18n, languages as i18nLanguages } from '@/lib/i18n';
+import AdSidebar from '@/components/AdSidebar';
 
 interface CustomPartner {
   id: string;
@@ -59,8 +60,19 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
-      {/* Hero Section */}
-      <header className="relative">
+      {/* ===== VERTICAL AD SIDEBARS — visible only on desktop (xl+) ===== */}
+      <div className="flex justify-center">
+        {/* Left Ad Sidebar */}
+        <AdSidebar
+          publisherId="ca-pub-5343389597650456"
+          adSlot="VOTRE-SLOT-GAUCHE"  // ← Remplacez par votre slot ID
+          side="left"
+        />
+
+        {/* Main Content */}
+        <div className="flex-1 max-w-7xl w-full min-w-0">
+          {/* Hero Section */}
+          <header className="relative">
         {/* Background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-background overflow-hidden pointer-events-none" />
         
@@ -367,6 +379,16 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+        </div>{/* End Main Content */}
+
+        {/* Right Ad Sidebar */}
+        <AdSidebar
+          publisherId="ca-pub-5343389597650456"
+          adSlot="VOTRE-SLOT-DROIT"  // ← Remplacez par votre slot ID
+          side="right"
+        />
+      </div>{/* End flex container */}
 
     </div>
   );

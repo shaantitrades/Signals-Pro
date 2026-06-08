@@ -1,0 +1,5 @@
+# Google AdSense ads.txt for marketsignals24.com
+# Format: <FIELD>, <ID>, <TYPE>, <certification authority ID>
+
+# Google AdSense
+google.com, pub-5343389597650456, DIRECT, f08c47fec0942fa0
