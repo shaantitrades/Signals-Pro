@@ -3,6 +3,6 @@
   "target": {
     "namespace": "android_app",
     "package_name": "com.signalspro.twa",
-    "sha256_cert_fingerprints": ["EC:01:32:8E:09:14:79:FA:C6:D2:E3:29:05:EF:F8:07:F4:65:A5:D9"]
+    "sha256_cert_fingerprints": ["9B:1D:13:B8:9D:23:A6:2C:6C:55:55:BC:E0:5A:77:99:A0:11:48:B0"]
   }
 }]
