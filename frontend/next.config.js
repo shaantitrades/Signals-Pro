@@ -27,6 +27,20 @@ const nextConfig = {
         ],
       },
       {
+        // ads.txt for Google AdSense verification
+        source: '/ads.txt',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400',
+          },
+          {
+            key: 'Content-Type',
+            value: 'text/plain',
+          },
+        ],
+      },
+      {
         // Static assets (_next/static) can be cached long-term (they are content-hashed)
         source: '/_next/static/(.*)',
         headers: [

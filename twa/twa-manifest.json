@@ -1,0 +1,58 @@
+{
+  "packageId": "com.signalspro.twa",
+  "host": "marketsignals24.com",
+  "name": "Market Signals24",
+  "launcherName": "Signals24",
+  "display": "standalone",
+  "themeColor": "#22c55e",
+  "navigationColor": "#0d1117",
+  "navigationColorDark": "#0d1117",
+  "navigationDividerColor": "#0d1117",
+  "navigationDividerColorDark": "#0d1117",
+  "backgroundColor": "#0d1117",
+  "startUrl": "/dashboard",
+  "iconUrl": "https://marketsignals24.com/icon-512.png",
+  "maskableIconUrl": "https://marketsignals24.com/icon-512.png",
+  "monochromeIconUrl": "https://marketsignals24.com/icon-512.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "C:\\bwrap\\signalspro.keystore",
+    "alias": "signalspro",
+    "keyStorePassword": "signalspro2026",
+    "keyPassword": "signalspro2026"
+  },
+  "appVersionCode": 1,
+  "appVersionName": "1.0.0",
+  "shortcuts": [
+    {
+      "name": "Signaux",
+      "shortName": "Signals",
+      "url": "/dashboard/signals",
+      "chosenIconUrl": "https://marketsignals24.com/icon-192.png"
+    },
+    {
+      "name": "Trading Bot",
+      "shortName": "Bot",
+      "url": "/dashboard/bot",
+      "chosenIconUrl": "https://marketsignals24.com/icon-192.png"
+    }
+  ],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://marketsignals24.com/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {
+    "locationDelegation": {
+      "enabled": false
+    },
+    "playBilling": {
+      "enabled": false
+    }
+  },
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "orientation": "any",
+  "fullScopeUrl": "https://marketsignals24.com/"
+}
