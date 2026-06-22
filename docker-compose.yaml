@@ -17,7 +17,6 @@ services:
       timeout: 5s
       retries: 10
       start_period: 30s
-    # No ports exposed — only accessible via internal Docker network
 
   # ─── Redis ────────────────────────────────────────────────
   redis:
@@ -31,7 +30,34 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    # No ports exposed — only accessible via internal network
+
+  # ─── Signal Engine (démarre en premier) ───────────────────
+  signal-engine:
+    build:
+      context: ./signal-engine
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      DATABASE_URL_ASYNC: postgresql+asyncpg://postgres:${DB_PASSWORD:-Rk7Xm9Pq2Wv5Nj8Hs4Lf6Gc3Yd1Tb0Za}@postgres:5432/signalspro
+      REDIS_URL: redis://:${REDIS_PASSWORD:-7KHw8mN2pXvR9qZbY5tL3jF6gC4hD1sA}@redis:6379
+      API_URL: http://backend:3001/api
+      API_KEY: ${ENGINE_API_KEY:-a7f3e9c2b1d8f4a6e5c9b7d3f2a8e6c4b9d7f3a5e2c8b6d4f9a7e3c1b5d8f4a2}
+      SIGNAL_MIN_CONFIDENCE: ${SIGNAL_MIN_CONFIDENCE:-85}
+      ANALYSIS_INTERVAL_SECONDS: ${ANALYSIS_INTERVAL_SECONDS:-30}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    ports:
+      - "8888:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 25s
 
   # ─── Backend API ──────────────────────────────────────────
   backend:
@@ -67,34 +93,6 @@ services:
         condition: service_healthy
       signal-engine:
         condition: service_healthy
-
-  # ─── Signal Engine (démarre en premier — pas de dépendance circulaire) ─────
-  signal-engine:
-    build:
-      context: ./signal-engine
-      dockerfile: Dockerfile
-    restart: always
-    environment:
-      DATABASE_URL_ASYNC: postgresql+asyncpg://postgres:${DB_PASSWORD:-Rk7Xm9Pq2Wv5Nj8Hs4Lf6Gc3Yd1Tb0Za}@postgres:5432/signalspro
-      REDIS_URL: redis://:${REDIS_PASSWORD:-7KHw8mN2pXvR9qZbY5tL3jF6gC4hD1sA}@redis:6379
-      API_URL: http://backend:3001/api
-      API_KEY: ${ENGINE_API_KEY:-a7f3e9c2b1d8f4a6e5c9b7d3f2a8e6c4b9d7f3a5e2c8b6d4f9a7e3c1b5d8f4a2}
-      SIGNAL_MIN_CONFIDENCE: ${SIGNAL_MIN_CONFIDENCE:-85}
-      ANALYSIS_INTERVAL_SECONDS: ${ANALYSIS_INTERVAL_SECONDS:-30}
-      LOG_LEVEL: ${LOG_LEVEL:-INFO}
-    ports:
-      - "8888:8000"
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 25s
 
   # ─── Frontend ─────────────────────────────────────────────
   frontend:
