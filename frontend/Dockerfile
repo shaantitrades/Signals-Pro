@@ -6,7 +6,7 @@ WORKDIR /app
 # Dependencies
 FROM base AS deps
 COPY package.json yarn.lock* package-lock.json* ./
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Build
 FROM base AS build
