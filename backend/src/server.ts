@@ -1,9 +1,9 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
-import dotenv from 'dotenv';
 import { createServer } from 'http';
 
 import { authRouter } from './routes/auth';
@@ -22,8 +22,6 @@ import { initializeWebSocket } from './websocket';
 import { initializeRedis } from './services/redis';
 import { initializeSignalMonitor } from './services/signalMonitor';
 import { prisma } from './lib/prisma';
-
-dotenv.config();
 
 const app = express();
 const server = createServer(app);
