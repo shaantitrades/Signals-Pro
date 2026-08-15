@@ -158,7 +158,7 @@ export default function Home() {
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-5 sm:mb-7 px-4">
             <Link
-              href="/dashboard"
+              href="/dashboard/signals-otc"
               className="bg-primary text-primary-foreground px-8 py-3 rounded-lg font-semibold text-lg hover:bg-primary/90 transition-colors w-full sm:w-auto text-center"
             >
               {t('hero.demo')}
