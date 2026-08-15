@@ -6,6 +6,7 @@ import { useI18n } from '@/lib/i18n';
 import { getFormattedPromoEndDate, langToLocale } from '@/lib/promo';
 import { api } from '@/lib/api';
 import { useRouter } from 'next/navigation';
+import PayPalButton from '@/components/PayPalButton';
 
 interface Plan {
   id: string;
@@ -339,6 +340,24 @@ export default function TarifsPage() {
                     <p className="text-[10px] text-muted-foreground text-center mt-1">
                       {t('pricing.cryptoCoins')}
                     </p>
+
+                    {/* PayPal button — hidden for the crypto-only Pass 48h plan */}
+                    {plan.slug !== 'pass-48h' && (
+                      <>
+                        <div className="flex items-center gap-2 my-2">
+                          <div className="flex-1 h-px bg-border"></div>
+                          <span className="text-xs text-muted-foreground whitespace-nowrap">
+                            {t('pricing.paypalHint')}
+                          </span>
+                          <div className="flex-1 h-px bg-border"></div>
+                        </div>
+                        <PayPalButton
+                          planSlug={plan.slug}
+                          disabled={checkoutSlug !== null || cryptoSlug !== null}
+                          onError={(msg) => setError(msg)}
+                        />
+                      </>
+                    )}
                   </div>
                 );
               })}

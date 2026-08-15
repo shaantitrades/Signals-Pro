@@ -168,6 +168,7 @@ model SubscriptionPlan {
   features      String   // JSON string
   isActive      Boolean  @default(true) @map("is_active")
   stripePriceId String?  @map("stripe_price_id")
+  paypalPlanId  String?  @map("paypal_plan_id")
   sortOrder     Int      @default(0) @map("sort_order")
 
   createdAt     DateTime @default(now()) @map("created_at")
@@ -184,6 +185,7 @@ model Subscription {
   planId             String   @map("plan_id")
   status             String   @default("ACTIVE")
   stripeSubId        String?  @map("stripe_subscription_id")
+  paypalSubId        String?  @map("paypal_subscription_id")
   currentPeriodStart DateTime @map("current_period_start")
   currentPeriodEnd   DateTime @map("current_period_end")
   canceledAt         DateTime? @map("canceled_at")
@@ -206,7 +208,8 @@ model Payment {
   status          String   @default("PENDING")
   stripePaymentId String?  @map("stripe_payment_id")
   nowPaymentId    String?  @unique @map("now_payment_id")
-  provider        String   @default("stripe") // stripe | nowpayments
+  paypalPaymentId String?  @unique @map("paypal_payment_id")
+  provider        String   @default("stripe") // stripe | nowpayments | paypal
 
   createdAt       DateTime @default(now()) @map("created_at")
 

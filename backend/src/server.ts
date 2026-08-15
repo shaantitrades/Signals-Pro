@@ -13,6 +13,7 @@ import { tradeRouter } from './routes/trades';
 import { validationRouter } from './routes/validation';
 import { subscriptionRouter } from './routes/subscriptions';
 import { nowpaymentsRouter } from './routes/nowpayments';
+import { paypalRouter } from './routes/paypal';
 import { performanceRouter } from './routes/performance';
 import { assetRouter } from './routes/assets';
 import { adminRouter } from './routes/admin';
@@ -66,6 +67,8 @@ app.use(morgan('dev'));
 
 // Stripe webhook needs raw body for signature verification — must come BEFORE express.json()
 app.use('/api/subscriptions/webhook', express.raw({ type: 'application/json' }));
+// PayPal webhook also needs the raw body for signature verification
+app.use('/api/paypal/webhook', express.raw({ type: 'application/json' }));
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
@@ -116,6 +119,7 @@ app.use('/api/trades', tradeRouter);
 app.use('/api/validation', validationRouter);
 app.use('/api/subscriptions', subscriptionRouter);
 app.use('/api/nowpayments', nowpaymentsRouter);
+app.use('/api/paypal', paypalRouter);
 app.use('/api/performance', performanceRouter);
 app.use('/api/assets', assetRouter);
 app.use('/api/admin', adminRouter);
@@ -129,16 +133,16 @@ app.use(errorHandler);
 
 async function seedPlans() {
   const planData = [
-    { slug: 'pass-24h', name: 'Pass 24h', priceEur: 6, durationDays: 1, sortOrder: 1, stripePriceId: 'price_1T5LVF8uXGeIyMMqbiHBpsFh' },
-    { slug: 'pass-48h', name: 'Pass 48h', priceEur: 10, durationDays: 2, sortOrder: 2, stripePriceId: 'price_1T5M4u8uXGeIyMMqcQgTyCol' },
-    { slug: 'weekly', name: 'Hebdomadaire', priceEur: 25, durationDays: 7, sortOrder: 3, stripePriceId: 'price_1T5Laa8uXGeIyMMqw7ia4HOp' },
-    { slug: 'monthly', name: 'Mensuel', priceEur: 85, durationDays: 30, sortOrder: 4, stripePriceId: 'price_1T5LbF8uXGeIyMMq1Du3EpUL' },
+    { slug: 'pass-24h', name: 'Pass 24h', priceEur: 6, durationDays: 1, sortOrder: 1, stripePriceId: 'price_1T5LVF8uXGeIyMMqbiHBpsFh', paypalPlanId: 'P-95256053J6059463RNKAFZDQ' },
+    { slug: 'pass-48h', name: 'Pass 48h', priceEur: 10, durationDays: 2, sortOrder: 2, stripePriceId: 'price_1T5M4u8uXGeIyMMqcQgTyCol', paypalPlanId: null },
+    { slug: 'weekly', name: 'Hebdomadaire', priceEur: 25, durationDays: 7, sortOrder: 3, stripePriceId: 'price_1T5Laa8uXGeIyMMqw7ia4HOp', paypalPlanId: 'P-12T63755J33481010NKAGB2A' },
+    { slug: 'monthly', name: 'Mensuel', priceEur: 85, durationDays: 30, sortOrder: 4, stripePriceId: 'price_1T5LbF8uXGeIyMMq1Du3EpUL', paypalPlanId: 'P-1CK477183W792933PNKAGCZY' },
   ];
 
   for (const p of planData) {
     await prisma.subscriptionPlan.upsert({
       where: { slug: p.slug },
-      update: { priceEur: p.priceEur, stripePriceId: p.stripePriceId, sortOrder: p.sortOrder },
+      update: { priceEur: p.priceEur, stripePriceId: p.stripePriceId, paypalPlanId: p.paypalPlanId, sortOrder: p.sortOrder },
       create: {
         name: p.name,
         slug: p.slug,
@@ -146,6 +150,7 @@ async function seedPlans() {
         durationDays: p.durationDays,
         sortOrder: p.sortOrder,
         stripePriceId: p.stripePriceId,
+        paypalPlanId: p.paypalPlanId,
         features: JSON.stringify({ signals: true, bot: true, dashboard: true }),
       },
     });
