@@ -31,8 +31,9 @@ echo.
 echo Lancement bubblewrap build...
 echo.
 
-:: Repondre "n" (no) aux prompts interactifs de bubblewrap
-(echo n && echo n && echo n) | bubblewrap build 2>&1
+:: Repondre aux prompts interactifs de bubblewrap
+:: D'abord accepter la licence (y), puis mot de passe keystore
+(echo y && echo signalspro2026) | bubblewrap build 2>&1
 
 if %ERRORLEVEL% EQU 0 (
     echo.

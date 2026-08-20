@@ -21,8 +21,8 @@
     "keyStorePassword": "signalspro2026",
     "keyPassword": "signalspro2026"
   },
-  "appVersionCode": 1,
-  "appVersionName": "1.0.0",
+  "appVersionCode": 2,
+  "appVersionName": "1.0.1",
   "shortcuts": [
     {
       "name": "Signaux",
