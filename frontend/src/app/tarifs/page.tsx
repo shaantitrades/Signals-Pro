@@ -154,12 +154,28 @@ export default function TarifsPage() {
     }
   };
 
+  // « Retour aux signaux » : revient à la page précédente (Signaux Pocket Option & Quotex
+  // ou Trading Bot), avec repli sur la page des signaux si l'utilisateur a atterri directement ici.
+  const handleBackToSignals = () => {
+    const referrer = typeof document !== 'undefined' ? document.referrer : '';
+    const cameFromThisSite = referrer.startsWith(window.location.origin);
+    if (window.history.length > 1 && (cameFromThisSite || !referrer)) {
+      router.back();
+    } else {
+      router.push('/dashboard/signals-otc');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Top bar */}
       <div className="flex items-center justify-between px-4 sm:px-8 py-4 border-b border-border">
         <Link
           href="/dashboard/signals-otc"
+          onClick={(e) => {
+            e.preventDefault();
+            handleBackToSignals();
+          }}
           className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
