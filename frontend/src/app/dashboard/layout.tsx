@@ -812,28 +812,16 @@ function DashboardPartners({ t }: { t: (k: string) => string }) {
 
   const staticPartners = [
     {
-      id: 'imparami',
-      href: 'https://imparami.com',
-      initial: 'I',
-      color: 'bg-gradient-to-br from-violet-600 to-pink-500',
-      name: 'imparami.com',
-      subtitle: t('partners.imparami.subtitle'),
-      desc: t('partners.imparami.desc'),
-      score: '',
-      tags: [t('partners.tag.tutors'), t('partners.tag.price'), t('partners.tag.subjects'), t('partners.tag.online')],
-      tagColor: 'bg-violet-500/10 text-violet-500 border-violet-500/20',
-    },
-    {
-      id: 'tradecomp',
-      href: 'https://tradecomparator.com/',
-      initial: 'TC',
-      color: 'bg-gradient-to-br from-orange-500 to-amber-600',
-      name: 'Trade Comparator',
-      subtitle: t('partners.tradecomp.subtitle'),
-      desc: t('partners.tradecomp.desc'),
-      score: '',
-      tags: [t('partners.tag.comparator'), 'Forex', t('partners.tag.crypto'), t('partners.tag.propfirm'), t('partners.tag.education')],
-      tagColor: 'bg-orange-500/10 text-orange-500 border-orange-500/20',
+      id: 'pocketoption',
+      href: 'https://u3.shortink.io/register?utm_campaign=41345&utm_source=affiliate&utm_medium=sr&a=nauJIysReFF6Mk&ac=promo-code-60&code=PMQ023',
+      initial: 'PO',
+      color: 'bg-gradient-to-br from-[#00b27a] to-[#00c98a]',
+      name: 'Pocket Option',
+      subtitle: t('partners.pocketoption.subtitle'),
+      desc: t('partners.pocketoption.desc'),
+      score: '4.9',
+      tags: ['Bonus 60–100%', t('partners.tag.promopmq'), t('partners.tag.binary')],
+      tagColor: 'bg-[#00b27a]/10 text-[#00e699] border-[#00b27a]/20',
     },
   ];
 

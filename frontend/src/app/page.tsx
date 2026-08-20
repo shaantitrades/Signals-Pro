@@ -168,17 +168,17 @@ export default function Home() {
           {/* Broker Strip */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-10 sm:mb-16 px-4">
             <a
-              href="https://tradecomparator.com/"
+              href="https://u3.shortink.io/register?utm_campaign=41345&utm_source=affiliate&utm_medium=sr&a=nauJIysReFF6Mk&ac=promo-code-60&code=PMQ023"
               target="_blank"
               rel="noopener noreferrer"
-              className="group flex items-center gap-3 bg-card/80 backdrop-blur-sm border border-orange-500/30 rounded-xl px-4 py-3 hover:border-orange-500/60 hover:shadow-lg hover:shadow-orange-500/10 transition-all w-full sm:w-auto"
+              className="group flex items-center gap-3 bg-card/80 backdrop-blur-sm border border-[#00b27a]/30 rounded-xl px-4 py-3 hover:border-[#00b27a]/60 hover:shadow-lg hover:shadow-[#00b27a]/10 transition-all w-full sm:w-auto"
             >
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center text-white font-bold text-xs shrink-0">TC</div>
+              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#00b27a] to-[#00c98a] flex items-center justify-center text-white font-bold text-xs shrink-0">PO</div>
               <div className="text-left">
-                <p className="font-semibold text-sm text-foreground group-hover:text-orange-500 transition-colors">Trade Comparator</p>
-                <p className="text-xs text-muted-foreground">Comparez les meilleurs brokers</p>
+                <p className="font-semibold text-sm text-foreground group-hover:text-[#00e699] transition-colors">Pocket Option</p>
+                <p className="text-xs text-muted-foreground">Bonus exclusif 60% à 100%</p>
               </div>
-              <svg className="w-4 h-4 text-muted-foreground/30 group-hover:text-orange-500 transition-colors ml-2 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="w-4 h-4 text-muted-foreground/30 group-hover:text-[#00e699] transition-colors ml-2 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
               </svg>
             </a>
@@ -263,29 +263,29 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 max-w-4xl mx-auto">
 
-            {/* Partner — imparami.com */}
+            {/* Partner — Pocket Option */}
             <a
-              href="https://imparami.com"
+              href="https://u3.shortink.io/register?utm_campaign=41345&utm_source=affiliate&utm_medium=sr&a=nauJIysReFF6Mk&ac=promo-code-60&code=PMQ023"
               target="_blank"
               rel="noopener noreferrer"
               className="group flex flex-col gap-3 bg-card border border-border rounded-2xl p-6 hover:border-primary/40 hover:shadow-lg transition-all shadow-sm"
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-pink-500 flex items-center justify-center text-white font-bold text-sm shrink-0">
-                  I
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00b27a] to-[#00c98a] flex items-center justify-center text-white font-bold text-sm shrink-0">
+                  PO
                 </div>
                 <div>
-                  <p className="font-semibold text-card-foreground text-sm group-hover:text-primary transition-colors">imparami.com</p>
-                  <p className="text-muted-foreground text-xs">{t('partners.imparami.subtitle')}</p>
+                  <p className="font-semibold text-card-foreground text-sm group-hover:text-primary transition-colors">Pocket Option</p>
+                  <p className="text-muted-foreground text-xs">{t('partners.pocketoption.subtitle')}</p>
                 </div>
                 <svg className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors ml-auto shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>
               </div>
-              <p className="text-muted-foreground text-xs leading-relaxed">{t('partners.imparami.desc')}</p>
+              <p className="text-muted-foreground text-xs leading-relaxed">{t('partners.pocketoption.desc')}</p>
               <div className="flex flex-wrap gap-1.5 mt-1">
-                {[t('partners.tag.tutors'), t('partners.tag.price'), t('partners.tag.subjects'), t('partners.tag.online')].map((tag) => (
-                  <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-violet-500/10 text-violet-500 border border-violet-500/20">{tag}</span>
+                {['Bonus 60–100%', t('partners.tag.promopmq'), t('partners.tag.binary')].map((tag) => (
+                  <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-[#00b27a]/10 text-[#00e699] border border-[#00b27a]/20">{tag}</span>
                 ))}
               </div>
             </a>

@@ -8,12 +8,9 @@ const DELAY_MS = 8000;          // show after 8s
 const COOLDOWN_HOURS = 24;      // don't re-show within 24h
 
 export function PocketOptionPopup() {
-  return null; // Popup temporarily disabled
-
   const { t } = useI18n();
   const [visible, setVisible] = useState(false);
 
-  // eslint-disable-next-line no-unreachable
   useEffect(() => {
     // Check cooldown
     try {
@@ -91,7 +88,7 @@ export function PocketOptionPopup() {
 
         {/* CTA */}
         <a
-          href="https://po.trade/register?promo=PMQ023"
+          href="https://u3.shortink.io/register?utm_campaign=41345&utm_source=affiliate&utm_medium=sr&a=nauJIysReFF6Mk&ac=promo-code-60&code=PMQ023"
           target="_blank"
           rel="noopener noreferrer"
           onClick={close}
