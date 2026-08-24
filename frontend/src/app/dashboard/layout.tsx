@@ -8,6 +8,7 @@ import { useAuthStore, useWSStore } from '@/lib/store';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useI18n, languages as i18nLanguages } from '@/lib/i18n';
 import { authApi, api } from '@/lib/api';
+import { POCKET_OPTION_URL } from '@/lib/partners';
 
 export default function DashboardLayout({
   children,
@@ -813,14 +814,14 @@ function DashboardPartners({ t }: { t: (k: string) => string }) {
   const staticPartners = [
     {
       id: 'pocketoption',
-      href: 'https://u3.shortink.io/register?utm_campaign=41345&utm_source=affiliate&utm_medium=sr&a=nauJIysReFF6Mk&ac=promo-code-60&code=PMQ023',
+      href: POCKET_OPTION_URL,
       initial: 'PO',
       color: 'bg-gradient-to-br from-[#00b27a] to-[#00c98a]',
       name: 'Pocket Option',
       subtitle: t('partners.pocketoption.subtitle'),
       desc: t('partners.pocketoption.desc'),
       score: '4.9',
-      tags: ['Bonus 60–100%', t('partners.tag.promopmq'), t('partners.tag.binary')],
+      tags: [t('partners.tag.bonus100'), t('partners.tag.promopmq'), t('partners.tag.binary')],
       tagColor: 'bg-[#00b27a]/10 text-[#00e699] border-[#00b27a]/20',
     },
   ];

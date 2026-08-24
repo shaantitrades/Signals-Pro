@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useI18n, languages as i18nLanguages } from '@/lib/i18n';
 import AdSidebar from '@/components/AdSidebar';
+import { POCKET_OPTION_URL } from '@/lib/partners';
 
 interface CustomPartner {
   id: string;
@@ -168,7 +169,7 @@ export default function Home() {
           {/* Broker Strip */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-10 sm:mb-16 px-4">
             <a
-              href="https://u3.shortink.io/register?utm_campaign=41345&utm_source=affiliate&utm_medium=sr&a=nauJIysReFF6Mk&ac=promo-code-60&code=PMQ023"
+              href={POCKET_OPTION_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="group flex items-center gap-3 bg-card/80 backdrop-blur-sm border border-[#00b27a]/30 rounded-xl px-4 py-3 hover:border-[#00b27a]/60 hover:shadow-lg hover:shadow-[#00b27a]/10 transition-all w-full sm:w-auto"
@@ -176,7 +177,7 @@ export default function Home() {
               <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#00b27a] to-[#00c98a] flex items-center justify-center text-white font-bold text-xs shrink-0">PO</div>
               <div className="text-left">
                 <p className="font-semibold text-sm text-foreground group-hover:text-[#00e699] transition-colors">Pocket Option</p>
-                <p className="text-xs text-muted-foreground">Bonus exclusif 60% à 100%</p>
+                <p className="text-xs text-muted-foreground">{t('partners.pocketoption.bonus')}</p>
               </div>
               <svg className="w-4 h-4 text-muted-foreground/30 group-hover:text-[#00e699] transition-colors ml-2 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -265,7 +266,7 @@ export default function Home() {
 
             {/* Partner — Pocket Option */}
             <a
-              href="https://u3.shortink.io/register?utm_campaign=41345&utm_source=affiliate&utm_medium=sr&a=nauJIysReFF6Mk&ac=promo-code-60&code=PMQ023"
+              href={POCKET_OPTION_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="group flex flex-col gap-3 bg-card border border-border rounded-2xl p-6 hover:border-primary/40 hover:shadow-lg transition-all shadow-sm"
@@ -284,7 +285,7 @@ export default function Home() {
               </div>
               <p className="text-muted-foreground text-xs leading-relaxed">{t('partners.pocketoption.desc')}</p>
               <div className="flex flex-wrap gap-1.5 mt-1">
-                {['Bonus 60–100%', t('partners.tag.promopmq'), t('partners.tag.binary')].map((tag) => (
+                {[t('partners.tag.bonus100'), t('partners.tag.promopmq'), t('partners.tag.binary')].map((tag) => (
                   <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-[#00b27a]/10 text-[#00e699] border border-[#00b27a]/20">{tag}</span>
                 ))}
               </div>

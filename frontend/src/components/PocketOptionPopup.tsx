@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useI18n } from '@/lib/i18n';
+import { POCKET_OPTION_URL } from '@/lib/partners';
 
 const STORAGE_KEY = 'po_popup_closed_at';
 const DELAY_MS = 8000;          // show after 8s
@@ -88,7 +89,7 @@ export function PocketOptionPopup() {
 
         {/* CTA */}
         <a
-          href="https://u3.shortink.io/register?utm_campaign=41345&utm_source=affiliate&utm_medium=sr&a=nauJIysReFF6Mk&ac=promo-code-60&code=PMQ023"
+          href={POCKET_OPTION_URL}
           target="_blank"
           rel="noopener noreferrer"
           onClick={close}
