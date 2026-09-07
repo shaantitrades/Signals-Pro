@@ -85,9 +85,9 @@
 
 Si Supabase pose trop de problèmes, utiliser la configuration Docker locale:
 
-1. **Modifier `docker-compose.yml` pour utiliser PostgreSQL local:**
+1. **Modifier `docker-compose.dev.yml` pour utiliser PostgreSQL local:**
    ```bash
-   docker-compose up -d postgres redis
+   docker-compose -f docker-compose.dev.yml up -d postgres redis
    ```
 
 2. **Mettre à jour DATABASE_URL:**
@@ -323,8 +323,8 @@ psql [NEW_DATABASE_URL] < backup.sql
 
 ### Option 2: Migration vers PostgreSQL auto-hébergé
 ```bash
-# 1. Utiliser docker-compose.yml (PostGIS/TimescaleDB)
-docker-compose up -d postgres
+# 1. Utiliser docker-compose.dev.yml (PostGIS/TimescaleDB)
+docker-compose -f docker-compose.dev.yml up -d postgres
 
 # 2. Mettre à jour DATABASE_URL
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/signalspro"
