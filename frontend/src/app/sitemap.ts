@@ -1,56 +1,61 @@
 import { MetadataRoute } from 'next';
+import { LOCALES, absoluteUrl, localeAlternates, withLocale } from '@/lib/locales';
+import { seoClusterLanguageMap, seoClusterPaths, type SeoClusterKey } from '@/lib/seo-clusters';
 
-const BASE_URL = 'https://marketsignals24.com';
+/** Pages that exist in every language (their URLs carry the locale prefix). */
+const LOCALIZED_PAGES = [
+  { path: '/', priority: 1.0, changeFrequency: 'weekly' as const },
+  { path: '/tarifs', priority: 0.9, changeFrequency: 'weekly' as const },
+  { path: '/register', priority: 0.8, changeFrequency: 'monthly' as const },
+  { path: '/login', priority: 0.7, changeFrequency: 'monthly' as const },
+];
+
+/** Single-language SEO landing pages, grouped per hreflang cluster. */
+const SEO_CLUSTERS: { key: SeoClusterKey; priority: number }[] = [
+  { key: 'forex', priority: 0.95 },
+  { key: 'crypto', priority: 0.9 },
+  { key: 'turbo', priority: 0.9 },
+  { key: 'ai', priority: 0.85 },
+];
+
+/** English-only legal pages. */
+const LEGAL_PAGES = [
+  '/privacy-policy',
+  '/terms-conditions',
+  '/trading-risks',
+  '/legal-notice',
+  '/cookie-policy',
+];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();
 
-  const staticPages = [
-    { url: BASE_URL, priority: 1.0, changeFrequency: 'weekly' as const },
-    { url: `${BASE_URL}/tarifs`, priority: 0.9, changeFrequency: 'weekly' as const },
-    { url: `${BASE_URL}/login`, priority: 0.7, changeFrequency: 'monthly' as const },
-    { url: `${BASE_URL}/register`, priority: 0.8, changeFrequency: 'monthly' as const },
-    { url: `${BASE_URL}/privacy-policy`, priority: 0.3, changeFrequency: 'yearly' as const },
-    { url: `${BASE_URL}/terms-conditions`, priority: 0.3, changeFrequency: 'yearly' as const },
-    { url: `${BASE_URL}/trading-risks`, priority: 0.3, changeFrequency: 'yearly' as const },
-    { url: `${BASE_URL}/legal-notice`, priority: 0.3, changeFrequency: 'yearly' as const },
-    { url: `${BASE_URL}/cookie-policy`, priority: 0.3, changeFrequency: 'yearly' as const },
-  ];
+  const localizedEntries: MetadataRoute.Sitemap = LOCALIZED_PAGES.flatMap((page) =>
+    LOCALES.map((locale) => ({
+      url: absoluteUrl(withLocale(page.path, locale)),
+      lastModified: now,
+      changeFrequency: page.changeFrequency,
+      priority: page.priority,
+      alternates: { languages: localeAlternates(page.path) },
+    })),
+  );
 
-  // EN SEO landing pages
-  const enSeoPages = [
-    { url: `${BASE_URL}/forex-signals`, priority: 0.95, changeFrequency: 'weekly' as const },
-    { url: `${BASE_URL}/crypto-signals`, priority: 0.95, changeFrequency: 'weekly' as const },
-    { url: `${BASE_URL}/binary-options-signals`, priority: 0.95, changeFrequency: 'weekly' as const },
-    { url: `${BASE_URL}/ai-trading-signals`, priority: 0.9, changeFrequency: 'weekly' as const },
-  ];
+  const seoEntries: MetadataRoute.Sitemap = SEO_CLUSTERS.flatMap((cluster) =>
+    seoClusterPaths(cluster.key).map((path) => ({
+      url: absoluteUrl(path),
+      lastModified: now,
+      changeFrequency: 'weekly' as const,
+      priority: cluster.priority,
+      alternates: { languages: seoClusterLanguageMap(cluster.key) },
+    })),
+  );
 
-  // FR SEO landing pages
-  const frSeoPages = [
-    { url: `${BASE_URL}/fr/signaux-forex`, priority: 0.95, changeFrequency: 'weekly' as const },
-    { url: `${BASE_URL}/fr/signaux-options-binaires`, priority: 0.95, changeFrequency: 'weekly' as const },
-    { url: `${BASE_URL}/fr/signaux-crypto`, priority: 0.9, changeFrequency: 'weekly' as const },
-    { url: `${BASE_URL}/fr/signaux-ia`, priority: 0.9, changeFrequency: 'weekly' as const },
-  ];
-
-  // ES SEO landing pages
-  const esSeoPages = [
-    { url: `${BASE_URL}/es/senales-forex`, priority: 0.9, changeFrequency: 'weekly' as const },
-    { url: `${BASE_URL}/es/senales-opciones-binarias`, priority: 0.9, changeFrequency: 'weekly' as const },
-  ];
-
-  // DE SEO landing pages
-  const deSeoPages = [
-    { url: `${BASE_URL}/de/forex-signale`, priority: 0.9, changeFrequency: 'weekly' as const },
-    { url: `${BASE_URL}/de/binaere-optionen-signale`, priority: 0.9, changeFrequency: 'weekly' as const },
-  ];
-
-  const allPages = [...staticPages, ...enSeoPages, ...frSeoPages, ...esSeoPages, ...deSeoPages];
-
-  return allPages.map((page) => ({
-    url: page.url,
+  const legalEntries: MetadataRoute.Sitemap = LEGAL_PAGES.map((path) => ({
+    url: absoluteUrl(path),
     lastModified: now,
-    changeFrequency: page.changeFrequency,
-    priority: page.priority,
+    changeFrequency: 'yearly' as const,
+    priority: 0.3,
   }));
+
+  return [...localizedEntries, ...seoEntries, ...legalEntries];
 }

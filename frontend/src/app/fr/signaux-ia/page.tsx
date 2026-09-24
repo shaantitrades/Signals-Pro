@@ -1,17 +1,16 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { seoClusterLanguageMap } from '@/lib/seo-clusters';
 
 export const metadata: Metadata = {
   title: 'Signaux Trading IA — Comment Notre Technologie Fonctionne | MarketSignals24',
   description:
-    'Découvrez comment MarketSignals24 utilise l\'intelligence artificielle et le machine learning pour générer des signaux de trading en temps réel pour le forex, les cryptos et les options binaires.',
+    'Découvrez comment MarketSignals24 utilise l\'intelligence artificielle et le machine learning pour générer des signaux de trading en temps réel pour le forex, les cryptos et le trading turbo.',
   keywords:
     'MarketSignals24, signaux trading IA, signaux IA gratuits, signaux trading automatisés gratuits, trading automatique gratuit, signaux trading gratuits, intelligence artificielle signaux gratuits, signaux trading automatisés, machine learning trading, intelligence artificielle trading, signaux algorithmiques, IA signaux forex, IA signaux crypto, IA signaux OTC',
   alternates: {
     canonical: 'https://marketsignals24.com/fr/signaux-ia',
-    languages: {
-      'en': 'https://marketsignals24.com/ai-trading-signals',
-    },
+    languages: seoClusterLanguageMap('ai'),
   },
   openGraph: {
     title: 'Signaux Trading IA — Notre Technologie | MarketSignals24',
@@ -168,8 +167,8 @@ export default function SignauxIaPage() {
                 <h3 className="font-semibold group-hover:text-yellow-400 transition-colors">Signaux Crypto →</h3>
                 <p className="text-gray-400 text-sm mt-1">BTC, ETH et 20+ altcoins</p>
               </Link>
-              <Link href="/fr/signaux-options-binaires" className="block bg-gray-900 border border-white/10 rounded-xl p-5 hover:border-yellow-400/50 transition-colors group">
-                <h3 className="font-semibold group-hover:text-yellow-400 transition-colors">Options Binaires →</h3>
+              <Link href="/fr/signaux-turbo" className="block bg-gray-900 border border-white/10 rounded-xl p-5 hover:border-yellow-400/50 transition-colors group">
+                <h3 className="font-semibold group-hover:text-yellow-400 transition-colors">Trading Turbo →</h3>
                 <p className="text-gray-400 text-sm mt-1">Signaux OTC 1–5 min</p>
               </Link>
             </div>

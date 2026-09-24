@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { seoClusterLanguageMap } from '@/lib/seo-clusters';
 
 export const metadata: Metadata = {
   title: 'Señales Forex en Tiempo Real — IA Profesional | MarketSignals24',
@@ -9,11 +10,7 @@ export const metadata: Metadata = {
     'MarketSignals24, señales forex, señales forex gratis, señales trading gratis, señales forex gratuitas, mejores señales forex gratis, señales forex en vivo gratis, señales trading forex, alertas forex, señales forex en vivo, mejores señales forex, señales EUR/USD, IA trading forex, señales forex precisas, señales forex tiempo real, proveedor señales forex',
   alternates: {
     canonical: 'https://marketsignals24.com/es/senales-forex',
-    languages: {
-      'en': 'https://marketsignals24.com/forex-signals',
-      'fr-FR': 'https://marketsignals24.com/fr/signaux-forex',
-      'de-DE': 'https://marketsignals24.com/de/forex-signale',
-    },
+    languages: seoClusterLanguageMap('forex'),
   },
   openGraph: {
     title: 'Señales Forex IA — Alertas en Tiempo Real | MarketSignals24',
@@ -195,12 +192,7 @@ export default function SenalesForexPage() {
               <Link href="/crypto-signals" className="block bg-gray-900 border border-white/10 rounded-xl p-5 hover:border-yellow-400/50 transition-colors group">
                 <h3 className="font-semibold group-hover:text-yellow-400 transition-colors">Señales Cripto →</h3>
                 <p className="text-gray-400 text-sm mt-1">BTC, ETH y 20+ altcoins</p>
-              </Link>
-              <Link href="/es/senales-opciones-binarias" className="block bg-gray-900 border border-white/10 rounded-xl p-5 hover:border-yellow-400/50 transition-colors group">
-                <h3 className="font-semibold group-hover:text-yellow-400 transition-colors">Opciones Binarias →</h3>
-                <p className="text-gray-400 text-sm mt-1">Señales OTC 1–5 min</p>
-              </Link>
-            </div>
+              </Link>            </div>
           </section>
 
           <section className="text-center bg-gradient-to-br from-yellow-400/10 to-yellow-400/5 border border-yellow-400/20 rounded-2xl p-10">

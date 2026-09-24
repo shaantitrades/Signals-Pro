@@ -7,8 +7,14 @@ import { cn } from '@/lib/utils';
 import { useAuthStore, useWSStore } from '@/lib/store';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useI18n, languages as i18nLanguages } from '@/lib/i18n';
+import {
+  LANG_TO_LOCALE,
+  isLocalizedPath,
+  localizedHref,
+  splitLocalePath,
+  type LangCode,
+} from '@/lib/locales';
 import { authApi, api } from '@/lib/api';
-import { POCKET_OPTION_URL } from '@/lib/partners';
 
 export default function DashboardLayout({
   children,
@@ -20,6 +26,15 @@ export default function DashboardLayout({
   const { user, isAuthenticated, logout, initAuth } = useAuthStore();
   const { isConnected, latency, connect } = useWSStore();
   const { lang, setLang, t } = useI18n();
+  // Selecting a language updates the URL prefix: the URL — not localStorage —
+  // is what decides the language of the page that is rendered.
+  const switchLanguage = (code: LangCode) => {
+    setLang(code);
+    const { path } = splitLocalePath(pathname || '/');
+    if (!isLocalizedPath(path)) return;
+    const target = localizedHref(pathname || '/', LANG_TO_LOCALE[code]);
+    if (target !== pathname) router.push(target);
+  };
 
   // Modern SVG nav icons (Heroicons outline style)
   const navIcons: Record<string, React.ReactNode> = {
@@ -410,7 +425,7 @@ export default function DashboardLayout({
                   {i18nLanguages.map((l) => (
                     <button
                       key={l.code}
-                      onClick={() => { setLang(l.code); setLangOpen(false); }}
+                      onClick={() => { switchLanguage(l.code); setLangOpen(false); }}
                       className={cn(
                         'w-full flex items-center gap-3 px-4 py-2 text-sm hover:bg-secondary/50 transition-colors',
                         lang === l.code ? 'text-primary font-semibold bg-primary/5' : 'text-foreground'
@@ -811,26 +826,14 @@ function DashboardPartners({ t }: { t: (k: string) => string }) {
     } catch { setCustomPartners([]); }
   }, []);
 
-  const staticPartners = [
-    {
-      id: 'pocketoption',
-      href: POCKET_OPTION_URL,
-      initial: 'PO',
-      color: 'bg-gradient-to-br from-[#00b27a] to-[#00c98a]',
-      name: 'Pocket Option',
-      subtitle: t('partners.pocketoption.subtitle'),
-      desc: t('partners.pocketoption.desc'),
-      score: '4.9',
-      tags: [t('partners.tag.bonus100'), t('partners.tag.promopmq'), t('partners.tag.binary')],
-      tagColor: 'bg-[#00b27a]/10 text-[#00e699] border-[#00b27a]/20',
-    },
-  ];
-
   const extArrow = (
     <svg className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors ml-auto shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
     </svg>
   );
+
+  // Nothing to display until a partner card is added from the blog admin.
+  if (customPartners.length === 0) return null;
 
   return (
     <section className="bg-secondary border-t border-border">
@@ -839,37 +842,7 @@ function DashboardPartners({ t }: { t: (k: string) => string }) {
           <span className="inline-block text-xs font-semibold tracking-widest uppercase text-muted-foreground mb-2">{t('partners.label')}</span>
           <h2 className="text-lg sm:text-xl font-bold text-foreground">{t('partners.title')}</h2>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {staticPartners.map((p) => (
-            <a
-              key={p.id}
-              href={p.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex flex-col gap-3 bg-card border border-border rounded-2xl p-5 hover:border-primary/40 hover:shadow-lg transition-all shadow-sm"
-            >
-              <div className="flex items-center gap-3">
-                <div className={`w-9 h-9 rounded-xl ${p.color} flex items-center justify-center text-white font-bold text-xs shrink-0`}>
-                  {p.initial}
-                </div>
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    <p className="font-semibold text-card-foreground text-sm group-hover:text-primary transition-colors truncate">{p.name}</p>
-                    {p.score && <span className="text-[10px] text-yellow-500 font-bold shrink-0">★ {p.score}</span>}
-                  </div>
-                  <p className="text-muted-foreground text-[11px] truncate">{p.subtitle}</p>
-                </div>
-                {extArrow}
-              </div>
-              <p className="text-muted-foreground text-[11px] leading-relaxed line-clamp-3">{p.desc}</p>
-              <div className="flex flex-wrap gap-1 mt-auto">
-                {p.tags.map((tag) => (
-                  <span key={tag} className={`text-[10px] px-2 py-0.5 rounded-full border ${p.tagColor}`}>{tag}</span>
-                ))}
-              </div>
-            </a>
-          ))}
-          {customPartners.map((p) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">          {customPartners.map((p) => (
             <a
               key={p.id}
               href={p.url}

@@ -21,6 +21,13 @@ const nextConfig = {
         permanent: true,
       },
       { source: '/dashboard/bot', destination: '/dashboard/tradingbot', permanent: true },
+      // Legacy URL of the turbo signals page (renamed to drop the binary
+      // options wording required by Google policies).
+      { source: '/binary-options-signals', destination: '/turbo-signals', permanent: true },
+      { source: '/fr/signaux-options-binaires', destination: '/fr/signaux-turbo', permanent: true },
+      // Old links that pointed to pages which never existed.
+      { source: '/es/senales-opciones-binarias', destination: '/es/senales-forex', permanent: true },
+      { source: '/de/binaere-optionen-signale', destination: '/de/forex-signale', permanent: true },
       { source: '/dashboard/signals', destination: '/dashboard/livesignals', permanent: true },
     ];
   },

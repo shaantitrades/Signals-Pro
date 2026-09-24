@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { seoClusterLanguageMap } from '@/lib/seo-clusters';
 
 export const metadata: Metadata = {
   title: 'Forex Trading Signals — Live AI Signals | MarketSignals24',
@@ -9,11 +10,7 @@ export const metadata: Metadata = {
     'MarketSignals24, forex trading signals, free forex signals, free forex signals live, best free forex signals, forex signals free trial, live forex signals, AI forex signals, fx signals, forex alerts, EUR/USD signals, GBP/USD signals, best forex signals, accurate forex signals, forex signal provider, daily forex signals, real-time forex signals, forex trading alerts',
   alternates: {
     canonical: 'https://marketsignals24.com/forex-signals',
-    languages: {
-      'fr-FR': 'https://marketsignals24.com/fr/signaux-forex',
-      'es-ES': 'https://marketsignals24.com/es/senales-forex',
-      'de-DE': 'https://marketsignals24.com/de/forex-signale',
-    },
+    languages: seoClusterLanguageMap('forex'),
   },
   openGraph: {
     title: 'Forex Trading Signals — Live AI Signals | MarketSignals24',
@@ -252,8 +249,8 @@ export default function ForexSignalsPage() {
                 <h3 className="font-semibold group-hover:text-yellow-400 transition-colors">Crypto Signals →</h3>
                 <p className="text-gray-400 text-sm mt-1">BTC, ETH, and 20+ altcoins</p>
               </Link>
-              <Link href="/binary-options-signals" className="block bg-gray-900 border border-white/10 rounded-xl p-5 hover:border-yellow-400/50 transition-colors group">
-                <h3 className="font-semibold group-hover:text-yellow-400 transition-colors">Binary Options Signals →</h3>
+              <Link href="/turbo-signals" className="block bg-gray-900 border border-white/10 rounded-xl p-5 hover:border-yellow-400/50 transition-colors group">
+                <h3 className="font-semibold group-hover:text-yellow-400 transition-colors">Turbo Trading Signals →</h3>
                 <p className="text-gray-400 text-sm mt-1">1–5 min OTC signals, 24/7</p>
               </Link>
               <Link href="/ai-trading-signals" className="block bg-gray-900 border border-white/10 rounded-xl p-5 hover:border-yellow-400/50 transition-colors group">

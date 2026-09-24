@@ -1,7 +1,24 @@
 import type { Metadata, Viewport } from 'next';
+import { headers } from 'next/headers';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import { Providers } from '@/components/providers';
+import {
+  DEFAULT_LOCALE,
+  LOCALES,
+  LOCALE_TO_LANG,
+  OG_LOCALE,
+  SITE_URL,
+  absoluteUrl,
+  isLocale,
+  isLocalizedPath,
+  isRtl,
+  localeAlternates,
+  splitLocalePath,
+  withLocale,
+  type Locale,
+} from '@/lib/locales';
+import { localizedPageMeta } from '@/lib/meta';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -16,56 +33,88 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
-export const metadata: Metadata = {
-  title: 'Market Signals24 — Live Trading Signals | Forex, Crypto & Binary Options',
-  description: 'Get real-time AI-powered trading signals for Forex, Crypto, Indices & Binary Options. Free live trading signals validated by AI. Start trading smarter today.',
-  keywords: 'trading signals, live trading signals, forex signals, crypto signals, binary options signals, free trading signals, AI trading signals, OTC signals, trading bot, signaux trading, meilleurs signaux trading, señales trading, live signals forex crypto',
-  authors: [{ name: 'MarketSignals24', url: 'https://marketsignals24.com' }],
-  creator: 'MarketSignals24',
-  publisher: 'MarketSignals24',
-  icons: {
-    icon: [
-      { url: '/favicon.ico', sizes: '48x48' },
-      { url: '/favicon.svg', type: 'image/svg+xml' },
-    ],
-    apple: '/apple-touch-icon.png',
-  },
-  manifest: '/manifest.json',
-  verification: {
-    google: 'eb94bneSZzVTVa4QRfdu_IplBWIW-1n-P2ge5k604Pc',
-  },
-  openGraph: {
-    type: 'website',
-    locale: 'fr_FR',
-    alternateLocale: ['en_US', 'es_ES', 'de_DE', 'pt_BR', 'it_IT'],
-    url: 'https://marketsignals24.com',
-    siteName: 'MarketSignals24',
-    title: 'Market Signals24 — Live Trading Signals | Forex, Crypto & Binary Options',
-    description: 'Real-time AI trading signals for Forex, Crypto, Indices & Binary Options. Free live signals with 85%+ confidence. Join thousands of traders.',
-    images: [
-      {
-        url: 'https://marketsignals24.com/og-image.png',
-        width: 1200,
-        height: 630,
-        alt: 'MarketSignals24 — Live Trading Signals Platform',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Market Signals24 — Live Trading Signals',
-    description: 'AI-powered live trading signals for Forex, Crypto & Binary Options. Free signals with high accuracy.',
-    images: ['https://marketsignals24.com/og-image.png'],
-  },
-  alternates: {
-    canonical: 'https://marketsignals24.com',
-    languages: {
-      'fr': 'https://marketsignals24.com',
-      'en': 'https://marketsignals24.com',
-      'es': 'https://marketsignals24.com',
+// ---- Default (English) copy, used when a page has no localized version ----
+const DEFAULT_TITLE = 'Market Signals24 — Live Trading Signals | Forex, Crypto & Turbo Trading';
+const DEFAULT_DESCRIPTION =
+  'Get real-time AI-powered trading signals for Forex, Crypto, Indices & Turbo Trading. Free live trading signals validated by AI. Start trading smarter today.';
+const DEFAULT_OG_DESCRIPTION =
+  'Real-time AI trading signals for Forex, Crypto, Indices & Turbo Trading. Free live signals with 85%+ confidence. Join thousands of traders.';
+const DEFAULT_KEYWORDS =
+  'trading signals, live trading signals, forex signals, crypto signals, free trading signals, AI trading signals, OTC signals, trading bot, signaux trading, meilleurs signaux trading, señales trading, signaux forex, señales forex, forex signale, live signals forex crypto';
+
+/**
+ * Locale-aware metadata.
+ *
+ * The locale and the current path are provided by `middleware.ts` through the
+ * `x-locale` / `x-pathname` request headers, so every page (including the ones
+ * implemented as client components) is served with the correct `lang`,
+ * self-referencing `canonical` and complete hreflang cluster.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const headerList = await headers();
+  const pathname = headerList.get('x-pathname') || '/';
+  const headerLocale = headerList.get('x-locale');
+
+  const { locale: pathLocale, path } = splitLocalePath(pathname);
+  const locale: Locale = pathLocale ?? (isLocale(headerLocale) ? headerLocale : DEFAULT_LOCALE);
+
+  const localized = isLocalizedPath(path);
+  const canonical = localized ? absoluteUrl(withLocale(path, locale)) : absoluteUrl(pathname);
+  const pageMeta = localized ? localizedPageMeta(path, locale) : null;
+
+  const title = pageMeta?.title ?? DEFAULT_TITLE;
+  const description = pageMeta?.description ?? DEFAULT_DESCRIPTION;
+
+  return {
+    metadataBase: new URL(SITE_URL),
+    title,
+    description,
+    keywords: DEFAULT_KEYWORDS,
+    authors: [{ name: 'MarketSignals24', url: SITE_URL }],
+    creator: 'MarketSignals24',
+    publisher: 'MarketSignals24',
+    icons: {
+      icon: [
+        { url: '/favicon.ico', sizes: '48x48' },
+        { url: '/favicon.svg', type: 'image/svg+xml' },
+      ],
+      apple: '/apple-touch-icon.png',
     },
-  },
-};
+    manifest: '/manifest.json',
+    verification: {
+      google: 'eb94bneSZzVTVa4QRfdu_IplBWIW-1n-P2ge5k604Pc',
+    },
+    openGraph: {
+      type: 'website',
+      locale: OG_LOCALE[locale],
+      alternateLocale: LOCALES.filter((item) => item !== locale).map((item) => OG_LOCALE[item]),
+      url: canonical,
+      siteName: 'MarketSignals24',
+      title,
+      description: pageMeta?.description ?? DEFAULT_OG_DESCRIPTION,
+      images: [
+        {
+          url: `${SITE_URL}/og-image.png`,
+          width: 1200,
+          height: 630,
+          alt: 'MarketSignals24 — Live Trading Signals Platform',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [`${SITE_URL}/og-image.png`],
+    },
+    alternates: {
+      canonical,
+      // Only real multi-locale pages get a hreflang cluster: pages that exist
+      // in a single language keep a plain self-referencing canonical.
+      ...(localized ? { languages: localeAlternates(path) } : {}),
+    },
+  };
+}
 
 // JSON-LD structured data — helps Google understand and rank the site for "trading signals"
 const jsonLd = {
@@ -76,7 +125,7 @@ const jsonLd = {
       '@id': 'https://marketsignals24.com/#website',
       url: 'https://marketsignals24.com',
       name: 'MarketSignals24',
-      description: 'Live AI-powered trading signals for Forex, Crypto, Indices & Binary Options',
+      description: 'Live AI-powered trading signals for Forex, Crypto, Indices & Turbo Trading',
       inLanguage: ['fr', 'en', 'es', 'de', 'pt', 'it'],
       potentialAction: {
         '@type': 'SearchAction',
@@ -100,7 +149,7 @@ const jsonLd = {
       name: 'MarketSignals24 — Live Trading Signals',
       applicationCategory: 'FinanceApplication',
       operatingSystem: 'Web, iOS, Android',
-      description: 'Real-time AI trading signals for Forex, Crypto, Indices and Binary Options. Get live signals with 85%+ confidence score.',
+      description: 'Real-time AI trading signals for Forex, Crypto, Indices and Turbo Trading. Get live signals with 85%+ confidence score.',
       offers: {
         '@type': 'Offer',
         price: '0',
@@ -193,13 +242,17 @@ const criticalCSS = `
   .animate-pulse { animation: pulse 2s cubic-bezier(.4,0,.6,1) infinite; }
 `;
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const headerList = await headers();
+  const headerLocale = headerList.get('x-locale');
+  const locale: Locale = isLocale(headerLocale) ? headerLocale : DEFAULT_LOCALE;
+
   return (
-    <html lang="fr" suppressHydrationWarning>
+    <html lang={locale} dir={isRtl(locale) ? 'rtl' : 'ltr'} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
         <script dangerouslySetInnerHTML={{ __html: swRegisterScript }} />
@@ -216,7 +269,7 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}>
-        <Providers>
+        <Providers initialLang={LOCALE_TO_LANG[locale]}>
           {children}
         </Providers>
       </body>

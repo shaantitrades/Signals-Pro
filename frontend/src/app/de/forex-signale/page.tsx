@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { seoClusterLanguageMap } from '@/lib/seo-clusters';
 
 export const metadata: Metadata = {
   title: 'Forex Signale in Echtzeit — KI-Powered Alerts | MarketSignals24',
@@ -9,11 +10,7 @@ export const metadata: Metadata = {
     'MarketSignals24, Forex Signale, kostenlose Forex Signale, kostenlose Trading Signale, Forex Signale kostenlos, gratis Forex Signale, beste kostenlose Forex Signale, Trading Signale Forex, Forex Alerts, Live Forex Signale, beste Forex Signale, EUR/USD Signale, KI Trading Forex, genaue Forex Signale, Echtzeit Forex Signale, Forex Signal Anbieter',
   alternates: {
     canonical: 'https://marketsignals24.com/de/forex-signale',
-    languages: {
-      'en': 'https://marketsignals24.com/forex-signals',
-      'fr-FR': 'https://marketsignals24.com/fr/signaux-forex',
-      'es-ES': 'https://marketsignals24.com/es/senales-forex',
-    },
+    languages: seoClusterLanguageMap('forex'),
   },
   openGraph: {
     title: 'Forex Signale KI — Echtzeit Alerts | MarketSignals24',
@@ -195,12 +192,7 @@ export default function ForexSignalePage() {
               <Link href="/crypto-signals" className="block bg-gray-900 border border-white/10 rounded-xl p-5 hover:border-yellow-400/50 transition-colors group">
                 <h3 className="font-semibold group-hover:text-yellow-400 transition-colors">Krypto Signale →</h3>
                 <p className="text-gray-400 text-sm mt-1">BTC, ETH und 20+ Altcoins</p>
-              </Link>
-              <Link href="/de/binaere-optionen-signale" className="block bg-gray-900 border border-white/10 rounded-xl p-5 hover:border-yellow-400/50 transition-colors group">
-                <h3 className="font-semibold group-hover:text-yellow-400 transition-colors">Binäre Optionen →</h3>
-                <p className="text-gray-400 text-sm mt-1">OTC Signale 1–5 Min</p>
-              </Link>
-            </div>
+              </Link>            </div>
           </section>
 
           <section className="text-center bg-gradient-to-br from-yellow-400/10 to-yellow-400/5 border border-yellow-400/20 rounded-2xl p-10">

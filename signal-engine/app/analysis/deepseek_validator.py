@@ -60,7 +60,7 @@ def _build_prompt(result: AnalysisResult) -> str:
     except Exception:
         pass
 
-    return f"""You are an expert trading signal validator for binary options and forex trading.
+    return f"""You are an expert trading signal validator for forex and multi-asset trading.
 Analyze this technical signal and decide CONFIRM or REJECT.
 
 SIGNAL:

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { seoClusterLanguageMap } from '@/lib/seo-clusters';
 
 export const metadata: Metadata = {
   title: 'Crypto Trading Signals — Bitcoin, Ethereum, Altcoin Alerts | MarketSignals24',
@@ -9,6 +10,7 @@ export const metadata: Metadata = {
     'MarketSignals24, crypto trading signals, free crypto signals, free bitcoin signals, free ethereum signals, best free crypto signals, crypto signals free, bitcoin signals, ethereum signals, altcoin signals, BTC signals, ETH signals, cryptocurrency alerts, crypto buy sell signals, AI crypto signals, real-time crypto signals, crypto trading alerts, daily crypto signals',
   alternates: {
     canonical: 'https://marketsignals24.com/crypto-signals',
+    languages: seoClusterLanguageMap('crypto'),
   },
   openGraph: {
     title: 'Crypto Trading Signals — Bitcoin & Altcoin Alerts | MarketSignals24',
@@ -61,7 +63,7 @@ const faqSchema = {
       name: 'Are crypto signals included in all plans?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes. Crypto signals are included in all subscription tiers starting from the Pass 24h at €6. The Monthly plan at €85 gives you unlimited access to all signal types — forex, crypto, binary options, and OTC — for the entire month.',
+        text: 'Yes. Crypto signals are included in all subscription tiers starting from the Pass 24h at €6. The Monthly plan at €85 gives you unlimited access to all signal types — forex, crypto, turbo trading and OTC — for the entire month.',
       },
     },
   ],
@@ -200,8 +202,8 @@ export default function CryptoSignalsPage() {
                 <h3 className="font-semibold group-hover:text-yellow-400 transition-colors">Forex Signals →</h3>
                 <p className="text-gray-400 text-sm mt-1">30+ FX pairs, majors &amp; crosses</p>
               </Link>
-              <Link href="/binary-options-signals" className="block bg-gray-900 border border-white/10 rounded-xl p-5 hover:border-yellow-400/50 transition-colors group">
-                <h3 className="font-semibold group-hover:text-yellow-400 transition-colors">Binary Options →</h3>
+              <Link href="/turbo-signals" className="block bg-gray-900 border border-white/10 rounded-xl p-5 hover:border-yellow-400/50 transition-colors group">
+                <h3 className="font-semibold group-hover:text-yellow-400 transition-colors">Turbo Trading →</h3>
                 <p className="text-gray-400 text-sm mt-1">1–5 min OTC signals, no market hours</p>
               </Link>
               <Link href="/ai-trading-signals" className="block bg-gray-900 border border-white/10 rounded-xl p-5 hover:border-yellow-400/50 transition-colors group">

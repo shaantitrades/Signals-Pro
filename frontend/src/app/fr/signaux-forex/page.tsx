@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { seoClusterLanguageMap } from '@/lib/seo-clusters';
 
 export const metadata: Metadata = {
   title: 'Signaux Forex en Temps Réel — IA Professionnelle | MarketSignals24',
@@ -9,11 +10,7 @@ export const metadata: Metadata = {
     'MarketSignals24, signaux forex, signaux forex gratuits, meilleurs signaux forex gratuits, signal forex gratuit, signaux forex gratuit en direct, alertes forex gratuites, signaux trading forex, alertes forex, signaux forex en direct, meilleurs signaux forex, signaux EUR/USD, IA trading forex, signaux forex fiables, signaux forex temps réel, fournisseur signaux forex',
   alternates: {
     canonical: 'https://marketsignals24.com/fr/signaux-forex',
-    languages: {
-      'en': 'https://marketsignals24.com/forex-signals',
-      'es-ES': 'https://marketsignals24.com/es/senales-forex',
-      'de-DE': 'https://marketsignals24.com/de/forex-signale',
-    },
+    languages: seoClusterLanguageMap('forex'),
   },
   openGraph: {
     title: 'Signaux Forex IA — Alertes en Temps Réel | MarketSignals24',
@@ -217,8 +214,8 @@ export default function SignauxForexPage() {
           <section>
             <h2 className="text-2xl font-bold mb-4">Autres Types de Signaux</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <Link href="/fr/signaux-options-binaires" className="block bg-gray-900 border border-white/10 rounded-xl p-5 hover:border-yellow-400/50 transition-colors group">
-                <h3 className="font-semibold group-hover:text-yellow-400 transition-colors">Options Binaires →</h3>
+              <Link href="/fr/signaux-turbo" className="block bg-gray-900 border border-white/10 rounded-xl p-5 hover:border-yellow-400/50 transition-colors group">
+                <h3 className="font-semibold group-hover:text-yellow-400 transition-colors">Trading Turbo →</h3>
                 <p className="text-gray-400 text-sm mt-1">Signaux OTC 1–5 min, 24h/24</p>
               </Link>
               <Link href="/fr/signaux-crypto" className="block bg-gray-900 border border-white/10 rounded-xl p-5 hover:border-yellow-400/50 transition-colors group">

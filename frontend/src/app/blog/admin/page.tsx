@@ -513,7 +513,7 @@ export default function BlogAdminPage() {
                 required
                 value={partnerForm.name}
                 onChange={(e) => setPartnerForm((f) => ({ ...f, name: e.target.value }))}
-                placeholder="e.g. Pocket Option"
+                placeholder="e.g. My Broker"
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500/70 transition-colors"
               />
             </div>
@@ -547,7 +547,7 @@ export default function BlogAdminPage() {
               required
               value={partnerForm.subtitle}
               onChange={(e) => setPartnerForm((f) => ({ ...f, subtitle: e.target.value }))}
-              placeholder="e.g. Binary Options & Forex Broker"
+              placeholder="e.g. Forex & Crypto Broker"
               className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500/70 transition-colors"
             />
           </div>

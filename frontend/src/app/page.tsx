@@ -5,7 +5,14 @@ import Image from 'next/image';
 import { useState, useEffect, useRef } from 'react';
 import { useI18n, languages as i18nLanguages } from '@/lib/i18n';
 import AdSidebar from '@/components/AdSidebar';
-import { POCKET_OPTION_URL } from '@/lib/partners';
+import { usePathname, useRouter } from 'next/navigation';
+import {
+  LANG_TO_LOCALE,
+  isLocalizedPath,
+  localizedHref,
+  splitLocalePath,
+  type LangCode,
+} from '@/lib/locales';
 
 interface CustomPartner {
   id: string;
@@ -27,6 +34,18 @@ export default function Home() {
   const [langOpen, setLangOpen] = useState(false);
   const langRef = useRef<HTMLDivElement>(null);
   const { lang, setLang, t } = useI18n();
+  const router = useRouter();
+  const pathname = usePathname();
+  // Selecting a language updates the URL prefix: the URL — not localStorage —
+  // is what decides the language of the page that is rendered.
+  const switchLanguage = (code: LangCode) => {
+    setLang(code);
+    const { path } = splitLocalePath(pathname || '/');
+    if (!isLocalizedPath(path)) return;
+    const target = localizedHref(pathname || '/', LANG_TO_LOCALE[code]);
+    if (target !== pathname) router.push(target);
+  };
+
   const [customPartners, setCustomPartners] = useState<CustomPartner[]>([]);
 
   useEffect(() => {
@@ -112,7 +131,7 @@ export default function Home() {
                   {i18nLanguages.map((l) => (
                     <button
                       key={l.code}
-                      onClick={() => { setLang(l.code); setLangOpen(false); }}
+                      onClick={() => { switchLanguage(l.code); setLangOpen(false); }}
                       className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-secondary/50 transition-colors ${
                         lang === l.code ? 'text-primary font-semibold' : 'text-foreground'
                       }`}
@@ -164,25 +183,6 @@ export default function Home() {
             >
               {t('hero.demo')}
             </Link>
-          </div>
-
-          {/* Broker Strip */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-10 sm:mb-16 px-4">
-            <a
-              href={POCKET_OPTION_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center gap-3 bg-card/80 backdrop-blur-sm border border-[#00b27a]/30 rounded-xl px-4 py-3 hover:border-[#00b27a]/60 hover:shadow-lg hover:shadow-[#00b27a]/10 transition-all w-full sm:w-auto"
-            >
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#00b27a] to-[#00c98a] flex items-center justify-center text-white font-bold text-xs shrink-0">PO</div>
-              <div className="text-left">
-                <p className="font-semibold text-sm text-foreground group-hover:text-[#00e699] transition-colors">Pocket Option</p>
-                <p className="text-xs text-muted-foreground">{t('partners.pocketoption.bonus')}</p>
-              </div>
-              <svg className="w-4 h-4 text-muted-foreground/30 group-hover:text-[#00e699] transition-colors ml-2 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-            </a>
           </div>
 
           {/* Stats Bar */}
@@ -255,80 +255,55 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Partners */}
-      <section className="bg-secondary border-t border-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-          <div className="text-center mb-10">
-            <span className="inline-block text-xs font-semibold tracking-widest uppercase text-muted-foreground mb-2">{t('partners.label')}</span>
-            <h2 className="text-xl sm:text-2xl font-bold text-foreground">{t('partners.title')}</h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 max-w-4xl mx-auto">
+      {/* Partners (cards added from the blog admin) */}
+      {customPartners.length > 0 && (
+        <section className="bg-secondary border-t border-border">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+            <div className="text-center mb-10">
+              <span className="inline-block text-xs font-semibold tracking-widest uppercase text-muted-foreground mb-2">{t('partners.label')}</span>
+              <h2 className="text-xl sm:text-2xl font-bold text-foreground">{t('partners.title')}</h2>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 max-w-4xl mx-auto">
 
-            {/* Partner — Pocket Option */}
-            <a
-              href={POCKET_OPTION_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex flex-col gap-3 bg-card border border-border rounded-2xl p-6 hover:border-primary/40 hover:shadow-lg transition-all shadow-sm"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#00b27a] to-[#00c98a] flex items-center justify-center text-white font-bold text-sm shrink-0">
-                  PO
-                </div>
-                <div>
-                  <p className="font-semibold text-card-foreground text-sm group-hover:text-primary transition-colors">Pocket Option</p>
-                  <p className="text-muted-foreground text-xs">{t('partners.pocketoption.subtitle')}</p>
-                </div>
-                <svg className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors ml-auto shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                </svg>
-              </div>
-              <p className="text-muted-foreground text-xs leading-relaxed">{t('partners.pocketoption.desc')}</p>
-              <div className="flex flex-wrap gap-1.5 mt-1">
-                {[t('partners.tag.bonus100'), t('partners.tag.promopmq'), t('partners.tag.binary')].map((tag) => (
-                  <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-[#00b27a]/10 text-[#00e699] border border-[#00b27a]/20">{tag}</span>
-                ))}
-              </div>
-            </a>
-
-            {/* Dynamic admin-added partners */}
-            {customPartners.map((partner) => (
-              <a
-                key={partner.id}
-                href={partner.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex flex-col gap-3 bg-card border border-border rounded-2xl p-6 hover:border-primary/40 hover:shadow-lg transition-all shadow-sm"
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm shrink-0 ${partner.color || 'bg-gradient-to-br from-primary to-primary/70'}`}>
-                    {partner.initial || partner.name.charAt(0).toUpperCase()}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <p className="font-semibold text-card-foreground text-sm group-hover:text-primary transition-colors">{partner.name}</p>
-                      {partner.score && <span className="text-[10px] text-yellow-500 font-bold">★ {partner.score}</span>}
+              {/* Dynamic admin-added partners */}
+              {customPartners.map((partner) => (
+                <a
+                  key={partner.id}
+                  href={partner.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex flex-col gap-3 bg-card border border-border rounded-2xl p-6 hover:border-primary/40 hover:shadow-lg transition-all shadow-sm"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold text-sm shrink-0 ${partner.color || 'bg-gradient-to-br from-primary to-primary/70'}`}>
+                      {partner.initial || partner.name.charAt(0).toUpperCase()}
                     </div>
-                    <p className="text-muted-foreground text-xs">{partner.subtitle}</p>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold text-card-foreground text-sm group-hover:text-primary transition-colors">{partner.name}</p>
+                        {partner.score && <span className="text-[10px] text-yellow-500 font-bold">★ {partner.score}</span>}
+                      </div>
+                      <p className="text-muted-foreground text-xs">{partner.subtitle}</p>
+                    </div>
+                    <svg className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors ml-auto shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
                   </div>
-                  <svg className="w-4 h-4 text-muted-foreground/40 group-hover:text-primary transition-colors ml-auto shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                  </svg>
-                </div>
-                <p className="text-muted-foreground text-xs leading-relaxed">{partner.desc}</p>
-                {partner.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 mt-1">
-                    {partner.tags.map((tag) => (
-                      <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">{tag}</span>
-                    ))}
-                  </div>
-                )}
-              </a>
-            ))}
+                  <p className="text-muted-foreground text-xs leading-relaxed">{partner.desc}</p>
+                  {partner.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mt-1">
+                      {partner.tags.map((tag) => (
+                        <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">{tag}</span>
+                      ))}
+                    </div>
+                  )}
+                </a>
+              ))}
 
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Footer */}
       <footer className="bg-gradient-to-r from-[#1a1a2e] via-[#2d1b69] to-[#1a1a2e] text-white">

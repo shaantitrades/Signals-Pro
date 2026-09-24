@@ -1,20 +1,22 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { seoClusterLanguageMap } from '@/lib/seo-clusters';
 
 export const metadata: Metadata = {
-  title: 'Binary Options & OTC Signals — 1–5 Min Alerts | MarketSignals24',
+  title: 'Turbo Trading Signals — 1–5 Min OTC Alerts | MarketSignals24',
   description:
-    'High-accuracy binary options and OTC trading signals for 1, 2 and 5-minute expiries. AI-powered UP/DOWN alerts for forex OTC pairs. Available 24/7.',
+    'High-accuracy turbo trading signals for 1, 2 and 5-minute expiries. AI-powered UP/DOWN alerts on OTC pairs. Available 24/7, week-ends included.',
   keywords:
-    'MarketSignals24, binary options signals, free binary options signals, free OTC signals, binary signals free, OTC signals free, 1 minute binary signals, turbo signals free, binary trading signals, OTC trading signals, high low signals, binary options alerts, turbo signal, Pocket Option signals, Quotex signals, free turbo signals, free binary signals',
+    'MarketSignals24, turbo trading signals, free turbo signals, OTC signals, free OTC signals, 1 minute signals, 5 minute signals, short-term trading signals, high low signals, AI trading signals, OTC trading signals, forex OTC signals, turbo signal, live turbo alerts',
   alternates: {
-    canonical: 'https://marketsignals24.com/binary-options-signals',
+    canonical: 'https://marketsignals24.com/turbo-signals',
+    languages: seoClusterLanguageMap('turbo'),
   },
   openGraph: {
-    title: 'Binary Options & OTC Signals | MarketSignals24',
+    title: 'Turbo Trading Signals & OTC Alerts | MarketSignals24',
     description:
-      '1–5 min binary options and OTC signals. UP/DOWN alerts with accuracy up to 82%. 24/7 coverage.',
-    url: 'https://marketsignals24.com/binary-options-signals',
+      '1–5 min turbo trading signals on OTC pairs. UP/DOWN alerts with accuracy up to 82%. 24/7 coverage.',
+    url: 'https://marketsignals24.com/turbo-signals',
     siteName: 'MarketSignals24',
     type: 'website',
   },
@@ -26,10 +28,10 @@ const faqSchema = {
   mainEntity: [
     {
       '@type': 'Question',
-      name: 'What are binary options signals?',
+      name: 'What are turbo trading signals?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Binary options signals tell you whether to place a CALL (UP) or PUT (DOWN) trade on a specific asset with a specific expiry time. If your prediction is correct at expiry, you receive a fixed payout. MarketSignals24 provides these signals for OTC pairs which trade 24/7, even when standard forex markets are closed.',
+        text: 'Turbo trading signals tell you when to open a short-term trade (up or down) on a specific asset, with an exact expiry — usually 1, 2 or 5 minutes. Every signal specifies the asset, the direction and the expiry duration. MarketSignals24 publishes them for OTC pairs which trade 24/7, even when standard forex markets are closed.',
       },
     },
     {
@@ -37,34 +39,25 @@ const faqSchema = {
       name: 'What is an OTC signal?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'OTC (Over-The-Counter) signals are for synthetic or broker-internal instruments that simulate forex price movements but trade continuously, including weekends. They are available on platforms like Pocket Option, Quotex, and IQ Option. Our AI generates signals specifically tuned for OTC volatility patterns, which differ from live market conditions.',
+        text: 'OTC (Over-The-Counter) signals are for synthetic or broker-internal instruments that simulate forex price movements but trade continuously, including weekends. They are available on most modern trading platforms, whatever broker you use. Our AI generates signals specifically tuned for OTC volatility patterns, which differ from live market conditions.',
       },
     },
     {
       '@type': 'Question',
-      name: 'What expiry times do your binary options signals use?',
+      name: 'What expiry times do your turbo signals use?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Our signals primarily target 1-minute, 2-minute, and 5-minute expiries — the most popular timeframes for binary and OTC traders. Each signal specifies the exact expiry duration and the trend direction to trade.',
+        text: 'Our signals primarily target 1-minute, 2-minute, and 5-minute expiries — the most popular timeframes for short-term and OTC traders. Each signal specifies the exact expiry duration and the trend direction to trade.',
       },
     },
     {
       '@type': 'Question',
-      name: 'Can I use these signals on Pocket Option or Quotex?',
+      name: 'Can I use these signals with my broker platform?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'Yes. Our OTC signals are fully compatible with binary options platforms that offer OTC instruments, including Pocket Option, Quotex, Olymp Trade, and similar brokers. Simply open the corresponding OTC pair on your platform and enter the direction specified by the signal at the published time.',
+        text: 'Yes. Our OTC signals work with any broker that offers OTC instruments. Simply open the corresponding OTC pair on your platform and enter the direction specified by the signal at the published time.',
       },
-    },
-    {
-      '@type': 'Question',
-      name: 'Are binary options legal in my country?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'Binary options regulations vary by country. They are banned for retail clients in the EU and UK but may be available through offshore brokers in other jurisdictions. It is your responsibility to check the legal status of binary options trading in your country before using our signals for this purpose.',
-      },
-    },
-    {
+    },    {
       '@type': 'Question',
       name: 'How many OTC signals can I expect per day?',
       acceptedAnswer: {
@@ -81,7 +74,7 @@ const pairs = [
   'EUR/GBP OTC', 'USD/CAD OTC', 'AUD/JPY OTC', 'EUR/AUD OTC',
 ];
 
-export default function BinaryOptionsSignalsPage() {
+export default function TurboTradingSignalsPage() {
   return (
     <>
       <script
@@ -95,13 +88,13 @@ export default function BinaryOptionsSignalsPage() {
           <div className="absolute inset-0 bg-yellow-400/5 pointer-events-none" />
           <div className="max-w-4xl mx-auto text-center relative z-10">
             <span className="inline-block bg-yellow-400/10 border border-yellow-400/30 text-yellow-400 text-sm font-medium px-4 py-1 rounded-full mb-6">
-              OTC · 1–5 Min Expiry · 24/7 · Pocket Option Compatible
+              OTC · 1–5 Min Expiry · 24/7 · Works With All Major Platforms
             </span>
             <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-              <span className="text-yellow-400">Binary Options &amp; OTC Signals</span> — AI-Powered UP/DOWN Alerts
+              <span className="text-yellow-400">Turbo Trading &amp; OTC Signals</span> — AI-Powered UP/DOWN Alerts
             </h1>
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              Get ultra-short-term trade signals for binary options and OTC pairs. Our AI fires CALL or PUT alerts for 1, 2, and 5-minute expiries — available 24/7, even on weekends when standard forex markets are closed.
+              Get ultra-short-term trade signals for OTC pairs and synthetic assets. Our AI fires UP or DOWN alerts for 1, 2, and 5-minute expiries — available 24/7, even on weekends when standard forex markets are closed.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/register" className="bg-yellow-400 text-black font-bold px-8 py-4 rounded-xl hover:bg-yellow-300 transition-colors text-lg">
@@ -134,15 +127,15 @@ export default function BinaryOptionsSignalsPage() {
         <article className="max-w-4xl mx-auto px-4 py-16 space-y-12">
 
           <section>
-            <h2 className="text-2xl font-bold mb-4">What Are Binary Options OTC Signals?</h2>
+            <h2 className="text-2xl font-bold mb-4">What Are Turbo OTC Signals?</h2>
             <p className="text-gray-300 leading-relaxed mb-4">
-              Binary options are a simplified form of trading where you predict whether an asset's price will be higher or lower than the current price at a fixed future time (the expiry). If you are correct, you earn a fixed payout — typically 70–95% of your stake. If you are wrong, you lose your stake. There is no stop-loss, no leverage management, and no variable profit: just a binary outcome.
+              Turbo trading is a simplified form of short-term trading: you anticipate whether an asset's price will be higher or lower at a very short expiry — 1, 2 or 5 minutes. Each signal we publish states the asset, the direction (UP or DOWN), the exact expiry and the AI confidence score, so you always know what to trade and when.
             </p>
             <p className="text-gray-300 leading-relaxed mb-4">
-              OTC (Over-The-Counter) binary options use synthetic instruments that mirror real forex pairs but trade independently of live market hours. This means you can trade EUR/USD OTC on a Saturday evening when the actual forex market is closed. The price action is generated by the broker's internal model and tends to exhibit unique technical patterns that differ from live markets.
+              OTC (Over-The-Counter) instruments are synthetic assets that mirror real forex pairs but trade independently of live market hours. This means you can trade EUR/USD OTC on a Saturday evening when the actual forex market is closed. The price action is generated by the broker's internal model and tends to exhibit unique technical patterns that differ from live markets.
             </p>
             <p className="text-gray-300 leading-relaxed">
-              MarketSignals24's AI has been specifically trained on OTC price data to recognise these patterns and generate high-accuracy signals for 1, 2, and 5-minute expiries. When the engine detects a strong directional signal, it publishes a CALL or PUT recommendation to your dashboard and fires an audio alert so you can react within seconds.
+              MarketSignals24's AI has been specifically trained on OTC price data to recognise these patterns and generate high-accuracy signals for 1, 2, and 5-minute expiries. When the engine detects a strong directional signal, it publishes a UP or DOWN recommendation to your dashboard and fires an audio alert so you can react within seconds.
             </p>
           </section>
 
@@ -161,12 +154,12 @@ export default function BinaryOptionsSignalsPage() {
             <h2 className="text-2xl font-bold mb-4">How to Use OTC Signals Step by Step</h2>
             <ol className="space-y-4">
               {[
-                { step: '1', title: 'Log in to your MarketSignals24 dashboard', text: 'Navigate to the OTC Signals section. This is the dedicated tab for binary and OTC asset signals, separate from the standard forex/crypto signals.' },
+                { step: '1', title: 'Log in to your MarketSignals24 dashboard', text: 'Navigate to the OTC Signals section. This is the dedicated tab for OTC asset signals, separate from the standard forex/crypto signals.' },
                 { step: '2', title: 'Enable sound alerts', text: 'Click "Enable Sound" before a signal arrives. Your browser requires a user gesture before it allows audio — clicking this button unlocks the chime that fires when each new signal appears.' },
-                { step: '3', title: 'Wait for a signal', text: 'When the AI fires a signal you will see: asset name, direction (CALL/PUT), expiry duration, and confidence score. A chime plays simultaneously.' },
-                { step: '4', title: 'Open your broker platform', text: 'Go to your binary/OTC broker (Pocket Option, Quotex, etc.) and select the same OTC pair. Set the expiry duration to match the signal.' },
-                { step: '5', title: 'Place the trade', text: 'Select CALL if the signal says UP, or PUT if it says DOWN. Enter your stake amount. Never stake more than 2–3% of your account balance on a single binary trade.' },
-                { step: '6', title: 'Wait for expiry', text: 'Do not close the trade early. Binary options signals are calibrated for the stated expiry. Closing early reduces statistical advantage.' },
+                { step: '3', title: 'Wait for a signal', text: 'When the AI fires a signal you will see: asset name, direction (UP/DOWN), expiry duration, and confidence score. A chime plays simultaneously.' },
+                { step: '4', title: 'Open your broker platform', text: 'Go to your broker platform and select the same OTC pair. Set the expiry duration to match the signal.' },
+                { step: '5', title: 'Place the trade', text: 'Select UP or DOWN according to the signal. Enter your stake amount. Never stake more than 2–3% of your account balance on a single trade.' },
+                { step: '6', title: 'Wait for expiry', text: 'Do not close the trade early. Turbo signals are calibrated for the stated expiry. Closing early reduces statistical advantage.' },
               ].map((item) => (
                 <li key={item.step} className="flex gap-4 bg-gray-900 border border-white/10 rounded-xl p-5">
                   <span className="flex-shrink-0 w-8 h-8 rounded-full bg-yellow-400 text-black font-bold flex items-center justify-center text-sm">{item.step}</span>
@@ -182,8 +175,7 @@ export default function BinaryOptionsSignalsPage() {
           <section>
             <h2 className="text-2xl font-bold mb-4">Important Risk Warning</h2>
             <div className="bg-red-900/20 border border-red-400/30 rounded-xl p-5 text-sm text-gray-300 leading-relaxed space-y-3">
-              <p>Binary options involve substantial risk of loss and are not suitable for all investors. The majority of retail binary options traders lose money. Past performance of signals does not guarantee future results.</p>
-              <p>Binary options are prohibited for retail clients in the European Union (ESMA restrictions) and the United Kingdom (FCA ban). They may be offered by offshore brokers in other jurisdictions. It is your sole responsibility to verify that trading binary options is legal in your country.</p>
+              <p>Short-term trading involves substantial risk of loss and is not suitable for all investors. The majority of retail traders lose money. Past performance of signals does not guarantee future results.</p>
               <p>MarketSignals24 provides signals for informational and educational purposes only. We do not provide investment advice and we are not responsible for any losses incurred from trading decisions made using our signals.</p>
             </div>
           </section>
@@ -220,7 +212,7 @@ export default function BinaryOptionsSignalsPage() {
 
           <section className="text-center bg-gradient-to-br from-yellow-400/10 to-yellow-400/5 border border-yellow-400/20 rounded-2xl p-10">
             <h2 className="text-2xl font-bold mb-3">Ready to Trade OTC with Confidence?</h2>
-            <p className="text-gray-300 mb-6">AI-powered CALL/PUT signals. Available 24/7. Start with just €6.</p>
+            <p className="text-gray-300 mb-6">AI-powered UP/DOWN signals. Available 24/7. Start with just €6.</p>
             <Link href="/register" className="inline-block bg-yellow-400 text-black font-bold px-10 py-4 rounded-xl hover:bg-yellow-300 transition-colors text-lg">
               Create Free Account
             </Link>

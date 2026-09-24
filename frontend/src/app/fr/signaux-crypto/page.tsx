@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { seoClusterLanguageMap } from '@/lib/seo-clusters';
 
 export const metadata: Metadata = {
   title: 'Signaux Crypto — Bitcoin, Ethereum & Altcoins | MarketSignals24',
@@ -9,9 +10,7 @@ export const metadata: Metadata = {
     'MarketSignals24, signaux crypto, signaux crypto gratuits, signaux bitcoin gratuits, signal crypto gratuit, alertes crypto gratuites, signaux ethereum gratuits, meilleurs signaux crypto gratuits, signaux bitcoin, signaux ethereum, alertes crypto, signaux trading cryptomonnaie, signaux BTC ETH, IA crypto trading, signaux altcoins, signaux crypto temps réel',
   alternates: {
     canonical: 'https://marketsignals24.com/fr/signaux-crypto',
-    languages: {
-      'en': 'https://marketsignals24.com/crypto-signals',
-    },
+    languages: seoClusterLanguageMap('crypto'),
   },
   openGraph: {
     title: 'Signaux Crypto IA — Bitcoin & Altcoins | MarketSignals24',
@@ -190,8 +189,8 @@ export default function SignauxCryptoPage() {
                 <h3 className="font-semibold group-hover:text-yellow-400 transition-colors">Signaux Forex →</h3>
                 <p className="text-gray-400 text-sm mt-1">30+ paires de devises</p>
               </Link>
-              <Link href="/fr/signaux-options-binaires" className="block bg-gray-900 border border-white/10 rounded-xl p-5 hover:border-yellow-400/50 transition-colors group">
-                <h3 className="font-semibold group-hover:text-yellow-400 transition-colors">Options Binaires →</h3>
+              <Link href="/fr/signaux-turbo" className="block bg-gray-900 border border-white/10 rounded-xl p-5 hover:border-yellow-400/50 transition-colors group">
+                <h3 className="font-semibold group-hover:text-yellow-400 transition-colors">Trading Turbo →</h3>
                 <p className="text-gray-400 text-sm mt-1">Signaux OTC 1–5 min</p>
               </Link>
               <Link href="/fr/signaux-ia" className="block bg-gray-900 border border-white/10 rounded-xl p-5 hover:border-yellow-400/50 transition-colors group">

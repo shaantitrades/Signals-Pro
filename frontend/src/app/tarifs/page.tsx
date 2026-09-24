@@ -154,7 +154,7 @@ export default function TarifsPage() {
     }
   };
 
-  // « Retour aux signaux » : revient à la page précédente (Signaux Pocket Option & Quotex
+  // « Retour aux signaux » : revient à la page précédente (signaux Trading Turbo
   // ou Trading Bot), avec repli sur la page des signaux si l'utilisateur a atterri directement ici.
   const handleBackToSignals = () => {
     const referrer = typeof document !== 'undefined' ? document.referrer : '';
