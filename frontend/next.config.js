@@ -10,6 +10,16 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      // Canonical host: always serve the apex domain.
+      // Needed so that both /ads.txt and /robots.txt (checked by the Google
+      // AdSense crawler on the root domain AND on the www subdomain) resolve
+      // on a single, certified hostname.
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'www.marketsignals24.com' }],
+        destination: 'https://marketsignals24.com/:path*',
+        permanent: true,
+      },
       { source: '/dashboard/bot', destination: '/dashboard/tradingbot', permanent: true },
       { source: '/dashboard/signals', destination: '/dashboard/livesignals', permanent: true },
     ];
